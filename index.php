@@ -126,7 +126,7 @@ else
     </head>
     <body>
         <div id="tallyMan">
-            <img class="masthead" src="https://bmlt.magshare.net/wp-content/uploads/2014/01/cropped-BMLT-Blog-Logo1.png" />
+            <a href="https://bmlt.magshare.net"><img class="masthead" src="https://bmlt.magshare.net/wp-content/uploads/2014/01/cropped-BMLT-Blog-Logo1.png" /></a>
             <h2>Tally of Known BMLT Root Servers</h2>
             <div id="tallyMeter">
                 <div id="tallyMeterFill"></div>
