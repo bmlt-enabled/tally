@@ -123,6 +123,7 @@ else
             }
             
         </style>
+        <link rel="shortcut icon" href="https://bmlt.magshare.net/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
     </head>
     <body>
         <div id="tallyMan">
