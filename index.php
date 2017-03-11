@@ -1,0 +1,313 @@
+<?php
+$url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
+if ( isset ( $_GET["GetVersion"] ) )
+    {
+    die ( parse_version ( $url . "/client_interface/serverInfo.xml" ) );
+    }
+elseif ( isset ( $_GET["GetMeetings"] ) )
+    {
+    die ( call_curl ( $url . "/client_interface/json/?switcher=GetSearchResults" ) );
+    }
+elseif ( $url )
+    {
+    die ( call_curl ( $url . "/client_interface/json/?switcher=GetServiceBodies" ) );
+    }
+else
+    { ?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>BMLT Live Tally</title>
+        <style type="text/css">
+            div#tallyMan
+            {
+                font-family: Arial, Helvetica, sans-serif;
+                text-align: center;
+            }
+            
+            div#tallyMeter
+            {
+                text-align: left;
+                height: 0.5em;
+                margin-left: auto;
+                margin-right:auto;
+                width: 25%;
+                border-radius: 0.25em;
+                border:1px solid blue;
+                background-color:#ccf;
+            }
+            
+            div#tallyMeterFill
+            {
+                background-color:blue;
+                width: 0px;
+                height: 100%;
+            }
+            
+            img.masthead,
+            table#tallyHo
+            {
+                margin-left: auto;
+                margin-right:auto;
+            }
+            
+            table#tallyHo a,
+            table#tallyHo a:visited
+            {
+                color: #36f;
+                text-decoration: none;
+            }
+            
+            table#tallyHo a:hover,
+            table#tallyHo a:active
+            {
+                color: #f63;
+                text-decoration: underline;
+            }
+            
+            table#tallyHo td
+            {
+                padding: 0.25em;
+                padding-left: 1em;
+                padding-right: 1em;
+            }
+            
+            table#tallyHo thead td
+            {
+                border: none;
+                text-align: center;
+                font-weight: bold;
+                border-bottom: 2px solid #009;
+            }
+            
+            table#tallyHo tr.tallyTotal td
+            {
+                border: none;
+                text-align: right;
+                font-weight: bold;
+                border-top: 2px solid #009;
+            }
+            
+            table#tallyHo tbody td
+            {
+                text-align: right;
+                padding-right: 1em;
+            }
+            
+            table#tallyHo thead td
+            {
+                padding-right: 0;
+            }
+            
+            table#tallyHo tbody tr.odd td
+            {
+                background-color: #eef;
+            }
+            
+            table#tallyHo tbody td.tallyName,
+            table#tallyHo tbody td.tallyVersion
+            {
+                text-align: left;
+                padding-right: 0;
+            }
+            
+            table#tallyHo tbody td.tallyVersion
+            {
+                padding-left: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="tallyMan">
+            <img class="masthead" src="https://bmlt.magshare.net/wp-content/uploads/2014/01/cropped-BMLT-Blog-Logo1.png" />
+            <h2>Tally of Known BMLT Root Servers</h2>
+            <div id="tallyMeter">
+                <div id="tallyMeterFill"></div>
+            </div>
+            <table id="tallyHo" cellspacing="0" cellpadding="0" border="0">
+                <thead id="tallyHead">
+                    <tr>
+                        <td>Server Name</td>
+                        <td>Version</td>
+                        <td>Number of Regions</td>
+                        <td>Number of Areas</td>
+                        <td>Number of Meetings</td>
+                    </tr>
+                </thead>
+                <tbody id="tallyBody"></tbody>
+            </table>
+        </div>
+        <script type="text/javascript" src="BMLTTally.js"></script>
+    </body>
+</html>
+<?php    }
+
+/************************************************************************************//**
+*   \brief This function gets the XML version resource from the Root Server, then       *
+*   parses it to return only the version string itself.                                 *
+*                                                                                       *   
+*   \returns a string, containing the response. Empty if the call fails to get data.    *
+****************************************************************************************/
+function parse_version ( $in_uri )
+{
+    $data = call_curl ( $in_uri );
+    $ret = '';
+    
+    if ( $data )
+        {
+        $info_file = new DOMDocument;
+        if ( $info_file instanceof DOMDocument )
+            {
+            if ( @$info_file->loadXML ( $data ) )
+                {
+                $has_info = $info_file->getElementsByTagName ( "bmltInfo" );
+                
+                if ( ($has_info instanceof domnodelist) && $has_info->length )
+                    {
+                    $ret = trim ( $has_info->item(0)->nodeValue );
+                    }
+                }
+            }
+        }
+        
+    return $ret;
+}
+
+/************************************************************************************//**
+*   \brief This is a function that returns the results of an HTTP call to a URI.        *
+*   It is a lot more secure than file_get_contents, but does the same thing.            *
+*                                                                                       *   
+*   \returns a string, containing the response. Null if the call fails to get any data. *
+****************************************************************************************/
+function call_curl ( $in_uri,                ///< A string. The URI to call.
+                     $in_post = false,       ///< If false, the transaction is a GET, not a POST. Default is true.
+                     &$error_message = null, ///< A string. If provided, any error message will be placed here.
+                     &$http_status = null    ///< Optional reference to a string. Returns the HTTP call status.
+                    )
+{
+    $ret = null;
+    
+    // Make sure we don't give any false positives.
+    if ( $error_message )
+        {
+        $error_message = null;
+        }
+    
+    if ( !extension_loaded ( 'curl' ) ) // Must have cURL.
+        {
+        // If there is no error message variable passed, we die quietly.
+        if ( isset ( $error_message ) )
+            {
+            $error_message = 'call_curl: The cURL extension is not available! This code will not work on this server!';
+            }
+        }
+    else
+        {
+        // This gets the session as a cookie.
+        if (isset ( $_COOKIE['PHPSESSID'] ) && $_COOKIE['PHPSESSID'] )
+            {
+            $strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
+
+            session_write_close();
+            }
+
+        // Create a new cURL resource.
+        $resource = curl_init();
+    
+        if ( isset ( $strCookie ) && $strCookie )
+            {
+            curl_setopt ( $resource, CURLOPT_COOKIE, $strCookie );
+            }
+    
+        // If we will be POSTing this transaction, we split up the URI.
+        if ( $in_post )
+            {
+            $spli = explode ( "?", $in_uri, 2 );
+            
+            if ( is_array ( $spli ) && count ( $spli ) )
+                {
+                $in_uri = $spli[0];
+                $in_params = $spli[1];
+                // Convert query string into an array using parse_str(). parse_str() will decode values along the way.
+                parse_str($in_params, $temp);
+                
+                // Now rebuild the query string using http_build_query(). It will re-encode values along the way.
+                // It will also take original query string params that have no value and appends a "=" to them
+                // thus giving them and empty value.
+                $in_params = http_build_query($temp);
+            
+                curl_setopt ( $resource, CURLOPT_POST, true );
+                curl_setopt ( $resource, CURLOPT_POSTFIELDS, $in_params );
+                }
+            }
+        
+        if ( isset ( $strCookie ) && $strCookie )
+            {
+            curl_setopt( $resource, CURLOPT_COOKIE, $strCookie );
+            }
+
+        // Set url to call.
+        curl_setopt ( $resource, CURLOPT_URL, $in_uri );
+        
+        // Make curl_exec() function (see below) return requested content as a string (unless call fails).
+        curl_setopt ( $resource, CURLOPT_RETURNTRANSFER, true );
+        
+        // By default, cURL prepends response headers to string returned from call to curl_exec().
+        // You can control this with the below setting.
+        // Setting it to false will remove headers from beginning of string.
+        // If you WANT the headers, see the Yahoo documentation on how to parse with them from the string.
+        curl_setopt ( $resource, CURLOPT_HEADER, false );
+        
+        // Allow  cURL to follow any 'location:' headers (redirection) sent by server (if needed set to true, else false- defaults to false anyway).
+// Disabled, because some servers disable this for security reasons.
+//          curl_setopt ( $resource, CURLOPT_FOLLOWLOCATION, true );
+        
+        // Set maximum times to allow redirection (use only if needed as per above setting. 3 is sort of arbitrary here).
+        curl_setopt ( $resource, CURLOPT_MAXREDIRS, 3 );
+        
+        // Set connection timeout in seconds (very good idea).
+        curl_setopt ( $resource, CURLOPT_CONNECTTIMEOUT, 10 );
+        
+        // Direct cURL to send request header to server allowing compressed content to be returned and decompressed automatically (use only if needed).
+        curl_setopt ( $resource, CURLOPT_ENCODING, 'gzip,deflate' );
+        
+        // Pretend we're a browser, so that anti-cURL settings don't pooch us.
+        curl_setopt ( $resource, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)" ); 
+
+        // Execute cURL call and return results in $content variable.
+        $content = curl_exec ( $resource );
+        
+        // Check if curl_exec() call failed (returns false on failure) and handle failure.
+        if ( $content === false )
+            {
+            // If there is no error message variable passed, we die quietly.
+            if ( isset ( $error_message ) )
+                {
+                // Cram as much info into the error message as possible.
+                $error_message = 'call_curl: curl failure calling $in_uri, '.curl_error ( $resource )."\n".curl_errno ( $resource );
+                }
+            }
+        else
+            {
+            // Do what you want with returned content (e.g. HTML, XML, etc) here or AFTER curl_close() call below as it is stored in the $content variable.
+        
+            // You MIGHT want to get the HTTP status code returned by server (e.g. 200, 400, 500).
+            // If that is the case then this is how to do it.
+            $http_status = curl_getinfo ($resource, CURLINFO_HTTP_CODE );
+            }
+        
+        // Close cURL and free resource.
+        curl_close ( $resource );
+        
+        // Maybe echo $contents of $content variable here.
+        if ( $content !== false )
+            {
+            $ret = $content;
+            }
+        }
+    
+    return $ret;
+}
+
+?>
