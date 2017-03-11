@@ -116,6 +116,12 @@ else
             {
                 padding-left: 1em;
             }
+            
+            table#tallyHo thead td.tallyVersion
+            {
+                padding-left: 0;
+            }
+            
         </style>
     </head>
     <body>
@@ -128,11 +134,11 @@ else
             <table id="tallyHo" cellspacing="0" cellpadding="0" border="0">
                 <thead id="tallyHead">
                     <tr>
-                        <td>Server Name</td>
-                        <td>Version</td>
-                        <td>Number of Regions</td>
-                        <td>Number of Areas</td>
-                        <td>Number of Meetings</td>
+                        <td class="tallyName">Server Name</td>
+                        <td class="tallyVersion">Version</td>
+                        <td class="tallyRegion">Number of Regions</td>
+                        <td class="tallyArea">Number of Areas</td>
+                        <td class="tallyMeeting">Number of Meetings</td>
                     </tr>
                 </thead>
                 <tbody id="tallyBody"></tbody>
