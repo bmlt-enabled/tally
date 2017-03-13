@@ -46,7 +46,8 @@ else
             }
             
             img.masthead,
-            table#tallyHo
+            table#tallyHo,
+            table#tallyLogTable
             {
                 margin-left: auto;
                 margin-right:auto;
@@ -122,6 +123,33 @@ else
                 padding-left: 0;
             }
             
+            table#tallyLogTable
+            {
+                margin-top: 1em;
+                text-align: left;
+                font-style: italic;
+            }
+            
+            table#tallyLogTable td.in-progress-0
+            {
+                color: #c30;
+            }
+            
+            table#tallyLogTable td.in-progress-1
+            {
+                color: #c60;
+            }
+            
+            table#tallyLogTable td.in-progress-2
+            {
+                color: #cc0;
+            }
+            
+            table#tallyLogTable td.in-progress-3
+            {
+                color: #0c0;
+            }
+            
         </style>
         <link rel="shortcut icon" href="https://bmlt.magshare.net/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
     </head>
@@ -132,6 +160,8 @@ else
             <div id="tallyMeter">
                 <div id="tallyMeterFill"></div>
             </div>
+            <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0">
+            </table>
             <table id="tallyHo" cellspacing="0" cellpadding="0" border="0">
                 <thead id="tallyHead">
                     <tr>
