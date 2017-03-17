@@ -10,33 +10,33 @@ function BMLTTally() {
     var tallyManDiv = document.getElementById ( "tallyMan" );
     var tallyLogRows = Array();
     var sourceList = [
-                        {"name":"Tejas-Bluebonnet Server","semanticURL":"https://texasoklahomana.org/main_server/semantic/","rootURL":"https://texasoklahomana.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Autonomy Zone","semanticURL":"https://metrorichna.org/BMLT/main_server/semantic/","rootURL":"https://metrorichna.org/BMLT/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Florida Region Server","semanticURL":"http://naflorida.org/bmlt_server/semantic/","rootURL":"http://naflorida.org/bmlt_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Greater New York Server","semanticURL":"https://bmlt.newyorkna.org/main_server/semantic/","rootURL":"https://bmlt.newyorkna.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Southern California Region","semanticURL":"http://todayna.org/bmlt/semantic/","rootURL":"http://todayna.org/bmlt/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Carolina Region","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=http://crna.org/main_server/","rootURL":"http://crna.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Georgia Region","semanticURL":"http://www.grscnabmlt.tk/main_server/semantic/","rootURL":"http://www.grscnabmlt.tk/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Eastern Pennsylvania/Philadelphia","semanticURL":"http://meetings.naworks.org/semantic/","rootURL":"http://meetings.naworks.org/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"NA Australia","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=http://na.org.au/main_server/","rootURL":"http://na.org.au/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Ohio Region","semanticURL":"http://bmlt.naohio.org/main_server/semantic/","rootURL":"http://bmlt.naohio.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"NA Sweden","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=https://www.nasverige.org/main_server/","rootURL":"https://www.nasverige.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"NA Minnesota","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=http://www.naminnesota.org/bmlt/main_server/","rootURL":"http://www.naminnesota.org/bmlt/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Alabama/NW Florida","semanticURL":"http://www.alnwfl.org/main_server/semantic/","rootURL":"http://www.alnwfl.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"San Diego NA","semanticURL":"http://www.sandiegona.org/bmlt/semantic/","rootURL":"http://www.sandiegona.org/bmlt/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"North Carolina Region","semanticURL":"http://bmlt.ncregion-na.org/main_server/semantic/","rootURL":"http://bmlt.ncregion-na.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Iowa Server","semanticURL":"http://iowa-na.org/main_server2/semantic/","rootURL":"http://iowa-na.org/main_server2/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Quebec","semanticURL":"http://membres.naquebec.org/reunions/main_server/semantic/","rootURL":"http://membres.naquebec.org/reunions/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"NA India","semanticURL":"http://naindia.in/meeting_server/semantic/","rootURL":"http://naindia.in/meeting_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"German-Speaking Region","semanticURL":"http://www.narcotics-anonymous.de/bmlt/semantic/","rootURL":"http://www.narcotics-anonymous.de/bmlt/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"NA Ireland","semanticURL":"http://bmlt.nasouth.ie/main_server/semantic/","rootURL":"http://bmlt.nasouth.ie/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Bluegrass-Appalachian Region","semanticURL":"http://barcna.com/bmlt/main_server/semantic/","rootURL":"http://barcna.com/bmlt/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Sierra-Sage Region","semanticURL":"http://sierrasagena.org/BMLT-Root-Server/main_server/semantic/","rootURL":"http://sierrasagena.org/BMLT-Root-Server/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"NA Hawai'i","semanticURL":"http://na-hawaii.org/bmltmain/semantic/","rootURL":"http://na-hawaii.org/bmltmain/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"San Jose Area","semanticURL":"http://www.sjna.org/main_server/semantic/","rootURL":"http://www.sjna.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Granite State Area","semanticURL":"http://www.gsana.org/bmlt/main_server/semantic/","rootURL":"http://www.gsana.org/bmlt/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Milwaukee","semanticURL":"http://meetings.namilwaukee.org/main_server/semantic/","rootURL":"http://meetings.namilwaukee.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0},
-                        {"name":"Connecticut Region","semanticURL":"","rootURL":"http://ctna.org/main_server_new/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0}
+                        {"name":"Tejas-Bluebonnet Server","semanticURL":"https://texasoklahomana.org/main_server/semantic/","rootURL":"https://texasoklahomana.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Autonomy Zone","semanticURL":"https://metrorichna.org/BMLT/main_server/semantic/","rootURL":"https://metrorichna.org/BMLT/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Florida Region Server","semanticURL":"http://naflorida.org/bmlt_server/semantic/","rootURL":"http://naflorida.org/bmlt_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Greater New York Server","semanticURL":"https://bmlt.newyorkna.org/main_server/semantic/","rootURL":"https://bmlt.newyorkna.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Southern California Region","semanticURL":"http://todayna.org/bmlt/semantic/","rootURL":"http://todayna.org/bmlt/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Carolina Region","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=http://crna.org/main_server/","rootURL":"http://crna.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Georgia Region","semanticURL":"http://www.grscnabmlt.tk/main_server/semantic/","rootURL":"http://www.grscnabmlt.tk/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Eastern Pennsylvania/Philadelphia","semanticURL":"https://meetings.naworks.org/semantic/","rootURL":"https://meetings.naworks.org/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"NA Australia","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=http://na.org.au/main_server/","rootURL":"http://na.org.au/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Ohio Region","semanticURL":"http://bmlt.naohio.org/main_server/semantic/","rootURL":"http://bmlt.naohio.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"NA Sweden","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=https://www.nasverige.org/main_server/","rootURL":"https://www.nasverige.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"NA Minnesota","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=http://www.naminnesota.org/bmlt/main_server/","rootURL":"http://www.naminnesota.org/bmlt/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Alabama/NW Florida","semanticURL":"http://www.alnwfl.org/main_server/semantic/","rootURL":"http://www.alnwfl.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"San Diego NA","semanticURL":"http://www.sandiegona.org/bmlt/semantic/","rootURL":"http://www.sandiegona.org/bmlt/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"North Carolina Region","semanticURL":"http://bmlt.ncregion-na.org/main_server/semantic/","rootURL":"http://bmlt.ncregion-na.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Iowa Server","semanticURL":"http://iowa-na.org/main_server2/semantic/","rootURL":"http://iowa-na.org/main_server2/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Quebec","semanticURL":"http://membres.naquebec.org/reunions/main_server/semantic/","rootURL":"http://membres.naquebec.org/reunions/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"NA India","semanticURL":"http://naindia.in/meeting_server/semantic/","rootURL":"http://naindia.in/meeting_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"German-Speaking Region","semanticURL":"http://www.narcotics-anonymous.de/bmlt/semantic/","rootURL":"http://www.narcotics-anonymous.de/bmlt/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"NA Ireland","semanticURL":"http://bmlt.nasouth.ie/main_server/semantic/","rootURL":"http://bmlt.nasouth.ie/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Bluegrass-Appalachian Region","semanticURL":"http://barcna.com/bmlt/main_server/semantic/","rootURL":"http://barcna.com/bmlt/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Sierra-Sage Region","semanticURL":"http://sierrasagena.org/BMLT-Root-Server/main_server/semantic/","rootURL":"http://sierrasagena.org/BMLT-Root-Server/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"NA Hawai'i","semanticURL":"https://na-hawaii.org/bmltmain/semantic/","rootURL":"https://na-hawaii.org/bmltmain/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"San Jose Area","semanticURL":"http://www.sjna.org/main_server/semantic/","rootURL":"http://www.sjna.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Granite State Area","semanticURL":"http://www.gsana.org/bmlt/main_server/semantic/","rootURL":"http://www.gsana.org/bmlt/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Milwaukee","semanticURL":"http://meetings.namilwaukee.org/main_server/semantic/","rootURL":"http://meetings.namilwaukee.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"Connecticut Region","semanticURL":"","rootURL":"http://ctna.org/main_server_new/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0}
                     ];
     
     /****************************************************************************************//**
@@ -172,7 +172,14 @@ function BMLTTally() {
             tableRow.appendChild ( tableCellName );
             
             var tableCellVersion = document.createElement ( 'td' );
-            tableCellVersion.className = 'tallyVersion';
+
+            var serverVersion = parseInt ( sourceObject.versionInt );
+            
+            if ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') && (serverVersion >= 2008012) ) {
+                tableCellVersion.className = 'tallyVersion validServer';
+            } else {
+                tableCellVersion.className = 'tallyVersion';
+            };
             tableCellVersion.appendChild ( document.createTextNode ( sourceObject.serverVersion.toString() ) );
             tableRow.appendChild ( tableCellVersion );
             
@@ -222,6 +229,8 @@ function BMLTTally() {
         tableBody.appendChild ( totalRow );
             
         tableContainer.style.display = 'table';
+        
+        document.getElementById ( "tallyMo" ).style.display = 'block';
     };
     
     /****************************************************************************************//**
@@ -250,6 +259,8 @@ function BMLTTally() {
         var responseText = in_req.responseText;
         var source = in_req.extra_data;
         eval('source.serverVersion = \'' + responseText.toString() + '\';' );
+        var versionArray = source.serverVersion.split('.');
+        source.versionInt = (parseInt ( versionArray[0] ) * 1000000) + (parseInt ( versionArray[1] ) * 1000) + parseInt ( versionArray[2] );
         source.stage = 2;
         tallyDone++;
         this.incrementTallyMeter();

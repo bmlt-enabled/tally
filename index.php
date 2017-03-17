@@ -150,6 +150,18 @@ else
                 color: #0c0;
             }
             
+            table#tallyHo tbody td.validServer
+            {
+                color: #090;
+                font-weight: bold;
+            }
+            
+            p#tallyMo
+            {
+                color: #090;
+                font-weight: bold;
+                font-style: italic;
+            }
         </style>
         <link rel="shortcut icon" href="https://bmlt.magshare.net/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
     </head>
@@ -166,7 +178,7 @@ else
                 <thead id="tallyHead">
                     <tr>
                         <td class="tallyName">Server Name</td>
-                        <td class="tallyVersion">Version</td>
+                        <td class="tallyVersion">Version*</td>
                         <td class="tallyRegion">Number of Regions</td>
                         <td class="tallyArea">Number of Areas</td>
                         <td class="tallyMeeting">Number of Meetings</td>
@@ -174,6 +186,7 @@ else
                 </thead>
                 <tbody id="tallyBody"></tbody>
             </table>
+            <p id="tallyMo" style="display: none">* Bold green indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
         </div>
         <script type="text/javascript" src="BMLTTally.js"></script>
     </body>
