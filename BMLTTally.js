@@ -36,6 +36,7 @@ function BMLTTally() {
                         {"name":"San Jose Area","semanticURL":"http://www.sjna.org/main_server/semantic/","rootURL":"http://www.sjna.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
                         {"name":"Granite State Area","semanticURL":"http://www.gsana.org/bmlt/main_server/semantic/","rootURL":"http://www.gsana.org/bmlt/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
                         {"name":"Milwaukee","semanticURL":"http://meetings.namilwaukee.org/main_server/semantic/","rootURL":"http://meetings.namilwaukee.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
+                        {"name":"NA New Jersey","semanticURL":"https://www.narcoticsanonymousnj.org/main_server/semantic","rootURL":"https://www.narcoticsanonymousnj.org/main_server/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0},
                         {"name":"Connecticut Region","semanticURL":"","rootURL":"http://ctna.org/main_server_new/","numRegions":0,"numASCs":0,"numMeetings":0,"serverVersion":"", "stage": 0, "versionInt": 0}
                     ];
     
