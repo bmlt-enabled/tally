@@ -118,9 +118,20 @@ else
                 padding-left: 1em;
             }
             
-            table#tallyHo thead td.tallyVersion
+            table#tallyHo tbody td.tallySSL
             {
-                padding-left: 0;
+                text-align:center;
+            }
+            
+            table#tallyHo tbody td.inValidSSL
+            {
+                color: red;
+            }
+            
+            table#tallyHo tbody td.validSSL
+            {
+                color: #090;
+                font-weight: bold;
             }
             
             table#tallyLogTable
@@ -178,6 +189,7 @@ else
                 <thead id="tallyHead">
                     <tr>
                         <td class="tallyName">Server Name</td>
+                        <td class="tallySSL">Is SSL?</td>
                         <td class="tallyVersion">Version*</td>
                         <td class="tallyRegion">Number of Regions</td>
                         <td class="tallyArea">Number of Areas</td>
@@ -186,7 +198,7 @@ else
                 </thead>
                 <tbody id="tallyBody"></tbody>
             </table>
-            <p id="tallyMo" style="display: none">* Bold green indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+            <p id="tallyMo" style="display: none">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
         </div>
         <script type="text/javascript" src="BMLTTally.js"></script>
     </body>
