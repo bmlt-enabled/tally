@@ -224,7 +224,11 @@ function BMLTTally(inSourceList) {
         var responseText = in_req.responseText;
         var source = in_req.extra_data;
         eval('var results = ' + responseText + ';' );
-        source.meetings = results;
+        source.meetings = Array();
+        for ( var i = 0; i < results.length; i++ ) {
+            var location = {"longitude":results[i].longitude,"latitude":results[i].latitude};
+            source.meetings.push ( location );
+        };
         source.stage = 3;
         tallyDone++;
         this.incrementTallyMeter();
