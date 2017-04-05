@@ -200,7 +200,11 @@ else
             </table>
             <p id="tallyMo" style="display: none">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
         </div>
+        <?php
+            $sourceListJson = file_get_contents("rootServerList.json");
+        ?>
         <script type="text/javascript" src="BMLTTally.js"></script>
+        <script type="text/javascript"><?php echo "var srcList = Array($sourceListJson);BMLTTally(srcList);" ?></script>
     </body>
 </html>
 <?php    }
