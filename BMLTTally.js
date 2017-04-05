@@ -129,18 +129,21 @@ function BMLTTally(inSourceList) {
             tableCellName.className = 'tallyName';
             tableCellName.appendChild ( tableAnchor );
             
-            if ( sourceObject.semanticURL ) {
-                var semanticAnchor = document.createElement ( 'a' );
-                semanticAnchor.href = sourceObject.semanticURL;
-                semanticAnchor.className = 'tallySemanticClick';
-                semanticAnchor.target = "_blank";
-                semanticAnchor.appendChild ( document.createTextNode ( 'Semantic Workshop Link' ) );
-
-                tableCellName.appendChild ( document.createTextNode ( ' (' ) );
-                tableCellName.appendChild ( semanticAnchor );
-                tableCellName.appendChild ( document.createTextNode ( ')' ) );
+            var semURL = sourceObject.semanticURL;
+            
+            if ( !semURL ) {
+                semURL = sourceObject.rootURL.toString() + "/semantic";
             };
             
+            var semanticAnchor = document.createElement ( 'a' );
+            semanticAnchor.href = semURL.toString();
+            semanticAnchor.className = 'tallySemanticClick';
+            semanticAnchor.target = "_blank";
+            semanticAnchor.appendChild ( document.createTextNode ( 'Semantic Workshop Link' ) );
+
+            tableCellName.appendChild ( document.createTextNode ( ' (' ) );
+            tableCellName.appendChild ( semanticAnchor );
+            tableCellName.appendChild ( document.createTextNode ( ')' ) );
             
             tableRow.appendChild ( tableCellName );
             
