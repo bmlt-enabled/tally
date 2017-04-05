@@ -76,7 +76,7 @@ function BMLTTally(inSourceList) {
     *   \brief Sorting Handler.                                                                 *
     ********************************************************************************************/
     sortResults = function ( a, b ) {
-        var ret = a.numMeetings - b.numMeetings;
+        var ret = a.meetings.length - b.meetings.length;
         if ( 0 == ret ) {
             ret = a.numRegions - b.numRegions;
             if ( 0 == ret ) {
@@ -111,7 +111,7 @@ function BMLTTally(inSourceList) {
             
             totalRegions += sourceObject.numRegions;
             totalAreas += sourceObject.numASCs;
-            totalMeetings += sourceObject.numMeetings;
+            totalMeetings += sourceObject.meetings.length;
             
             var tableRow = document.createElement ( 'tr' );
             
@@ -176,7 +176,7 @@ function BMLTTally(inSourceList) {
             
             var tableCellMeetings = document.createElement ( 'td' );
             tableCellMeetings.className = 'tallyMeeting';
-            tableCellMeetings.appendChild ( document.createTextNode ( sourceObject.numMeetings.toString() ) );
+            tableCellMeetings.appendChild ( document.createTextNode ( sourceObject.meetings.length.toString() ) );
             tableRow.appendChild ( tableCellMeetings );
             
             tableBody.appendChild ( tableRow );
@@ -224,7 +224,7 @@ function BMLTTally(inSourceList) {
         var responseText = in_req.responseText;
         var source = in_req.extra_data;
         eval('var results = ' + responseText + ';' );
-        source.numMeetings = results.length;
+        source.meetings = results;
         source.stage = 3;
         tallyDone++;
         this.incrementTallyMeter();
