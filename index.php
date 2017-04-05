@@ -204,7 +204,7 @@ else
             $sourceListJson = file_get_contents("rootServerList.json");
         ?>
         <script type="text/javascript" src="BMLTTally.js"></script>
-        <script type="text/javascript"><?php echo "var srcList = Array($sourceListJson);BMLTTally(srcList);" ?></script>
+        <script type="text/javascript"><?php echo "var srcList = $sourceListJson;BMLTTally(srcList);" ?></script>
     </body>
 </html>
 <?php    }
