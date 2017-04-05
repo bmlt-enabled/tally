@@ -27,6 +27,10 @@ function BMLTTally(inSourceList) {
                 tallyTable.appendChild(tableRow);
             };
             
+            if ( !sourceObject.stage ) {
+                sourceObject.stage = 0;
+            };
+            
             var innerElement = '';
             tallyLogRows[i].className = 'in-progress-' + sourceObject.stage.toString();
             
@@ -71,7 +75,6 @@ function BMLTTally(inSourceList) {
     /****************************************************************************************//**
     *   \brief Sorting Handler.                                                                 *
     ********************************************************************************************/
-    
     sortResults = function ( a, b ) {
         var ret = a.numMeetings - b.numMeetings;
         if ( 0 == ret ) {
