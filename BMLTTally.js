@@ -3,75 +3,89 @@
 ************************************************************************************************/
 
 function BMLTTally(inSourceList) {
-    var tallyManTotal = 0;
-    var tallyDone = 0;
-    var tallyManDiv = document.getElementById ( "tallyMan" );
-    var tallyLogRows = Array();
-    var sourceList = inSourceList;
-    
+    this.tallyManTotal = 0;
+    this.tallyDone = 0;
+    this.tallyLogRows = Array();
+    this.sourceList = inSourceList;
+    this.mapObject = null;
+
     /****************************************************************************************//**
-    *   \brief Updates the log of events.                                                      *
+    *   \brief MAIN CONTEXT                                                                     *
     ********************************************************************************************/
-    updateTallyLog = function ( )
-    {
-        for ( i = 0; i < sourceList.length; i++ ) {
-            var tallyTable = document.getElementById ( 'tallyLogTable' );
-            var sourceObject = sourceList[i];
-            if ( tallyLogRows.length < (i + 1) ) {
-                var tableRow = document.createElement ( 'tr' );
-                if ( i % 2 ) {
-                    tableRow.className = 'odd';
-                };
-                tallyLogRows[i] = document.createElement ( 'td' );
-                tableRow.appendChild(tallyLogRows[i]);
-                tallyTable.appendChild(tableRow);
-            };
-            
-            if ( !sourceObject.stage ) {
-                sourceObject.stage = 0;
-            };
-            
-            var innerElement = '';
-            tallyLogRows[i].className = 'in-progress-' + sourceObject.stage.toString();
-            
-            switch ( sourceObject.stage ) {
-                case 0:
-                    innerElement = sourceObject.name + ' -Fetching Service Bodies.';
-                    break;
-                
-                case 1:
-                    innerElement = sourceObject.name + ' -Fetching Server Version.';
-                    break;
-                
-                case 2:
-                    innerElement = sourceObject.name + ' -Fetching Meetings.';
-                    break;
-                    
-                default:
-                    innerElement = sourceObject.name + ' -Done.';
-                    break;
-            };
-            
-            tallyLogRows[i].innerHTML = innerElement;
-        };
-            
+    this.start_tally();
+};
+
+BMLTTally.prototype.tallyManTotal;
+BMLTTally.prototype.tallyDone;
+BMLTTally.prototype.tallyLogRows;
+BMLTTally.prototype.sourceList;
+BMLTTally.prototype.mapObject;
+ 
+/****************************************************************************************//**
+*   \brief Increments the tally meter.                                                      *
+********************************************************************************************/
+BMLTTally.prototype.incrementTallyMeter = function ( ) {
+    var tallyMeter = document.getElementById ( "tallyMeter" );
+    var tallyMeterFill = document.getElementById ( "tallyMeterFill" );
+    var percentage = this.tallyDone / this.tallyManTotal;
+    tallyMeterFill.style.width = (percentage * 100).toString() + "%";
+    if ( this.tallyDone == this.tallyManTotal ) {
+        this.displayResults ( );
     };
+    this.updateTallyLog();
+};
     
-    /****************************************************************************************//**
-    *   \brief Increments the tally meter.                                                      *
-    ********************************************************************************************/
-    incrementTallyMeter = function ( )
-    {
-        var tallyMeter = document.getElementById ( "tallyMeter" );
-        var tallyMeterFill = document.getElementById ( "tallyMeterFill" );
-        var percentage = tallyDone / tallyManTotal;
-        tallyMeterFill.style.width = (percentage * 100).toString() + "%";
-        if ( tallyDone == tallyManTotal ) {
-            this.displayResults ( );
+/****************************************************************************************//**
+*   \brief Updates the log of events.                                                      *
+********************************************************************************************/
+BMLTTally.prototype.updateTallyLog = function ( ) {
+    for ( i = 0; i < this.sourceList.length; i++ ) {
+        var tallyTable = document.getElementById ( 'tallyLogTable' );
+        var sourceObject = this.sourceList[i];
+        if ( this.tallyLogRows.length < (i + 1) ) {
+            var tableRow = document.createElement ( 'tr' );
+            if ( i % 2 ) {
+                tableRow.className = 'odd';
+            };
+            this.tallyLogRows[i] = document.createElement ( 'td' );
+            tableRow.appendChild(this.tallyLogRows[i]);
+            tallyTable.appendChild(tableRow);
         };
-        this.updateTallyLog();
+        
+        if ( !sourceObject.stage ) {
+            sourceObject.stage = 0;
+        };
+        
+        var innerElement = '';
+        this.tallyLogRows[i].className = 'in-progress-' + sourceObject.stage.toString();
+        
+        switch ( sourceObject.stage ) {
+            case 0:
+                innerElement = sourceObject.name + ' -Fetching Service Bodies.';
+                break;
+            
+            case 1:
+                innerElement = sourceObject.name + ' -Fetching Server Version.';
+                break;
+            
+            case 2:
+                innerElement = sourceObject.name + ' -Fetching Meetings.';
+                break;
+                
+            default:
+                innerElement = sourceObject.name + ' -Done.';
+                break;
+        };
+        
+        this.tallyLogRows[i].innerHTML = innerElement;
     };
-    
+        
+};
+
+/****************************************************************************************//**
+*   \brief Increments the tally meter.                                                      *
+********************************************************************************************/
+BMLTTally.prototype.displayResults = function ( ) {
     /****************************************************************************************//**
     *   \brief Sorting Handler.                                                                 *
     ********************************************************************************************/
@@ -86,235 +100,263 @@ function BMLTTally(inSourceList) {
         
         return -ret;
     };
+
+    var tallyTable = document.getElementById ( 'tallyLogTable' );
+    var tableContainer = document.getElementById ( 'tallyHo' );
+    var tableBody = document.getElementById ( 'tallyBody' );
+    tableBody.innerHTML = '';
+    var tallyMeter = document.getElementById ( "tallyMeter" );
+    tallyMeter.style.display = 'none';
+    tallyTable.innerHTML = '';
     
-    /****************************************************************************************//**
-    *   \brief Increments the tally meter.                                                      *
-    ********************************************************************************************/
-    displayResults = function ( )
-    {
-        var tallyTable = document.getElementById ( 'tallyLogTable' );
-        var tableContainer = document.getElementById ( 'tallyHo' );
-        var tableBody = document.getElementById ( 'tallyBody' );
-        tableBody.innerHTML = '';
-        var tallyMeter = document.getElementById ( "tallyMeter" );
-        tallyMeter.style.display = 'none';
-        tallyTable.innerHTML = '';
+    this.sourceList.sort ( this.sortResults );
+    
+    var totalRegions = 0;
+    var totalAreas = 0;
+    var totalMeetings = 0;
+    
+    for ( i = 0; i < this.sourceList.length; i++ ) {
+        var sourceObject = this.sourceList[i];
         
-        sourceList.sort ( this.sortResults );
+        totalRegions += sourceObject.numRegions;
+        totalAreas += sourceObject.numASCs;
+        totalMeetings += sourceObject.meetings.length;
         
-        var totalRegions = 0;
-        var totalAreas = 0;
-        var totalMeetings = 0;
+        var tableRow = document.createElement ( 'tr' );
         
-        for ( i = 0; i < sourceList.length; i++ ) {
-            var sourceObject = sourceList[i];
-            
-            totalRegions += sourceObject.numRegions;
-            totalAreas += sourceObject.numASCs;
-            totalMeetings += sourceObject.meetings.length;
-            
-            var tableRow = document.createElement ( 'tr' );
-            
-            if ( i % 2 ) {
-                tableRow.className = 'odd';
-            };
-            
-            var tableAnchor = document.createElement ( 'a' );
-            tableAnchor.href = sourceObject.rootURL;
-            tableAnchor.className = 'tallyClick';
-            tableAnchor.target = "_blank";
-            tableAnchor.appendChild ( document.createTextNode ( sourceObject.name ) );
-
-            var tableCellName = document.createElement ( 'td' );
-            tableCellName.className = 'tallyName';
-            tableCellName.appendChild ( tableAnchor );
-            
-            var semURL = sourceObject.semanticURL;
-            
-            if ( !semURL ) {
-                semURL = sourceObject.rootURL.toString() + "/semantic";
-            };
-            
-            var semanticAnchor = document.createElement ( 'a' );
-            semanticAnchor.href = semURL.toString();
-            semanticAnchor.className = 'tallySemanticClick';
-            semanticAnchor.target = "_blank";
-            semanticAnchor.appendChild ( document.createTextNode ( 'Semantic Workshop Link' ) );
-
-            tableCellName.appendChild ( document.createTextNode ( ' (' ) );
-            tableCellName.appendChild ( semanticAnchor );
-            tableCellName.appendChild ( document.createTextNode ( ')' ) );
-            
-            tableRow.appendChild ( tableCellName );
-            
-            var tableCellSSL = document.createElement ( 'td' );
-            tableCellSSL.className = 'tallySSL' + ((sourceObject.rootURL.toString().substring(0, 5) === 'https') ? ' validSSL' : ' inValidSSL');
-            tableCellSSL.appendChild ( document.createTextNode ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') ? "YES" : "NO" ) );
-            tableRow.appendChild ( tableCellSSL );
-            
-            var tableCellVersion = document.createElement ( 'td' );
-
-            var serverVersion = parseInt ( sourceObject.versionInt );
-            
-            if ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') && (serverVersion >= 2008012) ) {
-                tableCellVersion.className = 'tallyVersion validServer';
-            } else {
-                tableCellVersion.className = 'tallyVersion';
-            };
-            tableCellVersion.appendChild ( document.createTextNode ( sourceObject.serverVersion.toString() ) );
-            tableRow.appendChild ( tableCellVersion );
-            
-            var tableCellRegions = document.createElement ( 'td' );
-            tableCellRegions.className = 'tallyRegion';
-            tableCellRegions.appendChild ( document.createTextNode ( sourceObject.numRegions.toString() ) );
-            tableRow.appendChild ( tableCellRegions );
-            
-            var tableCellAreas = document.createElement ( 'td' );
-            tableCellAreas.className = 'tallyArea';
-            tableCellAreas.appendChild ( document.createTextNode ( sourceObject.numASCs.toString() ) );
-            tableRow.appendChild ( tableCellAreas );
-            
-            var tableCellMeetings = document.createElement ( 'td' );
-            tableCellMeetings.className = 'tallyMeeting';
-            tableCellMeetings.appendChild ( document.createTextNode ( sourceObject.meetings.length.toString() ) );
-            tableRow.appendChild ( tableCellMeetings );
-            
-            tableBody.appendChild ( tableRow );
+        if ( i % 2 ) {
+            tableRow.className = 'odd';
         };
         
-        var totalRow = document.createElement ( 'tr' );
-        
-        totalRow.className = 'tallyTotal';
+        var tableAnchor = document.createElement ( 'a' );
+        tableAnchor.href = sourceObject.rootURL;
+        tableAnchor.className = 'tallyClick';
+        tableAnchor.target = "_blank";
+        tableAnchor.appendChild ( document.createTextNode ( sourceObject.name ) );
 
         var tableCellName = document.createElement ( 'td' );
         tableCellName.className = 'tallyName';
-        tableCellName.colSpan = '3';
-        tableCellName.appendChild ( document.createTextNode ( 'TOTAL' ) );
-        totalRow.appendChild ( tableCellName );
+        tableCellName.appendChild ( tableAnchor );
+        
+        var semURL = sourceObject.semanticURL;
+        
+        if ( !semURL ) {
+            semURL = sourceObject.rootURL.toString() + "/semantic";
+        };
+        
+        var semanticAnchor = document.createElement ( 'a' );
+        semanticAnchor.href = semURL.toString();
+        semanticAnchor.className = 'tallySemanticClick';
+        semanticAnchor.target = "_blank";
+        semanticAnchor.appendChild ( document.createTextNode ( 'Semantic Workshop Link' ) );
+
+        tableCellName.appendChild ( document.createTextNode ( ' (' ) );
+        tableCellName.appendChild ( semanticAnchor );
+        tableCellName.appendChild ( document.createTextNode ( ')' ) );
+        
+        tableRow.appendChild ( tableCellName );
+        
+        var tableCellSSL = document.createElement ( 'td' );
+        tableCellSSL.className = 'tallySSL' + ((sourceObject.rootURL.toString().substring(0, 5) === 'https') ? ' validSSL' : ' inValidSSL');
+        tableCellSSL.appendChild ( document.createTextNode ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') ? "YES" : "NO" ) );
+        tableRow.appendChild ( tableCellSSL );
+        
+        var tableCellVersion = document.createElement ( 'td' );
+
+        var serverVersion = parseInt ( sourceObject.versionInt );
+        
+        if ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') && (serverVersion >= 2008012) ) {
+            tableCellVersion.className = 'tallyVersion validServer';
+        } else {
+            tableCellVersion.className = 'tallyVersion';
+        };
+        tableCellVersion.appendChild ( document.createTextNode ( sourceObject.serverVersion.toString() ) );
+        tableRow.appendChild ( tableCellVersion );
         
         var tableCellRegions = document.createElement ( 'td' );
         tableCellRegions.className = 'tallyRegion';
-        tableCellRegions.appendChild ( document.createTextNode ( totalRegions.toString() ) );
-        totalRow.appendChild ( tableCellRegions );
+        tableCellRegions.appendChild ( document.createTextNode ( sourceObject.numRegions.toString() ) );
+        tableRow.appendChild ( tableCellRegions );
         
         var tableCellAreas = document.createElement ( 'td' );
         tableCellAreas.className = 'tallyArea';
-        tableCellAreas.appendChild ( document.createTextNode ( totalAreas.toString() ) );
-        totalRow.appendChild ( tableCellAreas );
+        tableCellAreas.appendChild ( document.createTextNode ( sourceObject.numASCs.toString() ) );
+        tableRow.appendChild ( tableCellAreas );
         
         var tableCellMeetings = document.createElement ( 'td' );
         tableCellMeetings.className = 'tallyMeeting';
-        tableCellMeetings.appendChild ( document.createTextNode ( totalMeetings.toString() ) );
-        totalRow.appendChild ( tableCellMeetings );
+        tableCellMeetings.appendChild ( document.createTextNode ( sourceObject.meetings.length.toString() ) );
+        tableRow.appendChild ( tableCellMeetings );
         
-        tableBody.appendChild ( totalRow );
-            
-        tableContainer.style.display = 'table';
-        
-        document.getElementById ( "tallyMo" ).style.display = 'block';
+        tableBody.appendChild ( tableRow );
     };
     
-    /****************************************************************************************//**
-    *   \brief AJAX callback for Meetings                                                 *
-    ********************************************************************************************/
-    ajax_callback_meetings = function ( in_req,        ///< The HTTPRequest object for this call.
+    var totalRow = document.createElement ( 'tr' );
+    
+    totalRow.className = 'tallyTotal';
+
+    var tableCellName = document.createElement ( 'td' );
+    tableCellName.className = 'tallyName';
+    tableCellName.colSpan = '3';
+    tableCellName.appendChild ( document.createTextNode ( 'TOTAL' ) );
+    totalRow.appendChild ( tableCellName );
+    
+    var tableCellRegions = document.createElement ( 'td' );
+    tableCellRegions.className = 'tallyRegion';
+    tableCellRegions.appendChild ( document.createTextNode ( totalRegions.toString() ) );
+    totalRow.appendChild ( tableCellRegions );
+    
+    var tableCellAreas = document.createElement ( 'td' );
+    tableCellAreas.className = 'tallyArea';
+    tableCellAreas.appendChild ( document.createTextNode ( totalAreas.toString() ) );
+    totalRow.appendChild ( tableCellAreas );
+    
+    var tableCellMeetings = document.createElement ( 'td' );
+    tableCellMeetings.className = 'tallyMeeting';
+    tableCellMeetings.appendChild ( document.createTextNode ( totalMeetings.toString() ) );
+    totalRow.appendChild ( tableCellMeetings );
+    
+    tableBody.appendChild ( totalRow );
+        
+    tableContainer.style.display = 'table';
+    
+    document.getElementById ( "tallyLegend" ).style.display = 'block';
+};
+
+/****************************************************************************************//**
+*   \brief AJAX callback for Meetings                                                 *
+********************************************************************************************/
+BMLTTally.prototype.ajax_callback_meetings = function ( in_req,        ///< The HTTPRequest object for this call.
+                                  in_extra_data  ///< Any refCon that was attached.  
+                                ) {
+    var responseText = in_req.responseText;
+    var source = in_req.extra_data;
+    var context = source.context;
+    eval('var results = ' + responseText + ';' );
+    source.meetings = Array();
+    for ( var i = 0; i < results.length; i++ ) {
+        var location = {"longitude":results[i].longitude,"latitude":results[i].latitude};
+        source.meetings.push ( location );
+    };
+    source.stage = 3;
+    context.tallyDone++;
+    context.incrementTallyMeter();
+};
+
+/****************************************************************************************//**
+*   \brief AJAX callback for The Version                                                 *
+********************************************************************************************/
+BMLTTally.prototype.ajax_callback_version = function ( in_req,        ///< The HTTPRequest object for this call.
                                       in_extra_data  ///< Any refCon that was attached.  
-                                    )
-    {
-        var responseText = in_req.responseText;
-        var source = in_req.extra_data;
-        eval('var results = ' + responseText + ';' );
-        source.meetings = Array();
-        for ( var i = 0; i < results.length; i++ ) {
-            var location = {"longitude":results[i].longitude,"latitude":results[i].latitude};
-            source.meetings.push ( location );
+                                    ) {
+    var responseText = in_req.responseText;
+    var source = in_req.extra_data;
+    var context = source.context;
+    eval('source.serverVersion = \'' + responseText.toString() + '\';' );
+    var versionArray = source.serverVersion.split('.');
+    source.versionInt = (parseInt ( versionArray[0] ) * 1000000) + (parseInt ( versionArray[1] ) * 1000) + parseInt ( versionArray[2] );
+    source.stage = 2;
+    context.tallyDone++;
+    context.incrementTallyMeter();
+
+    var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
+    Simple_AjaxRequest ( uri, context.ajax_callback_meetings, 'GET', source );
+};
+
+/****************************************************************************************//**
+*   \brief AJAX callback for Service bodies                                                 *
+********************************************************************************************/
+BMLTTally.prototype.ajax_callback_services = function ( in_req,        ///< The HTTPRequest object for this call.
+                                      in_extra_data  ///< Any refCon that was attached.  
+                                    ) {
+    var responseText = in_req.responseText;
+    var source = in_req.extra_data;
+    var context = source.context;
+    eval('var serviceBodies = ' + responseText + ';' );
+    var regions = 0;
+    var areas = 0;
+
+    for ( i = 0; i < serviceBodies.length; i++ ) {
+        var serviceBody = serviceBodies[i];
+    
+        if ( serviceBody.type == 'RS' ) {
+            regions++;
+        } else {
+            areas++;
         };
-        source.stage = 3;
-        tallyDone++;
-        this.incrementTallyMeter();
     };
 
-    /****************************************************************************************//**
-    *   \brief AJAX callback for The Version                                                 *
-    ********************************************************************************************/
-    ajax_callback_version = function ( in_req,        ///< The HTTPRequest object for this call.
-                                      in_extra_data  ///< Any refCon that was attached.  
-                                    )
-    {
-        var responseText = in_req.responseText;
-        var source = in_req.extra_data;
-        eval('source.serverVersion = \'' + responseText.toString() + '\';' );
-        var versionArray = source.serverVersion.split('.');
-        source.versionInt = (parseInt ( versionArray[0] ) * 1000000) + (parseInt ( versionArray[1] ) * 1000) + parseInt ( versionArray[2] );
-        source.stage = 2;
-        tallyDone++;
-        this.incrementTallyMeter();
-        
-        var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
-        Simple_AjaxRequest ( uri, this.ajax_callback_meetings, 'GET', source );
-    };
+    source.numRegions = regions;
+    source.numASCs = areas;
+    source.stage = 1;
+    context.tallyDone++;
+    context.incrementTallyMeter();
 
-    /****************************************************************************************//**
-    *   \brief AJAX callback for Service bodies                                                 *
-    ********************************************************************************************/
-    ajax_callback_services = function ( in_req,        ///< The HTTPRequest object for this call.
-                                      in_extra_data  ///< Any refCon that was attached.  
-                                    )
-    {
-        var responseText = in_req.responseText;
-        var source = in_req.extra_data;
-        eval('var serviceBodies = ' + responseText + ';' );
-        var regions = 0;
-        var areas = 0;
+    var uri = "index.php?GetVersion&callURI=" + encodeURIComponent ( source.rootURL );
+    Simple_AjaxRequest ( uri, context.ajax_callback_version, 'GET', source );
+};
+
+/****************************************************************************************//**
+*   \brief Start your engines                                                               *
+********************************************************************************************/
+BMLTTally.prototype.start_tally = function() {
+    var tableContainer = document.getElementById ( 'tallyHo' );
+    tableContainer.style.display = 'none';
     
-        for ( i = 0; i < serviceBodies.length; i++ ) {
-            var serviceBody = serviceBodies[i];
-        
-            if ( serviceBody.type == 'RS' ) {
-                regions++;
-            } else {
-                areas++;
+    var count = this.sourceList.length;
+    this.tallyManTotal = count * 3;
+    this.incrementTallyMeter();
+    document.getElementById ( "tallyMeter" ).style.display = 'block';
+    document.getElementById ( "tallyLogTable" ).style.display = 'table';
+
+    for ( i = 0; i < count; i++ ) {
+        var source = this.sourceList[i];
+        if ( source.rootURL ) {
+            source.stage = 0;
+            var uri = "index.php?callURI=" + encodeURIComponent ( source.rootURL );
+            source.context = this;
+            Simple_AjaxRequest ( uri, this.ajax_callback_services, 'GET', source );
+        };
+    };
+};
+    
+/*********************************************************************************************//*
+*   \brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.displayTallyMap = function() {
+        document.getElementById ( "tallyMan" ).style.display = 'none';
+        document.getElementById ( "tallyMap" ).style.display = 'block';
+        this.loadMap();
+};
+
+/*********************************************************************************************//*
+*   \brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.loadMap = function ( )
+{
+    if ( !this.mapObject )
+        {
+        var myOptions = {
+                        'center': new google.maps.LatLng ( 0, 0 ),
+                        'zoom': 3,
+                        'mapTypeId': google.maps.MapTypeId.ROADMAP,
+                        'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+                        'zoomControl': true,
+                        'mapTypeControl': true,
+                        'disableDoubleClickZoom' : true,
+                        'draggableCursor': "crosshair",
+                        'scaleControl' : true
+                        };
+
+        myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
+
+        this.mapObject = new google.maps.Map ( document.getElementById ( "tallyMap" ), myOptions );
+
+        if ( this.mapObject )
+            {
+            this.mapObject.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
             };
         };
-    
-        source.numRegions = regions;
-        source.numASCs = areas;
-        source.stage = 1;
-        tallyDone++;
-        this.incrementTallyMeter();
-    
-        var uri = "index.php?GetVersion&callURI=" + encodeURIComponent ( source.rootURL );
-        Simple_AjaxRequest ( uri, this.ajax_callback_version, 'GET', source );
-    };
-
-    /****************************************************************************************//**
-    *   \brief Start your engines                                                               *
-    ********************************************************************************************/
-    start_tally = function() {
-        var tableContainer = document.getElementById ( 'tallyHo' );
-        tableContainer.style.display = 'none';
-        
-        var count = sourceList.length;
-        tallyManTotal = count * 3;
-        this.incrementTallyMeter();
-        var tallyMeter = document.getElementById ( "tallyMeter" );
-        tallyMeter.style.display = 'block';
-    
-        for ( i = 0; i < count; i++ ) {
-            var source = sourceList[i];
-            if ( source.rootURL ) {
-                source.stage = 0;
-                var uri = "index.php?callURI=" + encodeURIComponent ( source.rootURL );
-                source.context = self;
-                Simple_AjaxRequest ( uri, this.ajax_callback_services, 'GET', source );
-            };
-        };
-    };
-    
-    /****************************************************************************************//**
-    *   \brief MAIN CONTEXT                                                                     *
-    ********************************************************************************************/
-    this.start_tally();
 };
 
 /********************************************************************************************//**

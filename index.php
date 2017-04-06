@@ -20,6 +20,15 @@ else
         <meta charset="utf-8" />
         <title>BMLT Live Tally</title>
         <style type="text/css">
+            html,
+            body
+            {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            
             div#tallyMan
             {
                 font-family: Arial, Helvetica, sans-serif;
@@ -173,8 +182,21 @@ else
                 font-weight: bold;
                 font-style: italic;
             }
+            
+            div#tallyMapButton
+            {
+                font-weight:bold;
+                text-align:center;
+            }
+            
+            div#tallyMap
+            {
+                width: 100%;
+                height: 100%;
+            }
         </style>
         <link rel="shortcut icon" href="https://bmlt.magshare.net/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyB4q4Cwwl7PvTdLSAyVy4oWOLt4l0yEuyM"></script>
     </head>
     <body>
         <div id="tallyMan">
@@ -183,9 +205,9 @@ else
             <div id="tallyMeter">
                 <div id="tallyMeterFill"></div>
             </div>
-            <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0">
+            <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none">
             </table>
-            <table id="tallyHo" cellspacing="0" cellpadding="0" border="0">
+            <table id="tallyHo" cellspacing="0" cellpadding="0" border="0" style="display:none">
                 <thead id="tallyHead">
                     <tr>
                         <td class="tallyName">Server Name</td>
@@ -198,13 +220,17 @@ else
                 </thead>
                 <tbody id="tallyBody"></tbody>
             </table>
-            <p id="tallyMo" style="display: none">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+            <div id="tallyLegend" style="display: none">
+                <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+                <div id="tallyMapButton"><a href="javascript:tallyManTallyMan.displayTallyMap();">Display Coverage Map</a></div>
+            </div>
         </div>
+        <div id="tallyMap" style="display: none"></div>
         <?php
             $sourceListJson = file_get_contents("rootServerList.json");
         ?>
         <script type="text/javascript" src="BMLTTally.js"></script>
-        <script type="text/javascript"><?php echo "var srcList = $sourceListJson;BMLTTally(srcList);" ?></script>
+        <script type="text/javascript"><?php echo "var tallyManTallyMan = new BMLTTally($sourceListJson);" ?></script>
     </body>
 </html>
 <?php    }
