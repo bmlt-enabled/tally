@@ -112,7 +112,7 @@ BMLTTally.prototype.displayResults = function ( ) {
     *   \brief Sorting Handler.                                                                 *
     ********************************************************************************************/
     sortResults = function ( a, b ) {
-        var ret = a.meetings.length - b.meetings.length;
+        var ret = (a.meetings.length - b.meetings.length);
         if ( 0 == ret ) {
             ret = a.numRegions - b.numRegions;
             if ( 0 == ret ) {
@@ -131,7 +131,7 @@ BMLTTally.prototype.displayResults = function ( ) {
     tallyMeter.style.display = 'none';
     tallyTable.innerHTML = '';
     
-    this.sourceList.sort ( this.sortResults );
+    this.sourceList.sort ( sortResults );
     
     var totalRegions = 0;
     var totalAreas = 0;
@@ -253,7 +253,11 @@ BMLTTally.prototype.ajax_callback_meetings = function ( in_req,        ///< The 
     var source = in_req.extra_data;
     var context = source.context;
     eval('var results = ' + responseText + ';' );
-    source.meetings = results;
+    source.meetings = Array();
+    if ( results && results.length ) {
+        source.meetings = results;
+        };
+    
     source.stage = 3;
     context.tallyDone++;
     context.incrementTallyMeter();
@@ -401,7 +405,7 @@ BMLTTally.prototype.redrawResultMapMarkers = function() {
 ************************************************************************************************/
 BMLTTally.prototype.sMapOverlappingMarkers = function ( in_meeting_array
 									                    ) {
-    var tolerance = 32;	/* This is how many pixels we allow. */
+    var tolerance = 8;	/* This is how many pixels we allow. */
     var tmp = new Array;
 
     for ( var c = 0; c < in_meeting_array.length; c++ ) {
@@ -503,9 +507,7 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
                                                     'map':		    this.mapObject,
                                                     'shadow':		this.m_icon_shadow,
                                                     'icon':			displayed_image,
-                                                    'clickable':	true,
-                                                    'cursor':		'pointer',
-                                                    'draggable':    false
+                                                    'clickable':    false
                                                     } );
         
         var id = this.m_uid;

@@ -205,6 +205,10 @@ else
             <div id="tallyMeter">
                 <div id="tallyMeterFill"></div>
             </div>
+            <div id="tallyLegend" style="display: none">
+                <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+                <div id="tallyMapButton"><a href="javascript:tallyManTallyMan.displayTallyMap();">Display Coverage Map</a></div>
+            </div>
             <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none">
             </table>
             <table id="tallyHo" cellspacing="0" cellpadding="0" border="0" style="display:none">
@@ -220,10 +224,6 @@ else
                 </thead>
                 <tbody id="tallyBody"></tbody>
             </table>
-            <div id="tallyLegend" style="display: none">
-                <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
-                <div id="tallyMapButton"><a href="javascript:tallyManTallyMan.displayTallyMap();">Display Coverage Map</a></div>
-            </div>
         </div>
         <div id="tallyMap" style="display: none"></div>
         <?php
