@@ -8,6 +8,13 @@ function BMLTTally(inSourceList) {
     this.tallyLogRows = Array();
     this.sourceList = inSourceList;
     this.mapObject = null;
+    this.mapMarkers = Array();
+    this.allMeetings = Array();
+
+	/// These describe the regular NA meeting icon
+	this.m_icon_image_single = new google.maps.MarkerImage ( "images/NAMarkerB.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_multi = new google.maps.MarkerImage ( "images/NAMarkerR.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_shadow = new google.maps.MarkerImage( "images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 
     /****************************************************************************************//**
     *   \brief MAIN CONTEXT                                                                     *
@@ -20,6 +27,11 @@ BMLTTally.prototype.tallyDone;
 BMLTTally.prototype.tallyLogRows;
 BMLTTally.prototype.sourceList;
 BMLTTally.prototype.mapObject;
+BMLTTally.prototype.mapMarkers;
+BMLTTally.prototype.allMeetings;
+BMLTTally.prototype.m_icon_image_single;
+BMLTTally.prototype.m_icon_image_multi;
+BMLTTally.prototype.m_icon_shadow;
  
 /****************************************************************************************//**
 *   \brief Increments the tally meter.                                                      *
@@ -30,6 +42,16 @@ BMLTTally.prototype.incrementTallyMeter = function ( ) {
     var percentage = this.tallyDone / this.tallyManTotal;
     tallyMeterFill.style.width = (percentage * 100).toString() + "%";
     if ( this.tallyDone == this.tallyManTotal ) {
+        for ( var i = 0; i < this.sourceList.length; i++ ) {
+            var source = this.sourceList[i];
+            if ( source ) {
+                var meetings = source.meetings;
+                for ( var c = i; c < meetings.length; c++ ) {
+                    this.allMeetings.push(meetings[c]);
+                };
+            };
+        };
+        
         this.displayResults ( );
     };
     this.updateTallyLog();
@@ -39,7 +61,7 @@ BMLTTally.prototype.incrementTallyMeter = function ( ) {
 *   \brief Updates the log of events.                                                      *
 ********************************************************************************************/
 BMLTTally.prototype.updateTallyLog = function ( ) {
-    for ( i = 0; i < this.sourceList.length; i++ ) {
+    for ( var i = 0; i < this.sourceList.length; i++ ) {
         var tallyTable = document.getElementById ( 'tallyLogTable' );
         var sourceObject = this.sourceList[i];
         if ( this.tallyLogRows.length < (i + 1) ) {
@@ -113,14 +135,12 @@ BMLTTally.prototype.displayResults = function ( ) {
     
     var totalRegions = 0;
     var totalAreas = 0;
-    var totalMeetings = 0;
     
-    for ( i = 0; i < this.sourceList.length; i++ ) {
+    for ( var i = 0; i < this.sourceList.length; i++ ) {
         var sourceObject = this.sourceList[i];
         
         totalRegions += sourceObject.numRegions;
         totalAreas += sourceObject.numASCs;
-        totalMeetings += sourceObject.meetings.length;
         
         var tableRow = document.createElement ( 'tr' );
         
@@ -213,7 +233,7 @@ BMLTTally.prototype.displayResults = function ( ) {
     
     var tableCellMeetings = document.createElement ( 'td' );
     tableCellMeetings.className = 'tallyMeeting';
-    tableCellMeetings.appendChild ( document.createTextNode ( totalMeetings.toString() ) );
+    tableCellMeetings.appendChild ( document.createTextNode ( this.allMeetings.length.toString() ) );
     totalRow.appendChild ( tableCellMeetings );
     
     tableBody.appendChild ( totalRow );
@@ -227,17 +247,13 @@ BMLTTally.prototype.displayResults = function ( ) {
 *   \brief AJAX callback for Meetings                                                 *
 ********************************************************************************************/
 BMLTTally.prototype.ajax_callback_meetings = function ( in_req,        ///< The HTTPRequest object for this call.
-                                  in_extra_data  ///< Any refCon that was attached.  
-                                ) {
+                                                        in_extra_data  ///< Any refCon that was attached.  
+                                                        ) {
     var responseText = in_req.responseText;
     var source = in_req.extra_data;
     var context = source.context;
     eval('var results = ' + responseText + ';' );
-    source.meetings = Array();
-    for ( var i = 0; i < results.length; i++ ) {
-        var location = {"longitude":results[i].longitude,"latitude":results[i].latitude};
-        source.meetings.push ( location );
-    };
+    source.meetings = results;
     source.stage = 3;
     context.tallyDone++;
     context.incrementTallyMeter();
@@ -246,9 +262,9 @@ BMLTTally.prototype.ajax_callback_meetings = function ( in_req,        ///< The 
 /****************************************************************************************//**
 *   \brief AJAX callback for The Version                                                 *
 ********************************************************************************************/
-BMLTTally.prototype.ajax_callback_version = function ( in_req,        ///< The HTTPRequest object for this call.
-                                      in_extra_data  ///< Any refCon that was attached.  
-                                    ) {
+BMLTTally.prototype.ajax_callback_version = function (  in_req,        ///< The HTTPRequest object for this call.
+                                                        in_extra_data  ///< Any refCon that was attached.  
+                                                        ) {
     var responseText = in_req.responseText;
     var source = in_req.extra_data;
     var context = source.context;
@@ -267,8 +283,8 @@ BMLTTally.prototype.ajax_callback_version = function ( in_req,        ///< The H
 *   \brief AJAX callback for Service bodies                                                 *
 ********************************************************************************************/
 BMLTTally.prototype.ajax_callback_services = function ( in_req,        ///< The HTTPRequest object for this call.
-                                      in_extra_data  ///< Any refCon that was attached.  
-                                    ) {
+                                                        in_extra_data  ///< Any refCon that was attached.  
+                                                        ) {
     var responseText = in_req.responseText;
     var source = in_req.extra_data;
     var context = source.context;
@@ -276,7 +292,7 @@ BMLTTally.prototype.ajax_callback_services = function ( in_req,        ///< The 
     var regions = 0;
     var areas = 0;
 
-    for ( i = 0; i < serviceBodies.length; i++ ) {
+    for ( var i = 0; i < serviceBodies.length; i++ ) {
         var serviceBody = serviceBodies[i];
     
         if ( serviceBody.type == 'RS' ) {
@@ -309,7 +325,7 @@ BMLTTally.prototype.start_tally = function() {
     document.getElementById ( "tallyMeter" ).style.display = 'block';
     document.getElementById ( "tallyLogTable" ).style.display = 'table';
 
-    for ( i = 0; i < count; i++ ) {
+    for ( var i = 0; i < count; i++ ) {
         var source = this.sourceList[i];
         if ( source.rootURL ) {
             source.stage = 0;
@@ -320,7 +336,7 @@ BMLTTally.prototype.start_tally = function() {
     };
 };
     
-/*********************************************************************************************//*
+/********************************************************************************************//**
 *   \brief                                                                                      *
 ************************************************************************************************/
 BMLTTally.prototype.displayTallyMap = function() {
@@ -329,13 +345,11 @@ BMLTTally.prototype.displayTallyMap = function() {
         this.loadMap();
 };
 
-/*********************************************************************************************//*
+/********************************************************************************************//**
 *   \brief                                                                                      *
 ************************************************************************************************/
-BMLTTally.prototype.loadMap = function ( )
-{
-    if ( !this.mapObject )
-        {
+BMLTTally.prototype.loadMap = function() {
+    if ( !this.mapObject ) {
         var myOptions = {
                         'center': new google.maps.LatLng ( 0, 0 ),
                         'zoom': 3,
@@ -343,8 +357,6 @@ BMLTTally.prototype.loadMap = function ( )
                         'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
                         'zoomControl': true,
                         'mapTypeControl': true,
-                        'disableDoubleClickZoom' : true,
-                        'draggableCursor': "crosshair",
                         'scaleControl' : true
                         };
 
@@ -352,10 +364,164 @@ BMLTTally.prototype.loadMap = function ( )
 
         this.mapObject = new google.maps.Map ( document.getElementById ( "tallyMap" ), myOptions );
 
-        if ( this.mapObject )
-            {
-            this.mapObject.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
+        if ( this.mapObject ) {
+            google.maps.event.addListener(this.mapObject, 'bounds_changed', function(inEvent) { tallyManTallyMan.redrawResultMapMarkers(); });
             };
+        };
+};
+    
+/********************************************************************************************//**
+*	\brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.redrawResultMapMarkers = function() {
+    if ( this.mapObject && this.mapObject.getBounds() ) {
+        // Next, get rid of all the meeting markers.
+        for ( var c = 0; this.mapMarkers && (c < this.mapMarkers.length); c++ ) {
+            if ( this.mapMarkers[c] ) {
+                this.mapMarkers[c].setMap(null);
+                this.mapMarkers[c] = null;
+                };
+            };
+            
+        this.mapMarkers = Array();
+        
+        // Recalculate the new batch.
+        var groupedMeetings = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
+
+        for ( var c = 0; groupedMeetings && (c < groupedMeetings.length); c++ ) {
+            var objectItem = groupedMeetings[c];
+            var matchesWeDontNeedNoSteenkinMatches = objectItem.matches;
+            this.displayMeetingMarkerInResults ( matchesWeDontNeedNoSteenkinMatches );
+            };
+        };
+};
+
+/********************************************************************************************//**
+*   \brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.sMapOverlappingMarkers = function ( in_meeting_array
+									                    ) {
+    var tolerance = 32;	/* This is how many pixels we allow. */
+    var tmp = new Array;
+
+    for ( var c = 0; c < in_meeting_array.length; c++ ) {
+        tmp[c] = new Object;
+        tmp[c].matched = false;
+        tmp[c].matches = null;
+        tmp[c].object = in_meeting_array[c];
+        tmp[c].coords = this.sFromLatLngToPixel ( new google.maps.LatLng ( tmp[c].object.latitude, tmp[c].object.longitude ), this.mapObject );
+        };
+
+    for ( var c = 0; c < in_meeting_array.length; c++ ) {
+        if ( false == tmp[c].matched ) {
+            tmp[c].matched = true;
+            tmp[c].matches = new Array ( tmp[c].object );
+
+            for ( var c2 = 0; c2 < in_meeting_array.length; c2++ ) {
+                if ( false == tmp[c2].matched && tmp[c] && tmp[c2] ) {
+                    var outer_coords = tmp[c].coords;
+                    var inner_coords = tmp[c2].coords;
+                
+                    if ( outer_coords && inner_coords ) {
+                        var xmin = outer_coords.x - tolerance;
+                        var xmax = outer_coords.x + tolerance;
+                        var ymin = outer_coords.y - tolerance;
+                        var ymax = outer_coords.y + tolerance;
+                
+                        /* We have an overlap. */
+                        if ( (inner_coords.x >= xmin) && (inner_coords.x <= xmax) && (inner_coords.y >= ymin) && (inner_coords.y <= ymax) ) {
+                            tmp[c].matches[tmp[c].matches.length] = tmp[c2].object;
+                            tmp[c2].matched = true;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+
+    var ret = Array ();
+    
+    for ( var c = 0; c < in_meeting_array.length; c++ ) {
+        if ( tmp[c].matches ) {
+            ret.push ( tmp[c] );
+            };
+    };
+    
+    return ret;
+};
+    
+/********************************************************************************************//**
+*	\brief This takes a latitude/longitude location, and returns an x/y pixel location for it.  *
+*																						        *
+*	\returns a Google Maps API V3 Point, with the pixel coordinates (top, left origin).	        *
+************************************************************************************************/
+BMLTTally.prototype.sFromLatLngToPixel = function ( in_Latng
+                                                    ) {
+    var	ret = null;
+    
+    if ( this.mapObject ) {
+        var	lat_lng_bounds = this.mapObject.getBounds();
+        if ( lat_lng_bounds ) {
+            // We measure the container div element.
+            var	div = this.mapObject.getDiv();
+    
+            if ( div ) {
+                var	pixel_width = div.offsetWidth;
+                var	pixel_height = div.offsetHeight;
+                var north_west_corner = new google.maps.LatLng ( lat_lng_bounds.getNorthEast().lat(), lat_lng_bounds.getSouthWest().lng() );
+                var lng_width = lat_lng_bounds.getNorthEast().lng()-lat_lng_bounds.getSouthWest().lng();
+                var	lat_height = lat_lng_bounds.getNorthEast().lat()-lat_lng_bounds.getSouthWest().lat();
+        
+                // We do this, so we have the largest values possible, to get the most accuracy.
+                var	pixels_per_degree = (( pixel_width > pixel_height ) ? (pixel_width / lng_width) : (pixel_height / lat_height));
+        
+                // Figure out the offsets, in long/lat degrees.
+                var	offset_vert = north_west_corner.lat() - in_Latng.lat();
+                var	offset_horiz = in_Latng.lng() - north_west_corner.lng();
+        
+                ret = new google.maps.Point ( Math.round(offset_horiz * pixels_per_degree),  Math.round(offset_vert * pixels_per_degree) );
+                };
+            };
+        };
+
+    return ret;
+};
+
+/********************************************************************************************//**
+*	\brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
+                                                                ) {
+    if ( in_mtg_obj_array && in_mtg_obj_array.length ) {
+        var displayed_image = (in_mtg_obj_array.length == 1) ? this.m_icon_image_single : this.m_icon_image_multi;
+        
+		var main_point = new google.maps.LatLng ( in_mtg_obj_array[0].latitude, in_mtg_obj_array[0].longitude );
+
+		var new_marker = new google.maps.Marker (
+                                                    {
+                                                    'position':     main_point,
+                                                    'map':		    this.mapObject,
+                                                    'shadow':		this.m_icon_shadow,
+                                                    'icon':			displayed_image,
+                                                    'clickable':	true,
+                                                    'cursor':		'pointer',
+                                                    'draggable':    false
+                                                    } );
+        
+        var id = this.m_uid;
+        new_marker.oldImage = displayed_image;
+        new_marker.meeting_id_array = new Array;
+        new_marker.meeting_obj_array = in_mtg_obj_array;
+        
+        // We save all the meetings represented by this marker.
+        for ( var c = 0; c < in_mtg_obj_array.length; c++ )
+            {
+            new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
+            };
+//         
+//         google.maps.event.addListener ( new_marker, 'click', function(in_event) { alert ( 'Hai!' ); } );
+
+        this.mapMarkers[this.mapMarkers.length] = new_marker;
         };
 };
 
