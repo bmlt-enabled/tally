@@ -8,8 +8,11 @@ function BMLTTally(inSourceList) {
     this.tallyLogRows = Array();
     this.sourceList = inSourceList;
     this.mapObject = null;
-    this.mapMarkers = Array();
-    this.allMeetings = Array();
+    this.mapMarkers = [];
+    this.allMeetings = [];
+    this.calculatedMarkers = [];
+    this.whatADrag = false;
+    this.inDraw = false;
 
 	/// These describe the regular NA meeting icon
 	this.m_icon_image_single = new google.maps.MarkerImage ( "images/NAMarkerB.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -28,10 +31,12 @@ BMLTTally.prototype.tallyLogRows;
 BMLTTally.prototype.sourceList;
 BMLTTally.prototype.mapObject;
 BMLTTally.prototype.mapMarkers;
+BMLTTally.prototype.calculatedMarkers;
 BMLTTally.prototype.allMeetings;
 BMLTTally.prototype.m_icon_image_single;
 BMLTTally.prototype.m_icon_image_multi;
 BMLTTally.prototype.m_icon_shadow;
+BMLTTally.prototype.whatADrag;
  
 /****************************************************************************************//**
 *   \brief Increments the tally meter.                                                      *
@@ -369,8 +374,22 @@ BMLTTally.prototype.loadMap = function() {
         this.mapObject = new google.maps.Map ( document.getElementById ( "tallyMap" ), myOptions );
 
         if ( this.mapObject ) {
+            google.maps.event.addListener(this.mapObject, 'zoom_changed', function(inEvent) { tallyManTallyMan.recalculateOverlaps(); });
             google.maps.event.addListener(this.mapObject, 'bounds_changed', function(inEvent) { tallyManTallyMan.redrawResultMapMarkers(); });
-            };
+            google.maps.event.addListener(this.mapObject, 'dragstart', function(inEvent) { tallyManTallyMan.whatADrag = true; });
+            google.maps.event.addListener(this.mapObject, 'dragend', function(inEvent) { tallyManTallyMan.whatADrag = false; tallyManTallyMan.redrawResultMapMarkers(); });
+        };
+    };
+};
+    
+/********************************************************************************************//**
+*	\brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.recalculateOverlaps = function() {
+    if ( this.mapObject && this.mapObject.getBounds() ) {
+        this.currentZoom = this.mapObject.getZoom();
+        this.calculatedMarkers = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
+        this.redrawResultMapMarkers();
         };
 };
     
@@ -379,23 +398,22 @@ BMLTTally.prototype.loadMap = function() {
 ************************************************************************************************/
 BMLTTally.prototype.redrawResultMapMarkers = function() {
     if ( this.mapObject && this.mapObject.getBounds() ) {
-        // Next, get rid of all the meeting markers.
-        for ( var c = 0; this.mapMarkers && (c < this.mapMarkers.length); c++ ) {
-            if ( this.mapMarkers[c] ) {
-                this.mapMarkers[c].setMap(null);
-                this.mapMarkers[c] = null;
-                };
+        if ( !this.calculatedMarkers.length ) {
+            this.calculatedMarkers = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
             };
-            
-        this.mapMarkers = Array();
         
-        // Recalculate the new batch.
-        var groupedMeetings = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
+        while(this.mapMarkers.length) { this.mapMarkers.pop().setMap(null); }
 
-        for ( var c = 0; groupedMeetings && (c < groupedMeetings.length); c++ ) {
-            var objectItem = groupedMeetings[c];
-            var matchesWeDontNeedNoSteenkinMatches = objectItem.matches;
-            this.displayMeetingMarkerInResults ( matchesWeDontNeedNoSteenkinMatches );
+        if ( !this.whatADrag && !this.inDraw ) {
+            // Recalculate the new batch.
+            var groupedMeetings = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
+            
+            for ( var c = 0; this.calculatedMarkers && (c < this.calculatedMarkers.length); c++ ) {
+                var objectItem = this.calculatedMarkers[c];
+                var matchesWeDontNeedNoSteenkinMatches = objectItem.matches;
+                var marker = this.displayMeetingMarkerInResults ( matchesWeDontNeedNoSteenkinMatches );
+                this.mapMarkers.push(marker);
+                };
             };
         };
 };
@@ -405,7 +423,7 @@ BMLTTally.prototype.redrawResultMapMarkers = function() {
 ************************************************************************************************/
 BMLTTally.prototype.sMapOverlappingMarkers = function ( in_meeting_array
 									                    ) {
-    var tolerance = 8;	/* This is how many pixels we allow. */
+    var tolerance = 16;	/* This is how many pixels we allow. */
     var tmp = new Array;
 
     for ( var c = 0; c < in_meeting_array.length; c++ ) {
@@ -511,7 +529,6 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
                                                     } );
         
         var id = this.m_uid;
-        new_marker.oldImage = displayed_image;
         new_marker.meeting_id_array = new Array;
         new_marker.meeting_obj_array = in_mtg_obj_array;
         
@@ -523,8 +540,10 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
 //         
 //         google.maps.event.addListener ( new_marker, 'click', function(in_event) { alert ( 'Hai!' ); } );
 
-        this.mapMarkers[this.mapMarkers.length] = new_marker;
+        return new_marker;
         };
+        
+    return null;
 };
 
 /********************************************************************************************//**
