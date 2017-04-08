@@ -435,7 +435,7 @@ BMLTTally.prototype.redrawResultMapMarkers = function() {
 ************************************************************************************************/
 BMLTTally.prototype.sMapOverlappingMarkers = function ( in_meeting_array
 									                    ) {
-    var tolerance = 16;	/* This is how many pixels we allow. */
+    var tolerance = 10;	/* This is how many pixels we allow. */
     var tmp = new Array;
 
     for ( var c = 0; c < in_meeting_array.length; c++ ) {
