@@ -405,14 +405,13 @@ BMLTTally.prototype.redrawResultMapMarkers = function() {
         while(this.mapMarkers.length) { this.mapMarkers.pop().setMap(null); }
 
         if ( !this.whatADrag && !this.inDraw ) {
-            // Recalculate the new batch.
-            var groupedMeetings = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
-            
             for ( var c = 0; this.calculatedMarkers && (c < this.calculatedMarkers.length); c++ ) {
                 var objectItem = this.calculatedMarkers[c];
                 var matchesWeDontNeedNoSteenkinMatches = objectItem.matches;
                 var marker = this.displayMeetingMarkerInResults ( matchesWeDontNeedNoSteenkinMatches );
-                this.mapMarkers.push(marker);
+                if ( marker ) {
+                    this.mapMarkers.push(marker);
+                    };
                 };
             };
         };
@@ -433,7 +432,7 @@ BMLTTally.prototype.sMapOverlappingMarkers = function ( in_meeting_array
         tmp[c].object = in_meeting_array[c];
         tmp[c].coords = this.sFromLatLngToPixel ( new google.maps.LatLng ( tmp[c].object.latitude, tmp[c].object.longitude ), this.mapObject );
         };
-
+    
     for ( var c = 0; c < in_meeting_array.length; c++ ) {
         if ( false == tmp[c].matched ) {
             tmp[c].matched = true;
@@ -515,32 +514,35 @@ BMLTTally.prototype.sFromLatLngToPixel = function ( in_Latng
 BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
                                                                 ) {
     if ( in_mtg_obj_array && in_mtg_obj_array.length ) {
-        var displayed_image = (in_mtg_obj_array.length == 1) ? this.m_icon_image_single : this.m_icon_image_multi;
-        
+        var bounds = this.mapObject.getBounds();
 		var main_point = new google.maps.LatLng ( in_mtg_obj_array[0].latitude, in_mtg_obj_array[0].longitude );
 
-		var new_marker = new google.maps.Marker (
-                                                    {
-                                                    'position':     main_point,
-                                                    'map':		    this.mapObject,
-                                                    'shadow':		this.m_icon_shadow,
-                                                    'icon':			displayed_image,
-                                                    'clickable':    false
-                                                    } );
+        if ( bounds.contains ( main_point ) ) {
+            var displayed_image = (in_mtg_obj_array.length == 1) ? this.m_icon_image_single : this.m_icon_image_multi;
         
-        var id = this.m_uid;
-        new_marker.meeting_id_array = new Array;
-        new_marker.meeting_obj_array = in_mtg_obj_array;
+            var new_marker = new google.maps.Marker (
+                                                        {
+                                                        'position':     main_point,
+                                                        'map':		    this.mapObject,
+                                                        'shadow':		this.m_icon_shadow,
+                                                        'icon':			displayed_image,
+                                                        'clickable':    false
+                                                        } );
         
-        // We save all the meetings represented by this marker.
-        for ( var c = 0; c < in_mtg_obj_array.length; c++ )
-            {
-            new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
-            };
+            var id = this.m_uid;
+            new_marker.meeting_id_array = new Array;
+            new_marker.meeting_obj_array = in_mtg_obj_array;
+        
+            // We save all the meetings represented by this marker.
+            for ( var c = 0; c < in_mtg_obj_array.length; c++ )
+                {
+                new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
+                };
 //         
-//         google.maps.event.addListener ( new_marker, 'click', function(in_event) { alert ( 'Hai!' ); } );
+//             google.maps.event.addListener ( new_marker, 'click', function(in_event) { alert ( 'Hai!' ); } );
 
-        return new_marker;
+            return new_marker;
+            };
         };
         
     return null;
