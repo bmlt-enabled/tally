@@ -401,7 +401,7 @@ BMLTTally.prototype.handleIdle = function() {
 ************************************************************************************************/
 BMLTTally.prototype.recalculateOverlaps = function() {
     if ( this.mapObject && this.mapObject.getBounds() ) {
-        this.calculatedMarkers = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
+        this.calculatedMarkers = [];
         this.redrawResultMapMarkers();
         };
 };
