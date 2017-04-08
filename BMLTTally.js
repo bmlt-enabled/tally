@@ -377,7 +377,7 @@ BMLTTally.prototype.loadMap = function() {
             google.maps.event.addListener(this.mapObject, 'zoom_changed', function(inEvent) { tallyManTallyMan.recalculateOverlaps(); });
             google.maps.event.addListener(this.mapObject, 'bounds_changed', function(inEvent) { tallyManTallyMan.redrawResultMapMarkers(); });
             google.maps.event.addListener(this.mapObject, 'dragstart', function(inEvent) { tallyManTallyMan.whatADrag = true; });
-            google.maps.event.addListener(this.mapObject, 'dragend', function(inEvent) { tallyManTallyMan.whatADrag = false; tallyManTallyMan.redrawResultMapMarkers(); });
+            google.maps.event.addListener(this.mapObject, 'idle', function(inEvent) { tallyManTallyMan.handleIdle(); });
         };
     };
 };
@@ -385,9 +385,22 @@ BMLTTally.prototype.loadMap = function() {
 /********************************************************************************************//**
 *	\brief                                                                                      *
 ************************************************************************************************/
+BMLTTally.prototype.handleIdle = function() {
+    if ( this.mapObject && this.mapObject.getBounds() ) {
+        if ( this.whatADrag ) {
+            tallyManTallyMan.whatADrag = false;
+            this.redrawResultMapMarkers();
+            };
+        };
+            
+    tallyManTallyMan.whatADrag = false;
+};
+    
+/********************************************************************************************//**
+*	\brief                                                                                      *
+************************************************************************************************/
 BMLTTally.prototype.recalculateOverlaps = function() {
     if ( this.mapObject && this.mapObject.getBounds() ) {
-        this.currentZoom = this.mapObject.getZoom();
         this.calculatedMarkers = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
         this.redrawResultMapMarkers();
         };
@@ -519,6 +532,12 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
 
         if ( bounds.contains ( main_point ) ) {
             var displayed_image = (in_mtg_obj_array.length == 1) ? this.m_icon_image_single : this.m_icon_image_multi;
+            
+            var marker_html = '';
+            
+            if ( this.mapObject.getZoom() > 8 ) {
+		        marker_html = '<div><dl>';
+                };
         
             var new_marker = new google.maps.Marker (
                                                         {
@@ -526,7 +545,7 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
                                                         'map':		    this.mapObject,
                                                         'shadow':		this.m_icon_shadow,
                                                         'icon':			displayed_image,
-                                                        'clickable':    false
+                                                        'clickable':    this.mapObject.getZoom() > 8
                                                         } );
         
             var id = this.m_uid;
@@ -534,13 +553,41 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
             new_marker.meeting_obj_array = in_mtg_obj_array;
         
             // We save all the meetings represented by this marker.
-            for ( var c = 0; c < in_mtg_obj_array.length; c++ )
-                {
+            for ( var c = 0; c < in_mtg_obj_array.length; c++ ) {
+                if ( marker_html ) {
+                    var weekdays = ['ERROR', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		            marker_html += '<dt><strong>';
+		            marker_html += in_mtg_obj_array[c]['meeting_name'];
+		            marker_html += '</strong></dt>';
+		            marker_html += '<dd><em>';
+		            marker_html += weekdays[parseInt ( in_mtg_obj_array[c]['weekday_tinyint'] )];
+		            var time = in_mtg_obj_array[c]['start_time'].toString().split(':');
+		            var hour = parseInt ( time[0] );
+		            var minute = parseInt ( time[1] );
+		            var pm = 'AM';
+		            if ( hour >= 12 ) {
+		                pm = 'PM';
+		                
+		                if ( hour > 12 ) {
+		                    hour -= 12;
+		                    };
+		                };
+		            
+		            hour = hour.toString();
+		            minute = (minute > 9) ? minute.toString() : ('0' + minute.toString());
+		            marker_html += ' ' + hour + ':' + minute + ' ' + pm;
+		            marker_html += '</em></dd>';
+                    };
+                
                 new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
                 };
-//         
-//             google.maps.event.addListener ( new_marker, 'click', function(in_event) { alert ( 'Hai!' ); } );
 
+            if ( marker_html ) {
+		        marker_html += '</dl></div>';
+                var infowindow = new google.maps.InfoWindow ( { content: marker_html });
+                new_marker.addListener ( 'click', function() { infowindow.open ( this.mapObject, new_marker ); });
+                };
+                
             return new_marker;
             };
         };
