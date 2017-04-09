@@ -260,6 +260,9 @@ BMLTTally.prototype.ajax_callback_meetings = function ( in_req,        ///< The 
     eval('var results = ' + responseText + ';' );
     source.meetings = Array();
     if ( results && results.length ) {
+        for ( var i = 0; i < results.length; i++ ) {
+            results[i].source = source;
+            };
         source.meetings = results;
         };
     
@@ -577,6 +580,18 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
 		            minute = (minute > 9) ? minute.toString() : ('0' + minute.toString());
 		            marker_html += ' ' + hour + ':' + minute + ' ' + pm;
 		            marker_html += '</em></dd>';
+		            var source = in_mtg_obj_array[c].source;
+		            if ( source ) {
+		                var url = source.semanticURL;
+		                
+		                if ( !url ) {
+		                    url = source.rootURL + 'semantic';
+		                    };
+		                    
+                        marker_html += '<dd><em><a href="' + url + '">';
+                        marker_html += source.name;
+                        marker_html += '</a></em></dd>';
+                        };
                     };
                 
                 new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
