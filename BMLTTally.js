@@ -166,7 +166,7 @@ BMLTTally.prototype.displayResults = function ( ) {
         var semURL = sourceObject.semanticURL;
         
         if ( !semURL ) {
-            semURL = sourceObject.rootURL.toString() + "/semantic";
+            semURL = sourceObject.rootURL.toString() + "semantic";
         };
         
         var semanticAnchor = document.createElement ( 'a' );
