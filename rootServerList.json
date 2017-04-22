@@ -20,7 +20,7 @@
 {"name":"Granite State Area","rootURL":"https://www.gsana.org/bmlt/main_server/"},
 {"name":"Milwaukee","rootURL":"http://meetings.namilwaukee.org/main_server/"},
 {"name":"NA New Jersey","rootURL":"https://www.narcoticsanonymousnj.org/main_server/"},
-{"name":"Connecticut Region","rootURL":"http://ctna.org/main_server_new/"},
+{"name":"Connecticut Region","rootURL":"http://ctna.org/main_server/"},
 {"name":"Volunteer Region","rootURL":"http://natennessee.org/main_server/"},
 {"name":"Florida and South Florida Regions","rootURL":"http://naflorida.org/bmlt_server/"},
 {"name":"Carolina Region","rootURL":"http://crna.org/main_server/","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=https://crna.org/main_server/"},
