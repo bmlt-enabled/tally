@@ -1,16 +1,18 @@
 <?php
 $url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
+$error_message = "";
+
 if ( isset ( $_GET["GetVersion"] ) )
     {
-    die ( parse_version ( $url . "/client_interface/serverInfo.xml" ) );
+    die ( parse_version ( $url . "client_interface/serverInfo.xml" ) );
     }
 elseif ( isset ( $_GET["GetMeetings"] ) )
     {
-    die ( call_curl ( $url . "/client_interface/json/?switcher=GetSearchResults" ) );
+    die ( call_curl ( $url . "client_interface/json/?switcher=GetSearchResults", FALSE, $error_message ) );
     }
 elseif ( $url )
     {
-    die ( call_curl ( $url . "/client_interface/json/?switcher=GetServiceBodies" ) );
+    die ( call_curl ( $url . "client_interface/json/?switcher=GetServiceBodies", FALSE, $error_message ) );
     }
 else
     { ?>
@@ -279,7 +281,6 @@ function call_curl ( $in_uri,                ///< A string. The URI to call.
                     )
 {
     $ret = null;
-    
     // Make sure we don't give any false positives.
     if ( $error_message )
         {
@@ -377,7 +378,10 @@ function call_curl ( $in_uri,                ///< A string. The URI to call.
             if ( isset ( $error_message ) )
                 {
                 // Cram as much info into the error message as possible.
-                $error_message = 'call_curl: curl failure calling $in_uri, '.curl_error ( $resource )."\n".curl_errno ( $resource );
+                $err_string = curl_error ( $resource );
+                $err_num = curl_errno ( $resource );
+                $error_message = "<pre>call_curl: curl failure calling '$in_uri'\nError String: '$err_string'\nError Number: $err_num</pre>";
+                $ret = $error_message;
                 }
             }
         else
