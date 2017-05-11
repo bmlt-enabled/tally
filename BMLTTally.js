@@ -1,8 +1,35 @@
+/*******************************************************************************************/
+/**
+    \class  BMLTTally
+    
+    \brief  BMLTTally is a utility app that quickly polls a list of Root Servers, and displays their
+            information in the form of a table, and a map.
+            
+            This started life as a "quick n' dirty one-off," so it does not cleave to the standards
+            of the rest of the BMLT project.
+            
+        This file is part of the Basic Meeting List Toolbox (BMLT).
+
+        Find out more at: http://bmlt.magshare.org
+
+        BMLT is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as
+        published by the Free Software Foundation, either version 3
+        of the License, or (at your option) any later version.
+
+        BMLT is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+        See the GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with this code.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /********************************************************************************************//**
 *                                         MAIN FUNCTION                                         *
 ************************************************************************************************/
-
-function BMLTTally(inSourceList) {
+function BMLTTally(inSourceList, inVersion) {
+    this.version = inVersion;
     this.tallyManTotal = 0;
     this.tallyDone = 0;
     this.tallyLogRows = Array();
@@ -11,14 +38,19 @@ function BMLTTally(inSourceList) {
     this.mapMarkers = [];
     this.allMeetings = [];
     this.calculatedMarkers = [];
+    this.calculatedCoverageOverlays = [];
     this.whatADrag = false;
     this.inDraw = false;
+    this.markersDisplayedCheckbox = null;
+    this.coverageDisplayedCheckbox = null;
 
 	/// These describe the regular NA meeting icon
 	this.m_icon_image_single = new google.maps.MarkerImage ( "images/NAMarkerB.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	this.m_icon_image_multi = new google.maps.MarkerImage ( "images/NAMarkerR.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	this.m_icon_shadow = new google.maps.MarkerImage( "images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 
+    document.getElementById ( "tallyVersion" ).innerHTML = "Version: " + inVersion;
+    
     /****************************************************************************************//**
     *   \brief MAIN CONTEXT                                                                     *
     ********************************************************************************************/
@@ -190,11 +222,20 @@ BMLTTally.prototype.displayResults = function ( ) {
 
         var serverVersion = parseInt ( sourceObject.versionInt );
         
-        if ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') && (serverVersion >= 2008012) ) {
-            tableCellVersion.className = 'tallyVersion validServer';
-        } else {
-            tableCellVersion.className = 'tallyVersion';
+        tableCellVersion.className = 'tallyVersion';
+
+        if ( serverVersion >= 2008016 ) {
+            tableCellVersion.className += ' tallyCoverage';
         };
+
+        if ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') && (serverVersion >= 2008012) ) {
+            tableCellVersion.className += ' validServer';
+        };
+        
+        if ( serverVersion >= 2008016 ) {
+            tableCellVersion.className += ' tallyCoverage';
+        };
+
         tableCellVersion.appendChild ( document.createTextNode ( sourceObject.serverVersion.toString() ) );
         tableRow.appendChild ( tableCellVersion );
         
@@ -279,14 +320,43 @@ BMLTTally.prototype.ajax_callback_version = function (  in_req,        ///< The 
                                                         ) {
     var responseText = in_req.responseText;
     var source = in_req.extra_data;
-    var context = source.context;
     eval('source.serverVersion = \'' + responseText.toString() + '\';' );
     var versionArray = source.serverVersion.split('.');
     source.versionInt = (parseInt ( versionArray[0] ) * 1000000) + (parseInt ( versionArray[1] ) * 1000) + parseInt ( versionArray[2] );
+    var context = source.context;
+
+    if ( source.versionInt >= 2008016 ) {
+        var uri = "index.php?GetCoverage&callURI=" + encodeURIComponent ( source.rootURL );
+        Simple_AjaxRequest ( uri, context.ajax_callback_coverage, 'GET', source );
+    } else {
+        source.stage = 2;
+        context.tallyDone++;
+        context.incrementTallyMeter();
+        var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
+        Simple_AjaxRequest ( uri, context.ajax_callback_meetings, 'GET', source );
+    };
+};
+
+/****************************************************************************************//**
+*   \brief AJAX callback for The Version                                                 *
+********************************************************************************************/
+BMLTTally.prototype.ajax_callback_coverage = function ( in_req,        ///< The HTTPRequest object for this call.
+                                                        in_extra_data  ///< Any refCon that was attached.  
+                                                        ) {
+    var responseText = in_req.responseText;
+    var source = in_req.extra_data;
+    var context = source.context;
+    eval('var coverageAreaRaw = ' + responseText.toString() + ';' );
+    
     source.stage = 2;
+    
+    source.coverageArea = new Object();
+
+    source.coverageArea.ne_corner = new google.maps.LatLng ( parseFloat ( coverageAreaRaw[0].nw_corner_latitude ), parseFloat ( coverageAreaRaw[0].se_corner_longitude ) );
+    source.coverageArea.sw_corner = new google.maps.LatLng ( parseFloat ( coverageAreaRaw[0].se_corner_latitude ), parseFloat ( coverageAreaRaw[0].nw_corner_longitude ) );
+
     context.tallyDone++;
     context.incrementTallyMeter();
-
     var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
     Simple_AjaxRequest ( uri, context.ajax_callback_meetings, 'GET', source );
 };
@@ -347,14 +417,154 @@ BMLTTally.prototype.start_tally = function() {
         };
     };
 };
+
+/********************************************************************************************//**
+*   \brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.setUpMapControls = function ( ) {
+    if ( this.mapObject ) {
+        this.markersDisplayedCheckbox = this.createCheckboxItem ( "Show Meeting Markers", "marker_checkbox", "marker_checkbox", true, this.selectOrDeselectDisplayMarkersCallback );
+        this.coverageDisplayedCheckbox = this.createCheckboxItem ( "Show Coverage Areas", "coverage_checkbox", "coverage_checkbox", false, this.selectOrDeselectDisplayMarkersCallback );
+   
+        var centerControlDiv = document.createElement ( 'div' );
+        centerControlDiv.id = "centerControlDiv";
+        centerControlDiv.className = "centerControlDiv";
+        centerControlDiv.appendChild ( this.markersDisplayedCheckbox );
+        centerControlDiv.appendChild ( this.coverageDisplayedCheckbox );
+
+        var toggleButton = document.createElement ( 'input' );
+        toggleButton.type = 'button';
+        toggleButton.value = "Show Table Display";
+        toggleButton.className = "showTableButton";
+        toggleButton.addEventListener ( 'click', this.showTable );
+        centerControlDiv.appendChild ( toggleButton );
+
+        this.mapObject.controls[google.maps.ControlPosition.TOP_CENTER].push ( centerControlDiv );
+    };
+};
+
+/********************************************************************************************//**
+*   \brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.selectOrDeselectDisplayMarkersCallback = function ( checkboxElement ) {
+    if ( checkboxElement.checked ) {
+        if ( checkboxElement == checkboxElement.context.markersDisplayedCheckbox.checkbox ) {
+            checkboxElement.context.coverageDisplayedCheckbox.checkbox.checked = false;
+        } else {
+            checkboxElement.context.markersDisplayedCheckbox.checkbox.checked = false;
+        };
+    };
+    checkboxElement.context.redrawResultMapMarkers();
+};
+
+/********************************************************************************************//**
+*   \brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.showTable = function() {
+    document.getElementById ( "tallyMap" ).style.display = 'none';
+    document.getElementById ( "tallyMan" ).style.display = 'block';
+};
+
+/****************************************************************************************//**
+*   \brief  *
+********************************************************************************************/
+BMLTTally.prototype.createCheckboxItem = function ( in_label_text, in_class, in_id, in_selected, inCallback ) {
+    var containerElement = document.createElement ( 'div' );
+    if ( containerElement ) {
+        var checkboxElement = document.createElement ( 'input' );
+        if ( checkboxElement ) {
+            checkboxElement.type = 'checkbox';
+            checkboxElement.baseClassName = in_class + '_checkbox';
+            checkboxElement.className = checkboxElement.baseClassName + '_checkbox' + (in_selected ? '_selected' : '' );
+            checkboxElement.id = in_id + '_checkbox';
+            checkboxElement.checked = in_selected;
+            checkboxElement.context = this;
+            containerElement.checkbox = checkboxElement;
+            var handler = function ( checkboxElement ) {
+                    checkboxElement.className = checkboxElement.baseClassName + '_checkbox' + (in_selected ? '_selected' : '' );
+                    inCallback(checkboxElement);
+                };
+
+            checkboxElement.addEventListener ( 'click', function () { handler(this); } );
+            
+            containerElement.appendChild ( checkboxElement );
+            
+            var labelElement = document.createElement ( 'label' );
+            if ( labelElement ) {
+                labelElement.htmlFor = checkboxElement.id;
+                labelElement.innerHTML = in_label_text;
+                containerElement.appendChild ( labelElement );
+                
+                return containerElement;
+            };
+        };
+    };
+    
+    return null;
+};
     
 /********************************************************************************************//**
 *   \brief                                                                                      *
 ************************************************************************************************/
 BMLTTally.prototype.displayTallyMap = function() {
-        document.getElementById ( "tallyMan" ).style.display = 'none';
-        document.getElementById ( "tallyMap" ).style.display = 'block';
-        this.loadMap();
+    document.getElementById ( "tallyMan" ).style.display = 'none';
+    document.getElementById ( "tallyMap" ).style.display = 'block';
+    this.loadMap();
+};
+    
+/********************************************************************************************//**
+*   \brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.displayTallyCoverage = function() {
+    if ( this.mapObject && this.mapObject.getBounds() ) {
+        if ( !this.coverageDisplayedCheckbox.checkbox.checked ) {
+            while(this.calculatedCoverageOverlays.length) { this.calculatedCoverageOverlays.pop().setMap(null); };
+        } else {
+            if ( !this.calculatedCoverageOverlays.length ) {
+                for ( var i = 0; i < this.sourceList.length; i++ ) {
+                    var source = this.sourceList[i];
+                    if ( source.coverageArea ) {
+                        var bounds = new google.maps.LatLngBounds();
+                        bounds.extend ( source.coverageArea.ne_corner );
+                        bounds.extend ( source.coverageArea.sw_corner );
+                        this.calculatedCoverageOverlays[this.calculatedCoverageOverlays.length] = new google.maps.Rectangle({
+                            strokeColor: '#000000',
+                            strokeOpacity: 0.25,
+                            strokeWeight: 0.5,
+                            fillColor: '#663300',
+                            fillOpacity: 0.25,
+                            map: this.mapObject,
+                            bounds: bounds
+                        });
+                    };
+                };
+            };
+        };
+    };
+};
+    
+/********************************************************************************************//**
+*	\brief                                                                                      *
+************************************************************************************************/
+BMLTTally.prototype.displayMeetingMarkers = function() {
+    if ( this.mapObject && this.mapObject.getBounds() ) {
+        if ( !this.calculatedMarkers.length ) {
+            this.calculatedMarkers = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
+            };
+        
+        while(this.mapMarkers.length) { this.mapMarkers.pop().setMap(null); };
+
+        if ( !this.whatADrag && !this.inDraw && this.markersDisplayedCheckbox.checkbox.checked ) {
+            for ( var c = 0; this.calculatedMarkers && (c < this.calculatedMarkers.length); c++ ) {
+                var objectItem = this.calculatedMarkers[c];
+                var matchesWeDontNeedNoSteenkinMatches = objectItem.matches;
+                var marker = this.displayMeetingMarkerInResults ( matchesWeDontNeedNoSteenkinMatches );
+                if ( marker ) {
+                    this.mapMarkers.push(marker);
+                    };
+                };
+            };
+        };
 };
 
 /********************************************************************************************//**
@@ -381,6 +591,7 @@ BMLTTally.prototype.loadMap = function() {
             google.maps.event.addListener(this.mapObject, 'bounds_changed', function(inEvent) { tallyManTallyMan.redrawResultMapMarkers(); });
             google.maps.event.addListener(this.mapObject, 'dragstart', function(inEvent) { tallyManTallyMan.whatADrag = true; });
             google.maps.event.addListener(this.mapObject, 'idle', function(inEvent) { tallyManTallyMan.handleIdle(); });
+            this.setUpMapControls();
         };
     };
 };
@@ -413,24 +624,8 @@ BMLTTally.prototype.recalculateOverlaps = function() {
 *	\brief                                                                                      *
 ************************************************************************************************/
 BMLTTally.prototype.redrawResultMapMarkers = function() {
-    if ( this.mapObject && this.mapObject.getBounds() ) {
-        if ( !this.calculatedMarkers.length ) {
-            this.calculatedMarkers = this.sMapOverlappingMarkers ( this.allMeetings, this.mapObject );
-            };
-        
-        while(this.mapMarkers.length) { this.mapMarkers.pop().setMap(null); }
-
-        if ( !this.whatADrag && !this.inDraw ) {
-            for ( var c = 0; this.calculatedMarkers && (c < this.calculatedMarkers.length); c++ ) {
-                var objectItem = this.calculatedMarkers[c];
-                var matchesWeDontNeedNoSteenkinMatches = objectItem.matches;
-                var marker = this.displayMeetingMarkerInResults ( matchesWeDontNeedNoSteenkinMatches );
-                if ( marker ) {
-                    this.mapMarkers.push(marker);
-                    };
-                };
-            };
-        };
+    this.displayMeetingMarkers();
+    this.displayTallyCoverage();
 };
 
 /********************************************************************************************//**

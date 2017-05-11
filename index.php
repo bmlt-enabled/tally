@@ -1,10 +1,41 @@
 <?php
+/*******************************************************************************************/
+/**
+    \brief  BMLTTally is a utility app that quickly polls a list of Root Servers, and displays their
+            information in the form of a table, and a map.
+            
+            This started life as a "quick n' dirty one-off," so it does not cleave to the standards
+            of the rest of the BMLT project.
+            
+        This file is part of the Basic Meeting List Toolbox (BMLT).
+
+        Find out more at: http://bmlt.magshare.org
+
+        BMLT is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as
+        published by the Free Software Foundation, either version 3
+        of the License, or (at your option) any later version.
+
+        BMLT is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+        See the GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with this code.  If not, see <http://www.gnu.org/licenses/>.
+*/
 $url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
 $error_message = "";
+
+define ( "__VERSION", "1.0.0" );
 
 if ( isset ( $_GET["GetVersion"] ) )
     {
     die ( parse_version ( $url . "client_interface/serverInfo.xml" ) );
+    }
+if ( isset ( $_GET["GetCoverage"] ) )
+    {
+    die ( call_curl ( $url . "client_interface/json/?switcher=GetCoverageArea", FALSE, $error_message ) );
     }
 elseif ( isset ( $_GET["GetMeetings"] ) )
     {
@@ -178,11 +209,33 @@ else
                 font-weight: bold;
             }
             
+            p#tallyCo
+            {
+                display: table;
+                margin-left:auto;
+                margin-right:auto;
+                padding: 0.5em;
+                font-style: italic;
+                font-weight: bold;
+            }
+            
+            p#tallyCo,
+            table#tallyHo tbody td.tallyCoverage
+            {
+                background-color: yellow !important;
+            }
+            
             p#tallyMo
             {
                 color: #090;
                 font-weight: bold;
                 font-style: italic;
+            }
+            
+            input.showTableButton
+            {
+                margin-left:auto;
+                margin-right:auto;
             }
             
             div#tallyMapButton
@@ -196,6 +249,28 @@ else
                 width: 100%;
                 height: 100%;
             }
+            
+            div.centerControlDiv
+            {
+                text-align:center;
+                background-color: white;
+                padding: 0.5em;
+                box-shadow: 2px 2px 1px #888888;
+            }
+            
+            div.centerControlDiv div
+            {
+                text-align:left;
+            }
+            
+            div#tallyVersion
+            {
+                margin-top: 1em;
+                text-align:center;
+                font-style: italic;
+                font-size: small;
+            }
+            
         </style>
         <link rel="shortcut icon" href="https://bmlt.magshare.net/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyB4q4Cwwl7PvTdLSAyVy4oWOLt4l0yEuyM"></script>
@@ -209,10 +284,10 @@ else
             </div>
             <div id="tallyLegend" style="display: none">
                 <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+                <p id="tallyCo">*Yellow background indicates that this Server can report its coverage area.</p>
                 <div id="tallyMapButton"><a href="javascript:tallyManTallyMan.displayTallyMap();">Display Coverage Map</a></div>
             </div>
-            <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none">
-            </table>
+            <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none"></table>
             <table id="tallyHo" cellspacing="0" cellpadding="0" border="0" style="display:none">
                 <thead id="tallyHead">
                     <tr>
@@ -226,13 +301,14 @@ else
                 </thead>
                 <tbody id="tallyBody"></tbody>
             </table>
+            <div id="tallyVersion"></div>
         </div>
         <div id="tallyMap" style="display: none"></div>
         <?php
             $sourceListJson = file_get_contents("rootServerList.json");
         ?>
         <script type="text/javascript" src="BMLTTally.js"></script>
-        <script type="text/javascript"><?php echo "var tallyManTallyMan = new BMLTTally($sourceListJson);" ?></script>
+        <script type="text/javascript"><?php echo "var tallyManTallyMan = new BMLTTally($sourceListJson,\"".__VERSION."\");" ?></script>
     </body>
 </html>
 <?php    }
