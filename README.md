@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.1* ** *- May 13, 2017*
+
+- Tweaked the styles a bit.
+
 ***Version 1.0.0* ** *- May 11, 2017*
 
 - First tracked version.

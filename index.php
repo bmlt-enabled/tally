@@ -27,7 +27,7 @@
 $url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
 $error_message = "";
 
-define ( "__VERSION", "1.0.0" );
+define ( "__VERSION", "1.0.1" );
 
 if ( isset ( $_GET["GetVersion"] ) )
     {
@@ -219,10 +219,19 @@ else
                 font-weight: bold;
             }
             
-            p#tallyCo,
-            table#tallyHo tbody td.tallyCoverage
+            p#tallyCo
             {
-                background-color: yellow !important;
+                background-color: yellow;
+            }
+            
+            table#tallyHo tbody tr td.tallyCoverage
+            {
+                background-color: #ff0;
+            }
+            
+            table#tallyHo tbody tr.odd td.tallyCoverage
+            {
+                background-color: #ee0;
             }
             
             p#tallyMo
