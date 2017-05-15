@@ -23,7 +23,7 @@
 {"name":"Connecticut Region","rootURL":"http://ctna.org/main_server/"},
 {"name":"Volunteer Region","rootURL":"http://natennessee.org/main_server/"},
 {"name":"Florida and South Florida Regions","rootURL":"http://naflorida.org/bmlt_server/"},
-{"name":"NA Australia","rootURL":"http://na.org.au/main_server/"},
+{"name":"NA Australia","rootURL":"https://www.na.org.au/main_server/"},
 {"name":"Carolina Region","rootURL":"http://crna.org/main_server/","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=https://crna.org/main_server/"},
 {"name":"NA Sweden","rootURL":"https://www.nasverige.org/main_server/","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=https://www.nasverige.org/main_server/"},
 {"name":"NA Minnesota","rootURL":"https://www.naminnesota.org/bmlt/main_server/","semanticURL":"https://bmlt.magshare.net/workshop/index.php?root_server=https://www.naminnesota.org/bmlt/main_server/"}

@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.3* ** *- May 15, 2017*
+
+- Australia is now SSL.
+
 ***Version 1.0.2* ** *- May 14, 2017*
 
 - Milwaukee is now "Wisconsin Region."
