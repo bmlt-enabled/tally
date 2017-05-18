@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.4* ** *- May 18, 2017*
+
+- Updated for Sweden and Carolina Regions. They now use the built-in Semantic Workshop.
+
 ***Version 1.0.3* ** *- May 15, 2017*
 
 - Australia is now SSL.
