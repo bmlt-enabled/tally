@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.6* ** *- May 20, 2017*
+
+- Quebec en le MAISON.
+
 ***Version 1.0.5* ** *- May 20, 2017*
 
 - Michigan is in da HOUSE.
