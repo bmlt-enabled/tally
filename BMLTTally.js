@@ -172,6 +172,9 @@ BMLTTally.prototype.displayResults = function ( ) {
     
     var totalRegions = 0;
     var totalAreas = 0;
+    var totalSSL = 0;
+    var totalValidAdmin = 0;
+    var totalCoverage = 0;
     
     for ( var i = 0; i < this.sourceList.length; i++ ) {
         var sourceObject = this.sourceList[i];
@@ -218,6 +221,10 @@ BMLTTally.prototype.displayResults = function ( ) {
         tableCellSSL.appendChild ( document.createTextNode ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') ? "YES" : "NO" ) );
         tableRow.appendChild ( tableCellSSL );
         
+        if ( sourceObject.rootURL.toString().substring(0, 5) === 'https' ) {
+            totalSSL += 1;
+        };
+        
         var tableCellVersion = document.createElement ( 'td' );
 
         var serverVersion = parseInt ( sourceObject.versionInt );
@@ -225,10 +232,12 @@ BMLTTally.prototype.displayResults = function ( ) {
         tableCellVersion.className = 'tallyVersion';
 
         if ( serverVersion >= 2008016 ) {
+            totalCoverage += 1;
             tableCellVersion.className += ' tallyCoverage';
         };
 
         if ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') && (serverVersion >= 2008012) ) {
+            totalValidAdmin += 1;
             tableCellVersion.className += ' validServer';
         };
         
@@ -264,7 +273,7 @@ BMLTTally.prototype.displayResults = function ( ) {
     var tableCellName = document.createElement ( 'td' );
     tableCellName.className = 'tallyName';
     tableCellName.colSpan = '3';
-    tableCellName.appendChild ( document.createTextNode ( 'TOTAL' ) );
+    tableCellName.appendChild ( document.createTextNode ( 'TOTAL (' + this.sourceList.length + ' Servers, ' + totalSSL + ' SSL, ' + totalCoverage + ' Can show coverage, ' + totalValidAdmin + ' Can use the admin app)' ) );
     totalRow.appendChild ( tableCellName );
     
     var tableCellRegions = document.createElement ( 'td' );
