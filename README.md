@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.10* ** *- May 22, 2017*
+
+- Removed Quebec for now.
+
 ***Version 1.0.9* ** *- May 21, 2017*
 
 - NC Region is now SSL.
