@@ -12,6 +12,7 @@ CHANGELIST
 - German-Speaking Region switched to SSL.
 - Alabama/NW Florida switched to SSL.
 - Quebec switched to SSL.
+- Sierra-Sage switched to SSL.
 
 ***Version 1.0.11* ** *- June 30, 2017*
 
