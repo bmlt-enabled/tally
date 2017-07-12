@@ -10,6 +10,7 @@ CHANGELIST
 ***Version 1.0.12* ** *- July 12, 2017*
 
 - German-Speaking Region switched to SSL.
+- Alabama/NW Florida switched to SSL.
 
 ***Version 1.0.11* ** *- June 30, 2017*
 
