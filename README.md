@@ -7,6 +7,9 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.13* ** *- July 21, 2017*
+- Volunteer Region is now SSL.
+
 ***Version 1.0.12* ** *- July 12, 2017*
 
 - German-Speaking Region switched to SSL.
