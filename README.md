@@ -7,6 +7,9 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.17* ** *- August 22, 2017*
+- Ireland is now SSL.
+
 ***Version 1.0.16* ** *- August 19, 2017*
 - Iowa lost their SSL. It will probably be back.
 - Added IDs for the Sandwich server.
