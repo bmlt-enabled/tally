@@ -7,6 +7,9 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.18* ** *- September 2, 2017*
+- Colorado is now SSL.
+
 ***Version 1.0.17* ** *- August 22, 2017*
 - Ireland is now SSL.
 
