@@ -7,26 +7,37 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.0.20* ** *- September 23, 2017*
+
+- Georgia is now SSL.
+
 ***Version 1.0.19* ** *- September 4, 2017*
+
 - Added Arizona.
 
 ***Version 1.0.18* ** *- September 2, 2017*
+
 - Colorado is now SSL.
 
 ***Version 1.0.17* ** *- August 22, 2017*
+
 - Ireland is now SSL.
 
 ***Version 1.0.16* ** *- August 19, 2017*
+
 - Iowa lost their SSL. It will probably be back.
 - Added IDs for the Sandwich server.
 
 ***Version 1.0.15* ** *- August 3, 2017*
+
 - NA India is now SSL.
 
 ***Version 1.0.14* ** *- July 25, 2017*
+
 - Iowa Region is now SSL.
 
 ***Version 1.0.13* ** *- July 21, 2017*
+
 - Volunteer Region is now SSL.
 
 ***Version 1.0.12* ** *- July 12, 2017*
