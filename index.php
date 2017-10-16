@@ -27,7 +27,7 @@
 $url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
 $error_message = "";
 
-define ( "__VERSION", "1.1.0" );
+define ( "__VERSION", "1.1.1" );
 
 if ( isset ( $_GET["GetVersion"] ) )
     {
@@ -226,6 +226,11 @@ else
                 font-weight: bold;
             }
             
+            table#tallyHo tbody td.invalidServer
+            {
+                color: red;
+            }
+            
             p#tallyCo
             {
                 display: table;
@@ -295,7 +300,8 @@ else
             </div>
             <div id="tallyLegend" style="display: none">
                 <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
-                <p id="tallyMo2">If you think your server should be green, and it's not, then maybe <a href="https://bmlt.magshare.net/semantic/semantic-administration/">it's not enabled for Semantic Administration</a>.</p>
+                <p id="tallyMo2">Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.magshare.net/semantic/semantic-administration/">Semantic Administration being enabled</a>.</p>
+                <p id="tallyMo3">If <strong>BOTH</strong> of these conditions are not met, then you cannot use the admin app.</p>
                 <div id="tallyMapButton"><a href="javascript:tallyManTallyMan.displayTallyMap();">Display Coverage Map</a></div>
             </div>
             <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none"></table>

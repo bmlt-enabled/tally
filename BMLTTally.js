@@ -281,6 +281,8 @@ BMLTTally.prototype.displayResults = function ( ) {
         if ( sourceObject.isSSL && (serverVersion >= 2008012) && sourceObject.isAdminOn ) {
             totalValidAdmin += 1;
             tableCellVersion.className += ' validServer';
+        } else {
+            tableCellVersion.className += ' invalidServer';
         };
         
         if ( serverVersion >= 2008016 ) {

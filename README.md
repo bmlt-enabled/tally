@@ -7,6 +7,11 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.1.1* ** *- October 16, 2017*
+
+- Some browsers seem to have difficulty parsing the JSON. I hope I simplified it enough for them.
+- Better explanation as to why the Server may not indicate that the admin app can be used.
+
 ***Version 1.1.0* ** *- October 16, 2017*
 
 - Now allow you to choose sorting.
