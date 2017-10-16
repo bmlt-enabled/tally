@@ -43,6 +43,9 @@ function BMLTTally(inSourceList, inVersion) {
     this.inDraw = false;
     this.markersDisplayedCheckbox = null;
     this.coverageDisplayedCheckbox = null;
+    this.initialSortKeyList = Array('meetings.length','numRegions','numASCs','versionInt','isSSL');
+    this.sortKeyList = this.initialSortKeyList;
+    this.sortDown = true;
 
 	/// These describe the regular NA meeting icon
 	this.m_icon_image_single = new google.maps.MarkerImage ( "images/NAMarkerB.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -89,7 +92,7 @@ BMLTTally.prototype.incrementTallyMeter = function ( ) {
             };
         };
         
-        this.displayResults ( );
+        this.setSort(this.sortKeyList[0],'tallyMeeting_Header');
     };
     this.updateTallyLog();
 };
@@ -142,22 +145,61 @@ BMLTTally.prototype.updateTallyLog = function ( ) {
 };
 
 /****************************************************************************************//**
+*   \brief This sets the sort order, with the input being the new primary key.              *
+********************************************************************************************/
+BMLTTally.prototype.setSort = function ( inSortKey, inTDID ) {
+    var newSort = Array ( inSortKey );
+    
+    document.getElementById('tallySSL_Header').className = '';
+    document.getElementById('tallyVersion_Header').className = '';
+    document.getElementById('tallyRegion_Header').className = '';
+    document.getElementById('tallyArea_Header').className = '';
+    document.getElementById('tallyMeeting_Header').className = '';
+    
+    for ( var index = 0; index < this.sortKeyList.length; index++ ) {
+        if ( (this.sortKeyList[index] == inSortKey) && (index == 0) ) {
+            this.sortDown = !this.sortDown;
+            newSort = this.sortKeyList;
+            break;
+        } else {
+            if ( this.sortKeyList[index] != inSortKey ) {
+                newSort.push(this.sortKeyList[index]);
+            };
+        };
+    };
+    
+    this.sortKeyList = newSort;
+    document.getElementById(inTDID).className = ('selected' + (this.sortDown ? ' down' : ''));
+    
+    this.displayResults();
+};
+
+/****************************************************************************************//**
 *   \brief Increments the tally meter.                                                      *
 ********************************************************************************************/
 BMLTTally.prototype.displayResults = function ( ) {
     /****************************************************************************************//**
     *   \brief Sorting Handler.                                                                 *
     ********************************************************************************************/
+    var direction = this.sortDown;
+    var sortList = this.sortKeyList;
+    
     sortResults = function ( a, b ) {
-        var ret = (a.meetings.length - b.meetings.length);
-        if ( 0 == ret ) {
-            ret = a.numRegions - b.numRegions;
-            if ( 0 == ret ) {
-                ret = a.numASCs - b.numASCs;
+        var ret = 0;
+        
+        for ( var index = 0; index < sortList.length; index++ ) {
+            var objectField = sortList[index];
+            eval ( 'var aVal = parseInt ( a.' + objectField + ' );' );
+            eval ( 'var bVal = parseInt ( b.' + objectField + ' );' );
+            
+            ret = bVal - aVal;
+            
+            if ( ret != 0 ) {
+                break;
             };
         };
         
-        return -ret;
+        return (direction ? -1 : 1) * ret;
     };
 
     var tallyTable = document.getElementById ( 'tallyLogTable' );
@@ -217,11 +259,11 @@ BMLTTally.prototype.displayResults = function ( ) {
         tableRow.appendChild ( tableCellName );
         
         var tableCellSSL = document.createElement ( 'td' );
-        tableCellSSL.className = 'tallySSL' + ((sourceObject.rootURL.toString().substring(0, 5) === 'https') ? ' validSSL' : ' inValidSSL');
-        tableCellSSL.appendChild ( document.createTextNode ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') ? "YES" : "NO" ) );
+        tableCellSSL.className = 'tallySSL' + (sourceObject.isSSL ? ' validSSL' : ' inValidSSL');
+        tableCellSSL.appendChild ( document.createTextNode ( sourceObject.isSSL ? "YES" : "NO" ) );
         tableRow.appendChild ( tableCellSSL );
         
-        if ( sourceObject.rootURL.toString().substring(0, 5) === 'https' ) {
+        if ( sourceObject.isSSL ) {
             totalSSL += 1;
         };
         
@@ -236,7 +278,7 @@ BMLTTally.prototype.displayResults = function ( ) {
             tableCellVersion.className += ' tallyCoverage';
         };
 
-        if ( (sourceObject.rootURL.toString().substring(0, 5) === 'https') && (serverVersion >= 2008012) ) {
+        if ( sourceObject.isSSL && (serverVersion >= 2008012) && sourceObject.isAdminOn ) {
             totalValidAdmin += 1;
             tableCellVersion.className += ' validServer';
         };
@@ -273,7 +315,7 @@ BMLTTally.prototype.displayResults = function ( ) {
     var tableCellName = document.createElement ( 'td' );
     tableCellName.className = 'tallyName';
     tableCellName.colSpan = '3';
-    tableCellName.appendChild ( document.createTextNode ( 'TOTAL (' + this.sourceList.length + ' Servers, ' + totalSSL + ' SSL, ' + totalCoverage + ' Can show coverage, ' + totalValidAdmin + ' Can use the admin app)' ) );
+    tableCellName.appendChild ( document.createTextNode ( 'TOTAL (' + this.sourceList.length + ' Servers, ' + totalValidAdmin + ' Can use the admin app)' ) );
     totalRow.appendChild ( tableCellName );
     
     var tableCellRegions = document.createElement ( 'td' );
@@ -307,6 +349,7 @@ BMLTTally.prototype.ajax_callback_meetings = function ( in_req,        ///< The 
     var responseText = in_req.responseText;
     var source = in_req.extra_data;
     var context = source.context;
+
     eval('var results = ' + responseText + ';' );
     source.meetings = Array();
     if ( results && results.length ) {
@@ -329,20 +372,27 @@ BMLTTally.prototype.ajax_callback_version = function (  in_req,        ///< The 
                                                         ) {
     var responseText = in_req.responseText;
     var source = in_req.extra_data;
-    eval('source.serverVersion = \'' + responseText.toString() + '\';' );
-    var versionArray = source.serverVersion.split('.');
-    source.versionInt = (parseInt ( versionArray[0] ) * 1000000) + (parseInt ( versionArray[1] ) * 1000) + parseInt ( versionArray[2] );
+    eval('var serverInfo = ' + responseText.toString() + ';' );
+   
+    source.serverVersion = serverInfo.version;
+    source.versionInt = serverInfo.versionInt;
+    source.isAdminOn = (serverInfo.semanticAdmin == "1") ? true : false;
     var context = source.context;
 
-    if ( source.versionInt >= 2008016 ) {
-        var uri = "index.php?GetCoverage&callURI=" + encodeURIComponent ( source.rootURL );
-        Simple_AjaxRequest ( uri, context.ajax_callback_coverage, 'GET', source );
+    if ( !source.versionInt ) {
+        var uri = in_req.RawUrl;
+        Simple_AjaxRequest ( uri, context.ajax_callback_version, 'GET', source );
     } else {
-        source.stage = 2;
-        context.tallyDone++;
-        context.incrementTallyMeter();
-        var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
-        Simple_AjaxRequest ( uri, context.ajax_callback_meetings, 'GET', source );
+        if ( source.versionInt >= 2008016 ) {
+            var uri = "index.php?GetCoverage&callURI=" + encodeURIComponent ( source.rootURL );
+            Simple_AjaxRequest ( uri, context.ajax_callback_coverage, 'GET', source );
+        } else {
+            source.stage = 2;
+            context.tallyDone++;
+            context.incrementTallyMeter();
+            var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
+            Simple_AjaxRequest ( uri, context.ajax_callback_meetings, 'GET', source );
+        };
     };
 };
 
@@ -395,6 +445,7 @@ BMLTTally.prototype.ajax_callback_services = function ( in_req,        ///< The 
 
     source.numRegions = regions;
     source.numASCs = areas;
+    source.isSSL = (source.rootURL.substring(0, 5) === 'https') ? 1 : 0;
     source.stage = 1;
     context.tallyDone++;
     context.incrementTallyMeter();

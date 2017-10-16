@@ -27,11 +27,11 @@
 $url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
 $error_message = "";
 
-define ( "__VERSION", "1.0.20" );
+define ( "__VERSION", "1.1.0" );
 
 if ( isset ( $_GET["GetVersion"] ) )
     {
-    die ( parse_version ( $url . "client_interface/serverInfo.xml" ) );
+    die ( trim(call_curl ( $url . "client_interface/json/?switcher=GetServerInfo", FALSE, $error_message ), "[]") );
     }
 if ( isset ( $_GET["GetCoverage"] ) )
     {
@@ -122,6 +122,23 @@ else
                 text-align: center;
                 font-weight: bold;
                 border-bottom: 2px solid #009;
+            }
+            
+            table#tallyHo thead td.selected a,
+            table#tallyHo thead td.selected a:visited
+            {
+                padding: 0.25em;
+            	display:block;
+            	width: 100%;
+            	height: 100%;
+            	background-color:blue;
+            	color: white;
+            }
+            
+            table#tallyHo thead td.selected.down a
+            {
+            	background-color:red;
+            	color: white;
             }
             
             table#tallyHo tr.tallyTotal td
@@ -219,21 +236,6 @@ else
                 font-weight: bold;
             }
             
-            p#tallyCo
-            {
-                background-color: yellow;
-            }
-            
-            table#tallyHo tbody tr td.tallyCoverage
-            {
-                background-color: #ff0;
-            }
-            
-            table#tallyHo tbody tr.odd td.tallyCoverage
-            {
-                background-color: #ee0;
-            }
-            
             p#tallyMo
             {
                 color: #090;
@@ -293,7 +295,7 @@ else
             </div>
             <div id="tallyLegend" style="display: none">
                 <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
-                <p id="tallyCo">*Yellow background indicates that this Server can report its coverage area.</p>
+                <p id="tallyMo2">If you think your server should be green, and it's not, then maybe <a href="https://bmlt.magshare.net/semantic/semantic-administration/">it's not enabled for Semantic Administration</a>.</p>
                 <div id="tallyMapButton"><a href="javascript:tallyManTallyMan.displayTallyMap();">Display Coverage Map</a></div>
             </div>
             <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none"></table>
@@ -301,11 +303,11 @@ else
                 <thead id="tallyHead">
                     <tr>
                         <td class="tallyName">Server Name</td>
-                        <td class="tallySSL">Is SSL?</td>
-                        <td class="tallyVersion">Version*</td>
-                        <td class="tallyRegion">Number of Regions</td>
-                        <td class="tallyArea">Number of Areas</td>
-                        <td class="tallyMeeting">Number of Meetings</td>
+                        <td id="tallySSL_Header"><a href="javascript:tallyManTallyMan.setSort('isSSL','tallySSL_Header');">Is SSL?</a></td>
+                        <td id="tallyVersion_Header"><a href="javascript:tallyManTallyMan.setSort('versionInt','tallyVersion_Header');">Version*</a></td>
+                        <td id="tallyRegion_Header"><a href="javascript:tallyManTallyMan.setSort('numRegions','tallyRegion_Header');">Number of Regions</a></td>
+                        <td id="tallyArea_Header"><a href="javascript:tallyManTallyMan.setSort('numASCs','tallyArea_Header');">Number of Areas</a></td>
+                        <td id="tallyMeeting_Header" class="selected"><a href="javascript:tallyManTallyMan.setSort('meetings.length','tallyMeeting_Header');">Number of Meetings</a></td>
                     </tr>
                 </thead>
                 <tbody id="tallyBody"></tbody>

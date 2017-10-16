@@ -7,6 +7,12 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.1.0* ** *- October 16, 2017*
+
+- Now allow you to choose sorting.
+- Removed the yellow background, as its now redundant.
+- Now check to see if Semantic Admin is enabled before marking a server as valid for the admin app.
+
 ***Version 1.0.20* ** *- September 23, 2017*
 
 - Georgia is now SSL.
