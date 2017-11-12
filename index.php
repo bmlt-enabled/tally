@@ -27,7 +27,7 @@
 $url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
 $error_message = "";
 
-define ( "__VERSION", "1.1.2" );
+define ( "__VERSION", "1.1.3" );
 
 if ( isset ( $_GET["GetVersion"] ) )
     {
@@ -459,7 +459,7 @@ function call_curl ( $in_uri,                ///< A string. The URI to call.
         curl_setopt ( $resource, CURLOPT_ENCODING, 'gzip,deflate' );
         
         // Pretend we're a browser, so that anti-cURL settings don't pooch us.
-        curl_setopt ( $resource, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)" ); 
+        curl_setopt ( $resource, CURLOPT_USERAGENT, "cURL Mozilla/5.0 (Windows NT 5.1; rv:21.0) Gecko/20130401 Firefox/21.0" ); 
 
         // Execute cURL call and return results in $content variable.
         $content = curl_exec ( $resource );
