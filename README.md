@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.1.5* ** *- January 16, 2018*
+
+- Added NA Denmark.
+
 ***Version 1.1.4* ** *- December 13, 2017*
 
 - Added the New England Region.
