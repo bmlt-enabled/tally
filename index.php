@@ -27,7 +27,7 @@
 $url = isset ( $_GET["callURI"] ) ? $_GET["callURI"] : "";
 $error_message = "";
 
-define ( "__VERSION", "1.1.6" );
+define ( "__VERSION", "1.1.7" );
 
 if ( isset ( $_GET["GetVersion"] ) )
     {
