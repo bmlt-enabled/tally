@@ -7,6 +7,8 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.2.0* ** *- TBD*
+
 ***Version 1.1.8* ** *- February 22, 2018*
 
 - Updated the Iowa Root Server URI.

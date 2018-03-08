@@ -36,6 +36,7 @@ function BMLTTally(inSourceList, inVersion) {
     this.sourceList = inSourceList;
     this.mapObject = null;
     this.mapMarkers = [];
+    this.allServiceBodies = [];
     this.allMeetings = [];
     this.calculatedMarkers = [];
     this.calculatedCoverageOverlays = [];
@@ -43,6 +44,7 @@ function BMLTTally(inSourceList, inVersion) {
     this.inDraw = false;
     this.markersDisplayedCheckbox = null;
     this.coverageDisplayedCheckbox = null;
+    this.regionalAffiliationCheckbox = null;
     this.initialSortKeyList = Array('meetings.length','numRegions','numASCs','versionInt','isSSL');
     this.sortKeyList = this.initialSortKeyList;
     this.sortDown = true;
@@ -67,6 +69,7 @@ BMLTTally.prototype.sourceList;
 BMLTTally.prototype.mapObject;
 BMLTTally.prototype.mapMarkers;
 BMLTTally.prototype.calculatedMarkers;
+BMLTTally.prototype.allServiceBodies;
 BMLTTally.prototype.allMeetings;
 BMLTTally.prototype.m_icon_image_single;
 BMLTTally.prototype.m_icon_image_multi;
@@ -445,6 +448,7 @@ BMLTTally.prototype.ajax_callback_services = function ( in_req,        ///< The 
         };
     };
 
+    source.allServiceBodies = serviceBodies;
     source.numRegions = regions;
     source.numASCs = areas;
     source.isSSL = (source.rootURL.substring(0, 5) === 'https') ? 1 : 0;
@@ -487,12 +491,14 @@ BMLTTally.prototype.setUpMapControls = function ( ) {
     if ( this.mapObject ) {
         this.markersDisplayedCheckbox = this.createCheckboxItem ( "Show Meeting Markers", "marker_checkbox", "marker_checkbox", true, this.selectOrDeselectDisplayMarkersCallback );
         this.coverageDisplayedCheckbox = this.createCheckboxItem ( "Show Coverage Areas", "coverage_checkbox", "coverage_checkbox", false, this.selectOrDeselectDisplayMarkersCallback );
-   
+        this.regionalAffiliationCheckbox = this.createCheckboxItem ( "Show Regional Affiliation", "regional_checkbox", "regional_checkbox", false, this.selectOrDeselectDisplayMarkersCallback );
+        
         var centerControlDiv = document.createElement ( 'div' );
         centerControlDiv.id = "centerControlDiv";
         centerControlDiv.className = "centerControlDiv";
         centerControlDiv.appendChild ( this.markersDisplayedCheckbox );
         centerControlDiv.appendChild ( this.coverageDisplayedCheckbox );
+        centerControlDiv.appendChild ( this.regionalAffiliationCheckbox );
 
         var toggleButton = document.createElement ( 'input' );
         toggleButton.type = 'button';
@@ -510,12 +516,24 @@ BMLTTally.prototype.setUpMapControls = function ( ) {
 ************************************************************************************************/
 BMLTTally.prototype.selectOrDeselectDisplayMarkersCallback = function ( checkboxElement ) {
     if ( checkboxElement.checked ) {
-        if ( checkboxElement == checkboxElement.context.markersDisplayedCheckbox.checkbox ) {
-            checkboxElement.context.coverageDisplayedCheckbox.checkbox.checked = false;
-        } else {
+        if ( checkboxElement == checkboxElement.context.coverageDisplayedCheckbox.checkbox ) {
             checkboxElement.context.markersDisplayedCheckbox.checkbox.checked = false;
+            checkboxElement.context.regionalAffiliationCheckbox.checkbox.checked = false;
+        } else {
+            if ( checkboxElement == checkboxElement.context.markersDisplayedCheckbox.checkbox ) {
+                checkboxElement.context.coverageDisplayedCheckbox.checkbox.checked = false;
+                checkboxElement.context.regionalAffiliationCheckbox.checkbox.checked = false;
+            } else {
+                if ( checkboxElement == checkboxElement.context.regionalAffiliationCheckbox.checkbox ) {
+                    checkboxElement.context.coverageDisplayedCheckbox.checkbox.checked = false;
+                    checkboxElement.context.markersDisplayedCheckbox.checkbox.checked = false;
+                } else {
+                    checkboxElement.context.regionalAffiliationCheckbox.checkbox.checked = false;
+                };
+            };
         };
     };
+    
     checkboxElement.context.redrawResultMapMarkers();
 };
 
