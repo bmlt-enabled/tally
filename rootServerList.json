@@ -34,5 +34,6 @@
 {"id":"132","name":"Arizona Region","rootURL":"http://www.arizona-na.org/bmlt/main_server/"},
 {"id":"133","name":"NA Italia","rootURL":"https://na-italia.info/main_server/"},
 {"id":"134","name":"New England Region","rootURL":"https://www.nerna.org/main_server/"},
-{"id":"135","name":"Kansas City Metro","rootURL":"http://www.kansascityna.org/main_server/"}
+{"id":"135","name":"Kansas City Metro","rootURL":"http://www.kansascityna.org/main_server/"},
+{"id":"136","name":"NA Denmark","rootURL":"http://nadanmark.dk/fixed_bmlt_root/main_server/"}
 ]
