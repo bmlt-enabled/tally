@@ -8,7 +8,6 @@
 {"id":"106","name":"Ohio Region","rootURL":"http://bmlt.naohio.org/main_server/"},
 {"id":"107","name":"Alabama/NW Florida","rootURL":"https://www.alnwfl.org/main_server/"},
 {"id":"108","name":"San Diego NA","rootURL":"https://www.sandiegona.org/bmlt/"},
-{"id":"109","name":"North Carolina Region","rootURL":"https://bmlt.ncregion-na.org/main_server/"},
 {"id":"110","name":"Iowa Server","rootURL":"http://iowa-na.org/main_server/"},
 {"id":"111","name":"NA India","rootURL":"https://naindia.in/meeting_server/"},
 {"id":"112","name":"German-Speaking Region","rootURL":"https://www.narcotics-anonymous.de/bmlt/"},
@@ -35,5 +34,6 @@
 {"id":"133","name":"NA Italia","rootURL":"https://na-italia.info/main_server/"},
 {"id":"134","name":"New England Region","rootURL":"https://www.nerna.org/main_server/"},
 {"id":"135","name":"Kansas City Metro","rootURL":"http://www.kansascityna.org/main_server/"},
-{"id":"136","name":"NA Denmark","rootURL":"http://nadanmark.dk/fixed_bmlt_root/main_server/"}
+{"id":"136","name":"NA Denmark","rootURL":"http://nadanmark.dk/fixed_bmlt_root/main_server/"},
+{"id":"137","name":"Southeastern Zonal Forum","rootURL":"https://bmlt.sezf.org/main_server/"}
 ]
