@@ -34,5 +34,6 @@
 {"id":"134","name":"New England Region","rootURL":"https://www.nerna.org/main_server/"},
 {"id":"135","name":"Kansas City Metro","rootURL":"http://www.kansascityna.org/main_server/"},
 {"id":"136","name":"NA Denmark","rootURL":"http://nadanmark.dk/fixed_bmlt_root/main_server/"},
-{"id":"137","name":"Southeastern Zonal Forum","rootURL":"https://bmlt.sezf.org/main_server/"}
+{"id":"137","name":"Southeastern Zonal Forum","rootURL":"https://bmlt.sezf.org/main_server/"},
+{"id":"138","name":"NA Kentucky","rootURL":"https://bmlt.bmltky.online/main_server/"}
 ]
