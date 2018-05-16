@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.2.5* ** *- April 22, 2018*
+
+- Added NA Kentucky.
+
 ***Version 1.2.4* ** *- April 15, 2018*
 
 - BARCNA is now SSL.
