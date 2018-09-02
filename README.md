@@ -7,6 +7,13 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.2.7* ** *- September 2, 2018*
+
+- Ohio is now SSL.
+- Arizona is now SSL.
+- NA Minnesota is SSL again.
+- Iowa is now SSL.
+
 ***Version 1.2.6* ** *- August 31, 2018*
 
 - Added NA Argentina.
