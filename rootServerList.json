@@ -6,7 +6,6 @@
 {"id":"105","name":"Eastern Pennsylvania/Philadelphia","rootURL":"https://meetings.naworks.org/"},
 {"id":"106","name":"Ohio Region","rootURL":"https://bmlt.naohio.org/main_server/"},
 {"id":"108","name":"San Diego NA","rootURL":"https://www.sandiegona.org/bmlt/"},
-{"id":"110","name":"Iowa Server","rootURL":"https://iowa-na.org/main_server/"},
 {"id":"111","name":"NA India","rootURL":"https://naindia.in/meeting_server/"},
 {"id":"112","name":"German-Speaking Region","rootURL":"https://www.narcotics-anonymous.de/bmlt/"},
 {"id":"113","name":"NA Ireland","rootURL":"https://bmlt.nasouth.ie/main_server/"},
@@ -36,5 +35,6 @@
 {"id":"137","name":"Southeastern Zonal Forum","rootURL":"https://bmlt.sezf.org/main_server/"},
 {"id":"138","name":"NA Kentucky","rootURL":"https://bmlt.bmltky.online/main_server/"},
 {"id":"139","name":"NA Argentina","rootURL":"https://www.na.org.ar/main_server/"},
-{"id":"140","name":"NA Uruguay","rootURL":"https://areaoceanicana.org.uy/main_server/"}
+{"id":"140","name":"NA Uruguay","rootURL":"https://areaoceanicana.org.uy/main_server/"},
+{"id":"141","name":"Plains States Zonal Forum","rootURL":"https://pszfna.org/main_server/"}
 ]
