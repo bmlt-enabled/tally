@@ -7,7 +7,11 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
-***Version 1.2.9* ** *- November 1 , 2018*
+***Version 1.2.10* ** *- November 18, 2018*
+
+- Replaced Iowa with Plains State Zonal.
+
+***Version 1.2.9* ** *- November 1, 2018*
 
 - Michigan Region is now SSL.
 
