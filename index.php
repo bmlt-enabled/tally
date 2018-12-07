@@ -322,7 +322,7 @@ else
         </div>
         <div id="tallyMap" style="display: none"></div>
         <?php
-            $sourceListJson = file_get_contents("rootServerList.json");
+            $sourceListJson = file_get_contents("https://raw.githubusercontent.com/bmlt-enabled/BMLTTally/master/rootServerList.json");
         ?>
         <script type="text/javascript" src="BMLTTally.js"></script>
         <script type="text/javascript"><?php echo "var tallyManTallyMan = new BMLTTally($sourceListJson,\"".__VERSION."\");" ?></script>
