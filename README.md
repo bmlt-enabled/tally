@@ -7,6 +7,10 @@ BMLTTally is a utility app that quickly polls a list of Root Servers, and displa
 
 CHANGELIST
 ----------
+***Version 1.2.12* ** *- February 19, 2019*
+
+- Converted San Jose to SSL.
+
 ***Version 1.2.11* ** *- December 15, 2018*
 
 - Reverted NA Florida to non-SSL.
