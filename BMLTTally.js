@@ -476,6 +476,10 @@ BMLTTally.prototype.start_tally = function() {
     for ( var i = 0; i < count; i++ ) {
         var source = this.sourceList[i];
         if ( source.rootURL ) {
+            if (source.rootURL.substr(-1) != '/') { // Add a slash, if necessary
+                source.rootURL = source.rootURL + '/';
+            };
+
             source.stage = 0;
             var uri = "index.php?callURI=" + encodeURIComponent ( source.rootURL );
             source.context = this;
