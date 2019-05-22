@@ -1,0 +1,233 @@
+html,
+body
+{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+div#tallyMan
+{
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+div#tallyMeter
+{
+    text-align: left;
+    height: 0.5em;
+    margin-left: auto;
+    margin-right:auto;
+    width: 25%;
+    border-radius: 0.25em;
+    border:1px solid blue;
+    background-color:#ccf;
+}
+
+div#tallyMeterFill
+{
+    background-color:blue;
+    width: 0px;
+    height: 100%;
+}
+
+img.masthead,
+table#tallyHo,
+table#tallyLogTable
+{
+    margin-left: auto;
+    margin-right:auto;
+}
+
+table#tallyHo a,
+table#tallyHo a:visited
+{
+    color: #36f;
+    text-decoration: none;
+}
+
+table#tallyHo a:hover,
+table#tallyHo a:active
+{
+    color: #f63;
+    text-decoration: underline;
+}
+
+table#tallyHo td
+{
+    padding: 0.25em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+table#tallyHo thead td
+{
+    border: none;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 2px solid #009;
+}
+
+table#tallyHo thead td.selected a,
+table#tallyHo thead td.selected a:visited
+{
+    padding: 0.25em;
+    display:block;
+    width: 100%;
+    height: 100%;
+    background-color:blue;
+    color: white;
+}
+
+table#tallyHo thead td.selected.down a
+{
+    background-color:red;
+    color: white;
+}
+
+table#tallyHo tr.tallyTotal td
+{
+    border: none;
+    text-align: right;
+    font-weight: bold;
+    border-top: 2px solid #009;
+}
+
+table#tallyHo tbody td
+{
+    text-align: right;
+    padding-right: 1em;
+}
+
+table#tallyHo thead td
+{
+    padding-right: 0;
+}
+
+table#tallyHo tbody tr.odd td
+{
+    background-color: #eef;
+}
+
+table#tallyHo tbody td.tallyName,
+table#tallyHo tbody td.tallyVersion
+{
+    text-align: left;
+    padding-right: 0;
+}
+
+table#tallyHo tbody td.tallyVersion
+{
+    padding-left: 1em;
+}
+
+table#tallyHo tbody td.tallySSL
+{
+    text-align:center;
+}
+
+table#tallyHo tbody td.inValidSSL
+{
+    color: red;
+}
+
+table#tallyHo tbody td.validSSL
+{
+    color: #090;
+    font-weight: bold;
+}
+
+table#tallyLogTable
+{
+    margin-top: 1em;
+    text-align: left;
+    font-style: italic;
+}
+
+table#tallyLogTable td.in-progress-0
+{
+    color: #c30;
+}
+
+table#tallyLogTable td.in-progress-1
+{
+    color: #c60;
+}
+
+table#tallyLogTable td.in-progress-2
+{
+    color: #cc0;
+}
+
+table#tallyLogTable td.in-progress-3
+{
+    color: #0c0;
+}
+
+table#tallyHo tbody td.validServer
+{
+    color: #090;
+    font-weight: bold;
+}
+
+table#tallyHo tbody td.invalidServer
+{
+    color: red;
+}
+
+p#tallyCo
+{
+    display: table;
+    margin-left:auto;
+    margin-right:auto;
+    padding: 0.5em;
+    font-style: italic;
+    font-weight: bold;
+}
+
+p#tallyMo
+{
+    color: #090;
+    font-weight: bold;
+    font-style: italic;
+}
+
+input.showTableButton
+{
+    margin-left:auto;
+    margin-right:auto;
+}
+
+div#tallyMapButton
+{
+    font-weight:bold;
+    text-align:center;
+}
+
+div#tallyMap
+{
+    width: 100%;
+    height: 100%;
+}
+
+div.centerControlDiv
+{
+    text-align:center;
+    background-color: white;
+    padding: 0.5em;
+    box-shadow: 2px 2px 1px #888888;
+}
+
+div.centerControlDiv div
+{
+    text-align:left;
+}
+
+div#tallyVersion
+{
+    margin-top: 1em;
+    text-align:center;
+    font-style: italic;
+    font-size: small;
+}

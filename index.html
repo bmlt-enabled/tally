@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>BMLT Tally</title>
+    <link rel="shortcut icon" href="https://bmlt.app/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="tally.css">
+    <script type="text/javascript" src="roots.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyB4q4Cwwl7PvTdLSAyVy4oWOLt4l0yEuyM"></script>
+    <script type="text/javascript" src="handlebars-v4.1.2.js"></script>
+</head>
+<body>
+<div id="tallyMan">
+    <a href="https://bmlt.app"><img class="masthead" src="https://bmlt.magshare.net/wp-content/uploads/2014/01/cropped-BMLT-Blog-Logo1.png" /></a>
+    <h2>Tally of Known BMLT Root Servers (requires root server version 2.10.3 or higher)</h2>
+    <div id="tallyLegend" style="display: none">
+        <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+        <p id="tallyMo2">Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/">Semantic Administration being enabled</a>.</p>
+        <p id="tallyMo3">If <strong>BOTH</strong> of these conditions are not met, then you cannot use the admin app.</p>
+        <div id="tallyMapButton"><a href="javascript:tally.displayTallyMap();">Display Coverage Map</a></div>
+    </div>
+    <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none"></table>
+    <div id="tally"></div>
+    <script id="tally-table-template" type="text/x-handlebars-template">
+        <table id="tallyHo" cellspacing="0" cellpadding="0" border="0">
+            <thead id="tallyHead">
+                <tr>
+                    <td id="tallyName_Header" class="tallyName">Server Name</td>
+                    <td id="tallySSL_Header"><a href="javascript:tally.setSort('isSSL','tallySSL_Header');">SSL?</a></td>
+                    <td id="tallySemanticAdmin_Header"><a href="javascript:tally.setSort('isSSL','tallySemanticAdmin_Header');">Admin?</a></td>
+                    <td id="tallyVersion_Header"><a href="javascript:tally.setSort('versionInt','tallyVersion_Header');">Version*</a></td>
+                    <td id="tallyRegion_Header"><a href="javascript:tally.setSort('numRegions','tallyRegion_Header');">Number of Regions</a></td>
+                    <td id="tallyArea_Header"><a href="javascript:tally.setSort('numASCs','tallyArea_Header');">Number of Areas</a></td>
+                    <td id="tallyMeeting_Header" class="selected"><a href="javascript:tally.setSort('meetings.length','tallyMeeting_Header');">Number of Meetings</a></td>
+                </tr>
+            </thead>
+            <tbody id="tallyBody">
+                {{#each this}}
+                    <tr>
+                        <td id="tallyName_Data_{{ this.id }}">
+                            {{this.name}}
+                        </td>
+                        <td id="tallySSL_Data_{{ this.id }}"><img src="images/spinner3.gif"></td>
+                        <td id="tallySemanticAdmin_Data_{{ this.id }}"><img src="images/spinner3.gif"></td>
+                        <td id="tallyVersion_Data_{{ this.id }}"><img src="images/spinner3.gif"></td>
+                        <td id="tallyRegion_Data_{{ this.id }}"><img src="images/spinner3.gif"></td>
+                        <td id="tallyArea_Data_{{ this.id }}"><img src="images/spinner3.gif"></td>
+                        <td id="tallyMeetings_Data_{{ this.id }}"><img src="images/spinner3.gif"></td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </script>
+    <div id="tallyVersion"></div>
+</div>
+<div id="tallyMap" style="display: none"></div>
+<script type="text/javascript" src="tally.js"></script>
+<script type="text/javascript">var tally = new Tally(roots);</script>
+</body>
+</html>
+</html>

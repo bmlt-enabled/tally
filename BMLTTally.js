@@ -346,121 +346,6 @@ BMLTTally.prototype.displayResults = function ( ) {
 };
 
 /****************************************************************************************//**
-*   \brief AJAX callback for Meetings                                                 *
-********************************************************************************************/
-BMLTTally.prototype.ajax_callback_meetings = function ( in_req,        ///< The HTTPRequest object for this call.
-                                                        in_extra_data  ///< Any refCon that was attached.  
-                                                        ) {
-    var responseText = in_req.responseText;
-    var source = in_req.extra_data;
-    var context = source.context;
-
-    eval('var results = ' + responseText + ';' );
-    source.meetings = Array();
-    if ( results && results.length ) {
-        for ( var i = 0; i < results.length; i++ ) {
-            results[i].source = source;
-            };
-        source.meetings = results;
-        };
-    
-    source.stage = 3;
-    context.tallyDone++;
-    context.incrementTallyMeter();
-};
-
-/****************************************************************************************//**
-*   \brief AJAX callback for The Version                                                 *
-********************************************************************************************/
-BMLTTally.prototype.ajax_callback_version = function (  in_req,        ///< The HTTPRequest object for this call.
-                                                        in_extra_data  ///< Any refCon that was attached.  
-                                                        ) {
-    var responseText = in_req.responseText;
-    var source = in_req.extra_data;
-    eval('var serverInfo = ' + responseText.toString() + ';' );
-   
-    source.serverVersion = serverInfo.version;
-    source.versionInt = serverInfo.versionInt;
-    source.isAdminOn = (serverInfo.semanticAdmin == "1") ? true : false;
-    var context = source.context;
-
-    if ( !source.versionInt ) {
-        var uri = in_req.RawUrl;
-        Simple_AjaxRequest ( uri, context.ajax_callback_version, 'GET', source );
-    } else {
-        if ( source.versionInt >= 2008016 ) {
-            var uri = "index.php?GetCoverage&callURI=" + encodeURIComponent ( source.rootURL );
-            Simple_AjaxRequest ( uri, context.ajax_callback_coverage, 'GET', source );
-        } else {
-            source.stage = 2;
-            context.tallyDone++;
-            context.incrementTallyMeter();
-            var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
-            Simple_AjaxRequest ( uri, context.ajax_callback_meetings, 'GET', source );
-        };
-    };
-};
-
-/****************************************************************************************//**
-*   \brief AJAX callback for The Version                                                 *
-********************************************************************************************/
-BMLTTally.prototype.ajax_callback_coverage = function ( in_req,        ///< The HTTPRequest object for this call.
-                                                        in_extra_data  ///< Any refCon that was attached.  
-                                                        ) {
-    var responseText = in_req.responseText;
-    var source = in_req.extra_data;
-    var context = source.context;
-    eval('var coverageAreaRaw = ' + responseText.toString() + ';' );
-    
-    source.stage = 2;
-    
-    source.coverageArea = new Object();
-
-    source.coverageArea.ne_corner = new google.maps.LatLng ( parseFloat ( coverageAreaRaw[0].nw_corner_latitude ), parseFloat ( coverageAreaRaw[0].se_corner_longitude ) );
-    source.coverageArea.sw_corner = new google.maps.LatLng ( parseFloat ( coverageAreaRaw[0].se_corner_latitude ), parseFloat ( coverageAreaRaw[0].nw_corner_longitude ) );
-
-    context.tallyDone++;
-    context.incrementTallyMeter();
-    var uri = "index.php?GetMeetings&callURI=" + encodeURIComponent ( source.rootURL );
-    Simple_AjaxRequest ( uri, context.ajax_callback_meetings, 'GET', source );
-};
-
-/****************************************************************************************//**
-*   \brief AJAX callback for Service bodies                                                 *
-********************************************************************************************/
-BMLTTally.prototype.ajax_callback_services = function ( in_req,        ///< The HTTPRequest object for this call.
-                                                        in_extra_data  ///< Any refCon that was attached.  
-                                                        ) {
-    var responseText = in_req.responseText;
-    var source = in_req.extra_data;
-    var context = source.context;
-    eval('var serviceBodies = ' + responseText + ';' );
-    var regions = 0;
-    var areas = 0;
-
-    for ( var i = 0; i < serviceBodies.length; i++ ) {
-        var serviceBody = serviceBodies[i];
-    
-        if ( serviceBody.type == 'RS' ) {
-            regions++;
-        } else {
-            areas++;
-        };
-    };
-
-    source.allServiceBodies = serviceBodies;
-    source.numRegions = regions;
-    source.numASCs = areas;
-    source.isSSL = (source.rootURL.substring(0, 5) === 'https') ? 1 : 0;
-    source.stage = 1;
-    context.tallyDone++;
-    context.incrementTallyMeter();
-
-    var uri = "index.php?GetVersion&callURI=" + encodeURIComponent ( source.rootURL );
-    Simple_AjaxRequest ( uri, context.ajax_callback_version, 'GET', source );
-};
-
-/****************************************************************************************//**
 *   \brief Start your engines                                                               *
 ********************************************************************************************/
 BMLTTally.prototype.start_tally = function() {
@@ -477,11 +362,73 @@ BMLTTally.prototype.start_tally = function() {
         var source = this.sourceList[i];
         if ( source.rootURL ) {
             source.stage = 0;
-            var uri = "index.php?callURI=" + encodeURIComponent ( source.rootURL );
             source.context = this;
-            Simple_AjaxRequest ( uri, this.ajax_callback_services, 'GET', source );
-        };
-    };
+            $.getJSON(source.rootURL + 'client_interface/jsonp/?switcher=GetServiceBodies&callback=?', function(data) {
+                var context = source.context;
+                eval('var serviceBodies = ' + data );
+                var regions = 0;
+                var areas = 0;
+
+                for ( var i = 0; i < serviceBodies.length; i++ ) {
+                    var serviceBody = serviceBodies[i];
+
+                    if ( serviceBody.type === 'RS' ) {
+                        regions++;
+                    } else {
+                        areas++;
+                    };
+                };
+
+                source.allServiceBodies = serviceBodies;
+                source.numRegions = regions;
+                source.numASCs = areas;
+                source.isSSL = (source.rootURL.substring(0, 5) === 'https') ? 1 : 0;
+                source.stage = 1;
+                context.tallyDone++;
+                context.incrementTallyMeter();
+
+                $.getJSON(source.rootURL + 'client_interface/jsonp/?switcher=GetServerInfo&callback=?', function(data) {
+                    eval('var serverInfo = ' + data.toString() );
+
+                    source.serverVersion = serverInfo.version;
+                    source.versionInt = serverInfo.versionInt;
+                    source.isAdminOn = serverInfo.semanticAdmin === "1";
+                    var context = source.context;
+
+                    $.getJSON(source.rootURL + 'client_interface/jsonp/?switcher=GetCoverageArea&callback=?', function(data) {
+                        var context = source.context;
+                        eval('var coverageAreaRaw = ' + data );
+
+                        source.stage = 2;
+
+                        source.coverageArea = {};
+
+                        source.coverageArea.ne_corner = new google.maps.LatLng ( parseFloat ( coverageAreaRaw[0].nw_corner_latitude ), parseFloat ( coverageAreaRaw[0].se_corner_longitude ) );
+                        source.coverageArea.sw_corner = new google.maps.LatLng ( parseFloat ( coverageAreaRaw[0].se_corner_latitude ), parseFloat ( coverageAreaRaw[0].nw_corner_longitude ) );
+
+                        context.tallyDone++;
+                        context.incrementTallyMeter();
+                        $.getJSON(source.rootURL + 'client_interface/jsonp/?switcher=GetSearchResults', function (data) {
+                            var context = source.context;
+
+                            eval('var results = ' + data + ';' );
+                            source.meetings = Array();
+                            if ( results && results.length ) {
+                                for ( var i = 0; i < results.length; i++ ) {
+                                    results[i].source = source;
+                                };
+                                source.meetings = results;
+                            };
+
+                            source.stage = 3;
+                            context.tallyDone++;
+                            context.incrementTallyMeter();
+                        });
+                    });
+                });
+            });
+        }
+    }
 };
 
 /********************************************************************************************//**
@@ -883,97 +830,4 @@ BMLTTally.prototype.displayMeetingMarkerInResults = function(   in_mtg_obj_array
         };
         
     return null;
-};
-
-/********************************************************************************************//**
-*                                       AJAX HANDLER                                            *
-************************************************************************************************/
-
-/********************************************************************************************//**
-*   \brief A simple, generic AJAX request function.                                             *
-*                                                                                               *
-*   \returns a new XMLHTTPRequest object.                                                       *
-************************************************************************************************/
-    
-function Simple_AjaxRequest (   url,        ///< The URI to be called
-                                callback,   ///< The success callback
-                                method,     ///< The method ('get' or 'post')
-                                extra_data  ///< If supplied, extra data to be delivered to the callback.
-                                )
-{
-    /****************************************************************************************//**
-    *   \brief Create a generic XMLHTTPObject.                                                  *
-    *                                                                                           *
-    *   This will account for the various flavors imposed by different browsers.                *
-    *                                                                                           *
-    *   \returns a new XMLHTTPRequest object.                                                   *
-    ********************************************************************************************/
-    
-    function createXMLHTTPObject()
-    {
-        var XMLHttpArray = [
-            function() {return new XMLHttpRequest()},
-            function() {return new ActiveXObject("Msxml2.XMLHTTP")},
-            function() {return new ActiveXObject("Msxml2.XMLHTTP")},
-            function() {return new ActiveXObject("Microsoft.XMLHTTP")}
-            ];
-            
-        var xmlhttp = false;
-        
-        for ( var i=0; i < XMLHttpArray.length; i++ )
-            {
-            try
-                {
-                xmlhttp = XMLHttpArray[i]();
-                }
-            catch(e)
-                {
-                continue;
-                };
-            break;
-            };
-        
-        return xmlhttp;
-    };
-    
-    var req = createXMLHTTPObject();
-    req.finalCallback = callback;
-    var sVars = null;
-    method = method.toString().toUpperCase();
-    var drupal_kludge = '';
-    
-    // Split the URL up, if this is a POST.
-    if ( method == "POST" )
-        {
-        var rmatch = /^([^\?]*)\?(.*)$/.exec ( url );
-        url = rmatch[1];
-        sVars = rmatch[2];
-        // This horrible, horrible kludge, is because Drupal insists on having its q parameter in the GET list only.
-        var rmatch_kludge = /(q=admin\/settings\/bmlt)&?(.*)/.exec ( rmatch[2] );
-        if ( rmatch_kludge && rmatch_kludge[1] )
-            {
-            url += '?'+rmatch_kludge[1];
-            sVars = rmatch_kludge[2];
-            };
-        };
-    if ( extra_data )
-        {
-        req.extra_data = extra_data;
-        };
-    req.open ( method, url, true );
-	if ( method == "POST" )
-        {
-        req.setRequestHeader("Method", "POST "+url+" HTTP/1.1");
-        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        };
-    req.onreadystatechange = function ( )
-        {
-        if ( req.readyState != 4 ) return;
-        if( req.status != 200 ) return;
-        callback ( req, req.extra_data );
-        req = null;
-        };
-    req.send ( sVars );
-    
-    return req;
 };
