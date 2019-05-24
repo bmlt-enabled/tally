@@ -1,12 +1,14 @@
 INTRODUCTION
 ============
 This is an extremely simple Web app that aggregates the various known [BMLT Root Servers](https://bmlt.magshare.net/installing-a-new-root-server/), and creates a "live" table that displays some basic statistics about those servers.
-BMLTTally is a utility app that quickly polls a list of Root Servers, and displays their information in the form of a table, and a map. This started life as a "quick n' dirty one-off," so it does not cleave to the standards of the rest of the BMLT project.
 
-[It can be seen in action here.](https://bmlt.magshare.net/bmlt-tally)
+[It can be seen in action here.](https://tally.bmlt.app)
 
 CHANGELIST
 ----------
+***Version 2.0.0* ** *- unreleased*
+- Rewritten to load entirely through javascript, PHP removed.
+
 ***Version 1.2.17* ** *- May 13, 2019*
 
 - Added NA France Root Server.
