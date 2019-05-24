@@ -179,11 +179,10 @@ p#tallyCo
     font-weight: bold;
 }
 
-p#tallyMo
+.tallyMo
 {
-    color: #090;
-    font-weight: bold;
     font-style: italic;
+    font-size: small;
 }
 
 input.showTableButton
@@ -196,6 +195,7 @@ div#tallyMapButton
 {
     font-weight:bold;
     text-align:center;
+    color:#0A61AD;
 }
 
 div#tallyMap

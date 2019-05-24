@@ -15,12 +15,10 @@
 <body>
 <div id="tallyMan">
     <a href="https://bmlt.app"><img class="masthead" src="images/banner.png" /></a>
+    <h3><span id="tallyTotal"></span> total meetings tallied, which is <span id="tallyPctTotal">0</span>% of the <span id="tallyKnownTotal"></span> known meetings in the world.</h3>
     <h4><i>requires root server version 2.10.3 or higher and SSL, contact admin@bmlt.app to get listed.</i></h4>
-    <div id="tallyLegend" style="display: none">
-        <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
-        <p id="tallyMo2">Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/">Semantic Administration being enabled</a>.</p>
-        <p id="tallyMo3">If <strong>BOTH</strong> of these conditions are not met, then you cannot use the admin app.</p>
-        <div id="tallyMapButton"><a href="javascript:tally.displayTallyMap();">Display Coverage Map</a></div>
+    <div id="tallyMapButton">
+        <a href="javascript:tally.displayTallyMap();">Display Coverage Map</a>
     </div>
     <table id="tallyLogTable" cellspacing="0" cellpadding="0" border="0" style="display:none"></table>
     <div id="tally"></div>
@@ -29,9 +27,9 @@
             <thead id="tallyHead">
                 <tr>
                     <th id="tallyName_Header"><a href="#">Server Name</a></th>
-                    <th id="tallySSL_Header"><a href="#">SSL?</a></th>
-                    <th id="tallySemanticAdmin_Header"><a href="#">Admin?</a></th>
-                    <th id="tallyVersion_Header"><a href="#">Version*</a></th>
+                    <th id="tallySSL_Header"><a href="#">SSL*</a></th>
+                    <th id="tallySemanticAdmin_Header"><a href="#">Admin**</a></th>
+                    <th id="tallyVersion_Header"><a href="#">Version</a></th>
                     <th id="tallyRegion_Header"><a href="#">Number of Regions</a></th>
                     <th id="tallyArea_Header"><a href="#">Number of Areas</a></th>
                     <th id="tallyMeeting_Header" class="selected"><a href="#">Number of Meetings</a></th>
@@ -54,7 +52,11 @@
             </tbody>
         </table>
     </script>
-    <div id="tallyVersion"></div>
+    <div id="tallyLegend">
+        <p class="tallyMo">* Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/">Semantic Administration being enabled</a>.</p>
+        <p class="tallyMo">** Indicates server is available to use <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+        <p class="tallyMo">If <strong>BOTH</strong> of these conditions are not met, then you cannot use the admin app.</p>
+    </div>
 </div>
 <div id="tallyMap" style="display: none"></div>
 <script type="text/javascript" src="js/tally.js?v=1"></script>
@@ -62,5 +64,6 @@
     var tally = new Tally(roots);
     var table = new Tablesort(document.getElementById('tallyHo'));
 </script>
+
 </body>
 </html>

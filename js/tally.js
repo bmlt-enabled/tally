@@ -1,6 +1,9 @@
 function Tally(sources) {
     var self = this;
     this.sources = sources;
+    this.meetingsCount = 0;
+    this.knownTotal = 70065;
+    document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
     document.getElementById("tally").innerHTML = template(sources);
     var max = sources.length;
@@ -31,6 +34,11 @@ function Tally(sources) {
 
                     $.getJSON(self.getSourceUrl(qs['id']) + 'client_interface/jsonp/?switcher=GetSearchResults&callback=?', { id: qs['id'] }, function (meetings) {
                         var qs = getUrlVars(this.url);
+                        if (self.getSourceUrl(qs['id']).indexOf("virtual") < 0) {
+                            self.meetingsCount += meetings.length;
+                            document.getElementById("tallyTotal").innerHTML = self.meetingsCount;
+                            document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
+                        }
 
                         document.getElementById("tallyMeetings_Data_" + qs['id']).innerHTML = meetings.length;
                     });
@@ -55,7 +63,7 @@ function getUrlVars(url)
 
 Tally.prototype.getSourceUrl = function(id) {
     return this.sources.getArrayItemByObjectKeyValue('id', id)['rootURL'];
-}
+};
 
 
 Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
