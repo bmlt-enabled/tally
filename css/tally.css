@@ -13,6 +13,11 @@ body
     text-align: center;
 }
 
+th
+{
+    padding: 5px;
+}
+
 img.masthead
 {
     margin-left: auto;

@@ -4,16 +4,18 @@
     <meta charset="utf-8" />
     <title>BMLT Tally</title>
     <link rel="shortcut icon" href="https://bmlt.app/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
-    <link rel="stylesheet" type="text/css" href="tally.css?v=1">
-    <script type="text/javascript" src="roots.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/tally.css?v=1">
+    <script type="text/javascript" src="js/roots.js"></script>
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/handlebars-v4.1.2.js"></script>
+    <script type="text/javascript" src="js/tablesort.min.js"></script>
+    <script type="text/javascript" src="js/sorts/tablesort.number.min.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyB4q4Cwwl7PvTdLSAyVy4oWOLt4l0yEuyM"></script>
-    <script type="text/javascript" src="handlebars-v4.1.2.js"></script>
 </head>
 <body>
 <div id="tallyMan">
     <a href="https://bmlt.app"><img class="masthead" src="images/banner.png" /></a>
-    <h3>requires root server version 2.10.3 or higher and SSL, contact admin@bmlt.app to get added.</h3>
+    <h4><i>requires root server version 2.10.3 or higher and SSL, contact admin@bmlt.app to get listed.</i></h4>
     <div id="tallyLegend" style="display: none">
         <p id="tallyMo">*Bold green version number indicates server is suitable to use the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
         <p id="tallyMo2">Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/">Semantic Administration being enabled</a>.</p>
@@ -26,19 +28,19 @@
         <table id="tallyHo" cellspacing="0" cellpadding="0" border="0">
             <thead id="tallyHead">
                 <tr>
-                    <td id="tallyName_Header" class="tallyName">Server Name</td>
-                    <td id="tallySSL_Header"><a href="javascript:tally.setSort('isSSL','tallySSL_Header');">SSL?</a></td>
-                    <td id="tallySemanticAdmin_Header"><a href="javascript:tally.setSort('isSSL','tallySemanticAdmin_Header');">Admin?</a></td>
-                    <td id="tallyVersion_Header"><a href="javascript:tally.setSort('versionInt','tallyVersion_Header');">Version*</a></td>
-                    <td id="tallyRegion_Header"><a href="javascript:tally.setSort('numRegions','tallyRegion_Header');">Number of Regions</a></td>
-                    <td id="tallyArea_Header"><a href="javascript:tally.setSort('numASCs','tallyArea_Header');">Number of Areas</a></td>
-                    <td id="tallyMeeting_Header" class="selected"><a href="javascript:tally.setSort('meetings.length','tallyMeeting_Header');">Number of Meetings</a></td>
+                    <th id="tallyName_Header"><a href="#">Server Name</a></th>
+                    <th id="tallySSL_Header"><a href="#">SSL?</a></th>
+                    <th id="tallySemanticAdmin_Header"><a href="#">Admin?</a></th>
+                    <th id="tallyVersion_Header"><a href="#">Version*</a></th>
+                    <th id="tallyRegion_Header"><a href="#">Number of Regions</a></th>
+                    <th id="tallyArea_Header"><a href="#">Number of Areas</a></th>
+                    <th id="tallyMeeting_Header" class="selected"><a href="#">Number of Meetings</a></th>
                 </tr>
             </thead>
             <tbody id="tallyBody">
                 {{#each this}}
                     <tr>
-                        <td id="tallyName_Data_{{ this.id }}">
+                        <td id="tallyName_Data_{{ this.id }}" class="tallyName">
                             {{this.name}}
                         </td>
                         <td id="tallySSL_Data_{{ this.id }}"><img src="images/spinner3.gif"></td>
@@ -55,7 +57,10 @@
     <div id="tallyVersion"></div>
 </div>
 <div id="tallyMap" style="display: none"></div>
-<script type="text/javascript" src="tally.js?v=1"></script>
-<script type="text/javascript">var tally = new Tally(roots);</script>
+<script type="text/javascript" src="js/tally.js?v=1"></script>
+<script type="text/javascript">
+    var tally = new Tally(roots);
+    var table = new Tablesort(document.getElementById('tallyHo'));
+</script>
 </body>
 </html>
