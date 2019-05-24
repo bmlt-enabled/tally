@@ -7,32 +7,20 @@ body
     padding: 0;
 }
 
-div#tallyMan
+#tallyMan
 {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     text-align: center;
 }
 
-div#tallyMeter
+img.masthead
 {
-    text-align: left;
-    height: 0.5em;
     margin-left: auto;
     margin-right:auto;
-    width: 25%;
-    border-radius: 0.25em;
-    border:1px solid blue;
-    background-color:#ccf;
+    height:60%;
+    width:60%;
 }
 
-div#tallyMeterFill
-{
-    background-color:blue;
-    width: 0px;
-    height: 100%;
-}
-
-img.masthead,
 table#tallyHo,
 table#tallyLogTable
 {
@@ -43,7 +31,7 @@ table#tallyLogTable
 table#tallyHo a,
 table#tallyHo a:visited
 {
-    color: #36f;
+    color: #0A61AD;
     text-decoration: none;
 }
 
@@ -66,7 +54,7 @@ table#tallyHo thead td
     border: none;
     text-align: center;
     font-weight: bold;
-    border-bottom: 2px solid #009;
+    border-bottom: 2px solid #0A61AD;
 }
 
 table#tallyHo thead td.selected a,
@@ -76,7 +64,7 @@ table#tallyHo thead td.selected a:visited
     display:block;
     width: 100%;
     height: 100%;
-    background-color:blue;
+    background-color:#0A61AD;
     color: white;
 }
 
@@ -91,7 +79,7 @@ table#tallyHo tr.tallyTotal td
     border: none;
     text-align: right;
     font-weight: bold;
-    border-top: 2px solid #009;
+    border-top: 2px solid #0A61AD;
 }
 
 table#tallyHo tbody td

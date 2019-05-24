@@ -4,7 +4,7 @@ function Tally(sources) {
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
     document.getElementById("tally").innerHTML = template(sources);
     var max = sources.length;
-    for (var i = 0; i <= max; i++) {
+    for (var i = 0; i < max; i++) {
         document.getElementById("tallySSL_Data_" + sources[i].id).innerHTML = sources[i].rootURL.substring(0, 5) === 'https' ? "Y" : "N";
         $.getJSON(sources[i].rootURL + 'client_interface/jsonp/?switcher=GetServiceBodies&callback=?', { id: sources[i]['id'] }, function(service_bodies) {
             var qs = getUrlVars(this.url);
@@ -12,11 +12,7 @@ function Tally(sources) {
             var areas = 0;
 
             for ( var i = 0; i < service_bodies.length; i++ ) {
-                if ( service_bodies[i].type === 'RS' ) {
-                    regions++;
-                } else {
-                    areas++;
-                }
+                service_bodies[i].type === 'RS' ? regions++ : areas++;
             }
 
             document.getElementById("tallyRegion_Data_" + qs['id']).innerHTML = regions.toString();
