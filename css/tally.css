@@ -191,15 +191,19 @@ input.showTableButton
     margin-right:auto;
 }
 
-div#tallyMapButton
+.tallyButtons
 {
     font-weight:bold;
     text-align:center;
     color:#0A61AD;
 }
 
-div#tallyMap
-{
+input#tallyMapButton {
+    margin-left: auto;
+    margin-right:auto;
+}
+
+div#tallyMap {
     width: 100%;
     height: 100%;
 }

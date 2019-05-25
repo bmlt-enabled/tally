@@ -1,7 +1,6 @@
-function Tally(sources) {
+function Tally() {
     var self = this;
-    this.sources = sources;
-    this.meetingsCount = 0;
+    this.tomatoUrl = "https://tomato.na-bmlt.org/";
     this.knownTotal = 70065;
     this.mapObject = null;
     this.mapMarkers = [];
@@ -14,44 +13,29 @@ function Tally(sources) {
     this.m_icon_image_multi = new google.maps.MarkerImage ( "images/NAMarkerR.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
     this.m_icon_shadow = new google.maps.MarkerImage( "images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
     this.meetings = [];
+    this.meetingsCount = 0;
 
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
-    document.getElementById("tally").innerHTML = template(sources);
-    var max = sources.length;
-    for (var i = 0; i < max; i++) {
-        document.getElementById("tallySSL_Data_" + sources[i].id).innerHTML = sources[i].rootURL.substring(0, 5) === 'https' ? "Y" : "N";
-        $.getJSON(sources[i].rootURL + 'client_interface/jsonp/?switcher=GetServiceBodies&callback=?', { id: sources[i]['id'] }, function(service_bodies) {
-            var qs = getUrlVars(this.url);
-            var regions = 0;
-            var areas = 0;
+    getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function(roots) {
+        document.getElementById("tally").innerHTML = template(roots);
+        new Tablesort(document.getElementById('tallyHo'));
+        document.getElementById('tallyRootServerDataLoading').style.display = 'none';
+        document.getElementById('tallyButtonLoading').style.display = 'block';
 
-            for ( var i = 0; i < service_bodies.length; i++ ) {
-                service_bodies[i].type === 'RS' ? regions++ : areas++;
-            }
+        for (var r = 0; r < roots.length; r++) {
+            self.meetingsCount += roots[r]['num_meetings'];
+            document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
+            document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
+        }
 
-            document.getElementById("tallyRegion_Data_" + qs['id']).innerHTML = regions.toString();
-            document.getElementById("tallyArea_Data_" + qs['id']).innerHTML = areas.toString();
+        return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time');
+    }).then(function(meetings) {
+        self.meetings = meetings;
 
-            $.getJSON(self.getSourceUrl(qs['id']) + 'client_interface/jsonp/?switcher=GetServerInfo&callback=?', { id: qs['id'] }, function(serverInfo) {
-                var qs = getUrlVars(this.url);
-                document.getElementById("tallyVersion_Data_" + qs['id']).innerHTML = serverInfo[0].version;
-                document.getElementById("tallySemanticAdmin_Data_" + qs['id']).innerHTML = serverInfo[0].semanticAdmin === "1" ? "Y" : "N";
-                $.getJSON(self.getSourceUrl(qs['id']) + 'client_interface/jsonp/?switcher=GetSearchResults&callback=?', { id: qs['id'] }, function (meetings) {
-                    var qs = getUrlVars(this.url);
-
-                    if (self.getSourceUrl(qs['id']).indexOf("virtual") < 0) {
-                        self.meetings = self.meetings.concat(meetings);
-                        document.getElementById("tallyTotal").innerHTML = self.meetings.length.toString();
-                        document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetings.length / self.knownTotal) * 100).toString();
-
-                    }
-
-                    document.getElementById("tallyMeetings_Data_" + qs['id']).innerHTML = meetings.length;
-                });
-            });
-        });
-    }
+        document.getElementById('tallyButtonLoading').style.display = 'none';
+        document.getElementById('tallyMapButton').style.display = 'block';
+    });
 }
 
 Tally.prototype.setUpMapControls = function ( ) {
@@ -374,6 +358,18 @@ Tally.prototype.getSourceUrl = function(id) {
     return this.sources.getArrayItemByObjectKeyValue('id', id)['rootURL'];
 };
 
+Handlebars.registerHelper('tlsEnabled', function(url) {
+    return url.substring(0, 5) === 'https' ? "Y" : "N";
+});
+
+Handlebars.registerHelper('semanticAdminEnabled', function(root) {
+    return JSON.parse(root['server_info'])[0]['semanticAdmin'] === '1' ? 'Y' : 'N'
+});
+
+Handlebars.registerHelper('version', function(root) {
+    return JSON.parse(root['server_info'])[0]['version'];
+});
+
 function getUrlVars(url)
 {
     var vars = {}, hash;
@@ -385,6 +381,27 @@ function getUrlVars(url)
     }
 
     return vars;
+}
+
+function getJSON(url) {
+    return new RSVP.Promise(function(resolve, reject) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.async = true;
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                try {
+                    var data = JSON.parse(xmlhttp.responseText);
+                } catch (err) {
+                    reject(this);
+                }
+
+                resolve(data);
+            }
+        };
+
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    });
 }
 
 Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
