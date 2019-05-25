@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>BMLT Tally</title>
+    <link rel="shortcut icon" href="https://bmlt.app/wp-content/uploads/2014/11/FavIcon.png" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="css/tally.css?v=1">
+    <script type="text/javascript" src="js/virtual-roots.js"></script>
+    <script type="text/javascript" src="js/rsvp.min.js"></script>
+    <script type="text/javascript" src="js/handlebars-v4.1.2.js"></script>
+    <script type="text/javascript" src="js/tablesort.min.js"></script>
+    <script type="text/javascript" src="js/sorts/tablesort.number.min.js"></script>
+    <script type="text/javascript" src="js/sorts/tablesort.dotsep.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyB4q4Cwwl7PvTdLSAyVy4oWOLt4l0yEuyM"></script>
+</head>
+<body>
+<div id="tallyBannerContainer">
+    <img id="tallyBannerImage" src="images/banner.png">
+</div>
+<div id="tallyMan">
+    <h3><span id="tallyTotal"></span> total meetings tallied, which is <span id="tallyPctTotal">0</span>% of the <span id="tallyKnownTotal"></span> known meetings in the world.</h3>
+    <h4><i>Contact admin@bmlt.app to get listed here.</i></h4>
+    <div class="tallyButtons">
+        <div id="tallyButtonLoading"><img src="images/spinner3.gif"> Loading Meeting Details for Map</div>
+        <input id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
+    </div>
+    <div id="tallyLogTable" style="display:none">
+        <div id="tallyRootServerDataLoading"><img src="images/spinner3.gif"> Loading Root Server Data</div>
+    </div>
+    <div id="tally"></div>
+    <script id="tally-table-template" type="text/x-handlebars-template">
+        <table id="tallyHo">
+            <thead id="tallyHead">
+                <tr>
+                    <th id="tallyName_Header"><a href="#">Server Name</a></th>
+                    <th id="tallySSL_Header"><a href="#">SSL*</a></th>
+                    <th id="tallySemanticAdmin_Header"><a href="#">Admin**</a></th>
+                    <th data-sort-method="dotsep" id="tallyVersion_Header"><a href="#">Version</a></th>
+                    <th id="tallyRegion_Header"><a href="#">Number of Regions</a></th>
+                    <th id="tallyArea_Header"><a href="#">Number of Areas</a></th>
+                    <th id="tallyMeeting_Header" class="selected"><a href="#">Number of Meetings</a></th>
+                </tr>
+            </thead>
+            <tbody id="tallyBody">
+                {{#each this}}
+                    <tr>
+                        <td id="tallyName_Data_{{ this.id }}" class="tallyName">{{this.name}}</td>
+                        <td id="tallySSL_Data_{{ this.id }}">{{tlsEnabled this.root_server_url}}</td>
+                        <td id="tallySemanticAdmin_Data_{{ this.id }}">{{semanticAdminEnabled this}}</td>
+                        <td id="tallyVersion_Data_{{ this.id }}">{{version this}}</td>
+                        <td id="tallyRegion_Data_{{ this.id }}">{{this.num_regions}}</td>
+                        <td id="tallyArea_Data_{{ this.id }}">{{this.num_areas}}</td>
+                        <td id="tallyMeetings_Data_{{ this.id }}">{{this.num_meetings}}</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </script>
+    <div id="tallyLegend">
+        <p class="tallyMo">* Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/">Semantic Administration being enabled</a>.</p>
+        <p class="tallyMo">** Indicates server is available to use <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+        <p class="tallyMo">If <strong>BOTH</strong> of these conditions are not met, then you cannot use the admin app.</p>
+    </div>
+</div>
+<div id="tallyMap" style="display: none"></div>
+<script type="text/javascript" src="js/tally.js?v=1"></script>
+<script type="text/javascript">
+    var tally = new Tally();
+</script>
+</body>
+</html>
