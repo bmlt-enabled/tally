@@ -35,6 +35,7 @@
                     <th id="tallyName_Header"><a href="#">Server Name</a></th>
                     <th id="tallySSL_Header"><a href="#">SSL*</a></th>
                     <th id="tallySemanticAdmin_Header"><a href="#">Admin**</a></th>
+                    <th id="tallyGoogleApiKeyPresent_Header"><a href="#">GAPI***</a></th>
                     <th data-sort-method="dotsep" id="tallyVersion_Header"><a href="#">Version</a></th>
                     <th id="tallyRegion_Header"><a href="#">Number of Regions</a></th>
                     <th id="tallyArea_Header"><a href="#">Number of Areas</a></th>
@@ -44,29 +45,31 @@
             <tbody id="tallyBody">
                 {{#each this}}
                     <tr>
-                        <td id="tallyName_Data_{{ this.id }}" class="tallyName">{{this.name}}</td>
+                        <td id="tallyName_Data_{{ this.id }}" class="tallyName"><a href="{{ this.root_server_url }}" target="_blank">{{this.name}}</a></td>
                         <td id="tallySSL_Data_{{ this.id }}">{{tlsEnabled this.root_server_url}}</td>
                         <td id="tallySemanticAdmin_Data_{{ this.id }}">{{semanticAdminEnabled this}}</td>
-                        <td id="tallyVersion_Data_{{ this.id }}">{{version this}}</td>
+                        <td id="tallyGoogleApiKeyPresent_Data_{{ this.id }}">{{googleApiKeyPresent this}}</a></td>
+                        <td id="tallyVersion_Data_{{ this.id }}">{{serverInfo this 'version'}}</td>
                         <td id="tallyRegion_Data_{{ this.id }}">{{this.num_regions}}</td>
                         <td id="tallyArea_Data_{{ this.id }}">{{this.num_areas}}</td>
                         <td id="tallyMeetings_Data_{{ this.id }}">{{this.num_meetings}}</td>
                     </tr>
                 {{/each}}
-                <tfoot>
-                    <tr class="tallyTotal">
-                        <td class="tallyName" colspan="4">TOTAL Servers <span id="serversTotal"></span></td>
-                        <td id="regionsTotal"></td>
-                        <td id="areasTotal"></td>
-                        <td id="meetingsTotal"></td>
-                    </tr>
-                </tfoot>
             </tbody>
+            <tfoot>
+                <tr class="tallyTotal">
+                    <td class="tallyName" colspan="4">TOTAL Servers <span id="serversTotal"></span></td>
+                    <td id="regionsTotal"></td>
+                    <td id="areasTotal"></td>
+                    <td id="meetingsTotal"></td>
+                </tr>
+            </tfoot>
         </table>
     </script>
     <div id="tallyLegend">
-        <p class="tallyMo">* Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/">Semantic Administration being enabled</a>.</p>
-        <p class="tallyMo">** Indicates server is available to use <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446">NA Meeting List Administrator</a> app.</p>
+        <p class="tallyMo">* Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/" target="_blank">Semantic Administration being enabled</a>.</p>
+        <p class="tallyMo">** Indicates server is available to use <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446" target="_blank">NA Meeting List Administrator</a> app.</p>
+        <p class="tallyMo">*** Indicates if the Google API Key was found to be present.  This is necessary for setting coordinates for each meeting entry.  More information is available <a href="https://bmlt.app/google-maps-api-keys-and-geolocation-issues/" target="_blank">here</a>.</p>
         <p class="tallyMo">If <strong>BOTH</strong> of these conditions are not met, then you cannot use the admin app.</p>
     </div>
 </div>
