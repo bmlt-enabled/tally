@@ -370,6 +370,10 @@ Handlebars.registerHelper('semanticAdminEnabled', function(root) {
     return JSON.parse(root['server_info'])[0]['semanticAdmin'] === '1' ? 'Y' : 'N'
 });
 
+Handlebars.registerHelper('googleApiKeyPresent', function(root) {
+    return JSON.parse(root['server_info'])[0]['google_api_key'] != null ? 'Y' : 'N'
+});
+
 Handlebars.registerHelper('serverInfo', function(root, key) {
     return JSON.parse(root['server_info'])[0][key];
 });
