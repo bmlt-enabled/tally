@@ -10,6 +10,7 @@
     <script type="text/javascript" src="js/handlebars-v4.1.2.js"></script>
     <script type="text/javascript" src="js/tablesort.min.js"></script>
     <script type="text/javascript" src="js/sorts/tablesort.number.min.js"></script>
+    <script type="text/javascript" src="js/sorts/tablesort.dotsep.min.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyB4q4Cwwl7PvTdLSAyVy4oWOLt4l0yEuyM"></script>
 </head>
 <body>
@@ -21,9 +22,9 @@
         <div id="tallyButtonLoading"><img src="images/spinner3.gif"> Loading Meeting Details for Map</div>
         <input id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
     </div>
-    <table id="tallyLogTable" style="display:none">
+    <div id="tallyLogTable" style="display:none">
         <div id="tallyRootServerDataLoading"><img src="images/spinner3.gif"> Loading Root Server Data</div>
-    </table>
+    </div>
     <div id="tally"></div>
     <script id="tally-table-template" type="text/x-handlebars-template">
         <table id="tallyHo">
@@ -32,7 +33,7 @@
                     <th id="tallyName_Header"><a href="#">Server Name</a></th>
                     <th id="tallySSL_Header"><a href="#">SSL*</a></th>
                     <th id="tallySemanticAdmin_Header"><a href="#">Admin**</a></th>
-                    <th id="tallyVersion_Header"><a href="#">Version</a></th>
+                    <th data-sort-method="dotsep" id="tallyVersion_Header"><a href="#">Version</a></th>
                     <th id="tallyRegion_Header"><a href="#">Number of Regions</a></th>
                     <th id="tallyArea_Header"><a href="#">Number of Areas</a></th>
                     <th id="tallyMeeting_Header" class="selected"><a href="#">Number of Meetings</a></th>
