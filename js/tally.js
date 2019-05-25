@@ -3,7 +3,8 @@ function Tally() {
     this.tomatoUrl = "https://tomato.na-bmlt.org/";
     this.knownTotal = 70065;
     this.mapObject = null;
-    this.mapLoad = false;
+    // this controls whether or not results will be queried for map pins, useful for debugging non-map display elements
+    this.mapLoad = true;
     this.mapMarkers = [];
     this.calculatedMarkers = [];
     this.whatADrag = false;
