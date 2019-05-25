@@ -85,6 +85,14 @@ table#tallyHo tr.tallyTotal td
     border-top: 2px solid #0A61AD;
 }
 
+table#tallyHo tr:nth-child(odd) {
+    background-color: #BCBEC0;
+}
+
+table#tallyHo tr:nth-child(even) {
+    background-color: #FFFFFF;
+}
+
 table#tallyHo tbody td
 {
     text-align: right;
