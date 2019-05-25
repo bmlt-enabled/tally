@@ -18,15 +18,23 @@ function Tally() {
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
     getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function (roots) {
+        for (v = 0; v < virtual_roots.length; v++) {
+            virtual_roots[v]['virtual'] = true;
+            roots.push(virtual_roots[v]);
+        }
+
         document.getElementById("tally").innerHTML = template(roots);
+        self.getVirtualRootsDetails(roots);
         new Tablesort(document.getElementById('tallyHo'));
         document.getElementById('tallyRootServerDataLoading').style.display = 'none';
         document.getElementById('tallyButtonLoading').style.display = 'block';
 
         for (var r = 0; r < roots.length; r++) {
-            self.meetingsCount += roots[r]['num_meetings'];
-            document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
-            document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
+            if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
+                self.meetingsCount += roots[r]['num_meetings'];
+                document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
+                document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
+            }
         }
 
         var shardSize = 1000;
@@ -52,6 +60,36 @@ function Tally() {
         });
     });
 }
+
+Tally.prototype.getVirtualRootsDetails = function (roots) {
+    for (var r = 0; r < roots.length; r++) {
+        if (roots[r].hasOwnProperty('virtual') != null && roots[r]['virtual']) {
+            getJSONP(roots[r]['root_server_url'] + 'client_interface/jsonp/?switcher=GetServiceBodies', roots[r], function(service_bodies) {
+                /*<PAYLOAD*/
+                var regions = 0;
+                var areas = 0;
+
+                for ( var i = 0; i < service_bodies.length; i++ ) {
+                    service_bodies[i].type === 'RS' ? regions++ : areas++;
+                }
+
+                document.getElementById("tallyRegion_Data_" + payload['id']).innerHTML = regions.toString();
+                document.getElementById("tallyArea_Data_" + payload['id']).innerHTML = areas.toString();
+
+                getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetServerInfo', payload, function(serverInfo) {
+                    /*<PAYLOAD*/
+                    document.getElementById("tallyVersion_Data_" + payload['id']).innerHTML = serverInfo[0].version;
+                    document.getElementById("tallySemanticAdmin_Data_" + payload['id']).innerHTML = serverInfo[0].semanticAdmin === "1" ? "Y" : "N";
+
+                    getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults', payload, function (meetings) {
+                        /*<PAYLOAD*/
+                        document.getElementById("tallyMeetings_Data_" + payload['id']).innerHTML = meetings.length;
+                    });
+                });
+            })
+        }
+    }
+};
 
 Tally.prototype.setUpMapControls = function ( ) {
     if ( this.mapObject ) {
@@ -385,17 +423,16 @@ Handlebars.registerHelper('version', function(root) {
     return JSON.parse(root['server_info'])[0]['version'];
 });
 
-function getUrlVars(url)
-{
-    var vars = {}, hash;
-    var hashes = url.slice(url.indexOf('?') + 1).split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
-        hash = hashes[i].split('=');
-        vars[hash[0]] = hash[1];
-    }
+function getJSONP(url, payload, callback) {
+    var functionName = 'jsonp_' + (new Date).getTime().toString() + '_' + Math.floor(Math.random() * 1000000).toString();
+    var callbackScript = document.createElement('script');
+    callbackScript.setAttribute('type', 'text/javascript');
+    callbackScript.appendChild(document.createTextNode('self.' + functionName + ' = ' + callback.toString().replace('/*<PAYLOAD*/', 'var payload = ' + JSON.stringify(payload))));
+    document.getElementsByTagName('head').item(0).appendChild(callbackScript);
 
-    return vars;
+    var script = document.createElement('script');
+    script.src = url + "&callback=" + functionName;
+    document.getElementsByTagName('head')[0].appendChild(script);
 }
 
 function getJSON(url) {
