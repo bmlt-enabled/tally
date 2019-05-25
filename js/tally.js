@@ -14,6 +14,9 @@ function Tally() {
     this.m_icon_shadow = new google.maps.MarkerImage("images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
     this.meetings = [];
     this.meetingsCount = 0;
+    this.areasCount = 0;
+    this.regionsCount = 0;
+    this.serversCount = 0;
 
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
@@ -28,11 +31,20 @@ function Tally() {
         new Tablesort(document.getElementById('tallyHo'));
         document.getElementById('tallyRootServerDataLoading').style.display = 'none';
         document.getElementById('tallyButtonLoading').style.display = 'block';
-
+		self.serversCount = roots.length;
+		
         for (var r = 0; r < roots.length; r++) {
+        
             if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
                 self.meetingsCount += roots[r]['num_meetings'];
+                self.areasCount += roots[r]['num_areas'];
+                self.regionsCount += roots[r]['num_regions'];
+                
                 document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
+                document.getElementById("meetingsTotal").innerHTML = self.meetingsCount.toString();
+                document.getElementById("areasTotal").innerHTML = self.areasCount.toString();
+                document.getElementById("regionsTotal").innerHTML = self.regionsCount.toString();
+                document.getElementById("serversTotal").innerHTML = self.serversCount.toString();
                 document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
             }
         }
