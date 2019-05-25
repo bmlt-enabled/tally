@@ -24,11 +24,11 @@ img#masthead
     display: block;
 }
 
-table#tallyHo,
-table#tallyLogTable
+table#tallyHo
 {
     margin-left: auto;
     margin-right:auto;
+    border-collapse: collapse;
 }
 
 table#tallyHo a,
@@ -85,11 +85,11 @@ table#tallyHo tr.tallyTotal td
     border-top: 2px solid #0A61AD;
 }
 
-table#tallyHo tr:nth-child(odd) {
-    background-color: #BCBEC0;
+table#tallyHo tr:nth-child(even) {
+    background-color: #DDDDDD;
 }
 
-table#tallyHo tr:nth-child(even) {
+table#tallyHo tr:nth-child(odd) {
     background-color: #FFFFFF;
 }
 
