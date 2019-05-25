@@ -65,7 +65,7 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
     for (var r = 0; r < roots.length; r++) {
         if (roots[r].hasOwnProperty('virtual') != null && roots[r]['virtual']) {
             getJSONP(roots[r]['root_server_url'] + 'client_interface/jsonp/?switcher=GetServiceBodies', roots[r], function(service_bodies) {
-                /*<PAYLOAD*/
+                /*<PAYLOAD>*/
                 var regions = 0;
                 var areas = 0;
 
@@ -77,12 +77,12 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
                 document.getElementById("tallyArea_Data_" + payload['id']).innerHTML = areas.toString();
 
                 getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetServerInfo', payload, function(serverInfo) {
-                    /*<PAYLOAD*/
+                    /*<PAYLOAD>*/
                     document.getElementById("tallyVersion_Data_" + payload['id']).innerHTML = serverInfo[0].version;
                     document.getElementById("tallySemanticAdmin_Data_" + payload['id']).innerHTML = serverInfo[0].semanticAdmin === "1" ? "Y" : "N";
 
                     getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults', payload, function (meetings) {
-                        /*<PAYLOAD*/
+                        /*<PAYLOAD>*/
                         document.getElementById("tallyMeetings_Data_" + payload['id']).innerHTML = meetings.length;
                     });
                 });
@@ -427,7 +427,7 @@ function getJSONP(url, payload, callback) {
     var functionName = 'jsonp_' + (new Date).getTime().toString() + '_' + Math.floor(Math.random() * 1000000).toString();
     var callbackScript = document.createElement('script');
     callbackScript.setAttribute('type', 'text/javascript');
-    callbackScript.appendChild(document.createTextNode('self.' + functionName + ' = ' + callback.toString().replace('/*<PAYLOAD*/', 'var payload = ' + JSON.stringify(payload))));
+    callbackScript.appendChild(document.createTextNode('self.' + functionName + ' = ' + callback.toString().replace('/*<PAYLOAD>*/', 'var payload = ' + JSON.stringify(payload))));
     document.getElementsByTagName('head').item(0).appendChild(callbackScript);
 
     var script = document.createElement('script');
