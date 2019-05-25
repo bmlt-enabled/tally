@@ -3,6 +3,7 @@ function Tally() {
     this.tomatoUrl = "https://tomato.na-bmlt.org/";
     this.knownTotal = 70065;
     this.mapObject = null;
+    this.mapLoad = false;
     this.mapMarkers = [];
     this.calculatedMarkers = [];
     this.whatADrag = false;
@@ -42,20 +43,24 @@ function Tally() {
             pages.push(x);
         }
 
-        var promises = pages.map(function (page) {
-            return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
-        });
+        if (self.mapLoad) {
+            var promises = pages.map(function (page) {
+                return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
+            });
 
-        RSVP.all(promises).then(function (meetings) {
-            for (m = 0; m < meetings.length; m++) {
-                if (meetings[m].length > 0) {
-                    self.meetings = self.meetings.concat(meetings[m]);
+            RSVP.all(promises).then(function (meetings) {
+                for (m = 0; m < meetings.length; m++) {
+                    if (meetings[m].length > 0) {
+                        self.meetings = self.meetings.concat(meetings[m]);
+                    }
                 }
-            }
 
+                document.getElementById('tallyButtonLoading').style.display = 'none';
+                document.getElementById('tallyMapButton').style.display = 'block';
+            });
+        } else {
             document.getElementById('tallyButtonLoading').style.display = 'none';
-            document.getElementById('tallyMapButton').style.display = 'block';
-        });
+        }
     });
 }
 
