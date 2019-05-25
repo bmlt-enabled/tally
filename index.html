@@ -47,21 +47,21 @@
                         <td id="tallyName_Data_{{ this.id }}" class="tallyName"><a href="{{ this.root_server_url }}" target="_blank">{{this.name}}</a></td>
                         <td id="tallySSL_Data_{{ this.id }}">{{tlsEnabled this.root_server_url}}</td>
                         <td id="tallySemanticAdmin_Data_{{ this.id }}">{{semanticAdminEnabled this}}</td>
-                        <td id="tallyVersion_Data_{{ this.id }}">{{version this}}</td>
+                        <td id="tallyVersion_Data_{{ this.id }}">{{serverInfo this 'version'}}</td>
                         <td id="tallyRegion_Data_{{ this.id }}">{{this.num_regions}}</td>
                         <td id="tallyArea_Data_{{ this.id }}">{{this.num_areas}}</td>
                         <td id="tallyMeetings_Data_{{ this.id }}">{{this.num_meetings}}</td>
                     </tr>
                 {{/each}}
-                <tfoot>
-                    <tr class="tallyTotal">
-                        <td class="tallyName" colspan="4">TOTAL Servers <span id="serversTotal"></span></td>
-                        <td id="regionsTotal"></td>
-                        <td id="areasTotal"></td>
-                        <td id="meetingsTotal"></td>
-                    </tr>
-                </tfoot>
             </tbody>
+            <tfoot>
+                <tr class="tallyTotal">
+                    <td class="tallyName" colspan="4">TOTAL Servers <span id="serversTotal"></span></td>
+                    <td id="regionsTotal"></td>
+                    <td id="areasTotal"></td>
+                    <td id="meetingsTotal"></td>
+                </tr>
+            </tfoot>
         </table>
     </script>
     <div id="tallyLegend">
