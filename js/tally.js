@@ -7,8 +7,6 @@ function Tally() {
     this.calculatedMarkers = [];
     this.whatADrag = false;
     this.inDraw = false;
-    this.markersDisplayedCheckbox = null;
-    this.regionalAffiliationCheckbox = null;
     this.m_icon_image_single = new google.maps.MarkerImage("images/NAMarkerB.png", new google.maps.Size(22, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
     this.m_icon_image_multi = new google.maps.MarkerImage("images/NAMarkerR.png", new google.maps.Size(22, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
     this.m_icon_shadow = new google.maps.MarkerImage("images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
@@ -45,7 +43,7 @@ function Tally() {
         }
 
         var promises = pages.map(function (page) {
-            return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
+            return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
         });
 
         RSVP.all(promises).then(function (meetings) {
@@ -81,7 +79,7 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
                     document.getElementById("tallyVersion_Data_" + payload['id']).innerHTML = serverInfo[0].version;
                     document.getElementById("tallySemanticAdmin_Data_" + payload['id']).innerHTML = serverInfo[0].semanticAdmin === "1" ? "Y" : "N";
 
-                    getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults', payload, function (meetings) {
+                    getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults&data_field_key=id_bigint', payload, function (meetings) {
                         /*<PAYLOAD>*/
                         document.getElementById("tallyMeetings_Data_" + payload['id']).innerHTML = meetings.length;
                     });
@@ -93,14 +91,9 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
 
 Tally.prototype.setUpMapControls = function ( ) {
     if ( this.mapObject ) {
-        this.markersDisplayedCheckbox = this.createCheckboxItem ( "Show Meeting Markers", "marker_checkbox", "marker_checkbox", true, this.selectOrDeselectDisplayMarkersCallback );
-        this.regionalAffiliationCheckbox = this.createCheckboxItem ( "Show Regional Affiliation", "regional_checkbox", "regional_checkbox", false, this.selectOrDeselectDisplayMarkersCallback );
-
         var centerControlDiv = document.createElement ( 'div' );
         centerControlDiv.id = "centerControlDiv";
         centerControlDiv.className = "centerControlDiv";
-        centerControlDiv.appendChild ( this.markersDisplayedCheckbox );
-        centerControlDiv.appendChild ( this.regionalAffiliationCheckbox );
 
         var toggleButton = document.createElement ( 'input' );
         toggleButton.type = 'button';
@@ -113,60 +106,9 @@ Tally.prototype.setUpMapControls = function ( ) {
     }
 };
 
-Tally.prototype.selectOrDeselectDisplayMarkersCallback = function ( checkboxElement ) {
-    if ( checkboxElement.checked ) {
-        if ( checkboxElement === checkboxElement.context.markersDisplayedCheckbox.checkbox ) {
-            checkboxElement.context.regionalAffiliationCheckbox.checkbox.checked = false;
-        } else {
-            if ( checkboxElement === checkboxElement.context.regionalAffiliationCheckbox.checkbox ) {
-                checkboxElement.context.markersDisplayedCheckbox.checkbox.checked = false;
-            } else {
-                checkboxElement.context.regionalAffiliationCheckbox.checkbox.checked = false;
-            }
-        }
-    }
-
-    checkboxElement.context.redrawResultMapMarkers();
-};
-
 Tally.prototype.showTable = function() {
     document.getElementById ( "tallyMap" ).style.display = 'none';
     document.getElementById ( "tallyMan" ).style.display = 'block';
-};
-
-Tally.prototype.createCheckboxItem = function ( in_label_text, in_class, in_id, in_selected, inCallback ) {
-    var containerElement = document.createElement ( 'div' );
-    if ( containerElement ) {
-        var checkboxElement = document.createElement ( 'input' );
-        if ( checkboxElement ) {
-            checkboxElement.type = 'checkbox';
-            checkboxElement.baseClassName = in_class + '_checkbox';
-            checkboxElement.className = checkboxElement.baseClassName + '_checkbox' + (in_selected ? '_selected' : '' );
-            checkboxElement.id = in_id + '_checkbox';
-            checkboxElement.checked = in_selected;
-            checkboxElement.context = this;
-            containerElement.checkbox = checkboxElement;
-            var handler = function ( checkboxElement ) {
-                checkboxElement.className = checkboxElement.baseClassName + '_checkbox' + (in_selected ? '_selected' : '' );
-                inCallback(checkboxElement);
-            };
-
-            checkboxElement.addEventListener ( 'click', function () { handler(this); } );
-
-            containerElement.appendChild ( checkboxElement );
-
-            var labelElement = document.createElement ( 'label' );
-            if ( labelElement ) {
-                labelElement.htmlFor = checkboxElement.id;
-                labelElement.innerHTML = in_label_text;
-                containerElement.appendChild ( labelElement );
-
-                return containerElement;
-            }
-        }
-    }
-
-    return null;
 };
 
 Tally.prototype.displayTallyMap = function() {
@@ -333,8 +275,9 @@ Tally.prototype.displayMeetingMarkerInResults = function(in_mtg_obj_array) {
             var displayed_image = (in_mtg_obj_array.length === 1) ? this.m_icon_image_single : this.m_icon_image_multi;
 
             var marker_html = '';
+            var zoom_marker_detail_level = 3;
 
-            if ( this.mapObject.getZoom() > 8 ) {
+            if ( this.mapObject.getZoom() > zoom_marker_detail_level ) {
                 marker_html = '<div><dl>';
             }
 
@@ -344,7 +287,7 @@ Tally.prototype.displayMeetingMarkerInResults = function(in_mtg_obj_array) {
                     'map':		    this.mapObject,
                     'shadow':		this.m_icon_shadow,
                     'icon':			displayed_image,
-                    'clickable':    this.mapObject.getZoom() > 8
+                    'clickable':    this.mapObject.getZoom() > zoom_marker_detail_level
                 } );
 
             var id = this.m_uid;
@@ -376,18 +319,13 @@ Tally.prototype.displayMeetingMarkerInResults = function(in_mtg_obj_array) {
                     minute = (minute > 9) ? minute.toString() : ('0' + minute.toString());
                     marker_html += ' ' + hour + ':' + minute + ' ' + pm;
                     marker_html += '</em></dd>';
-                    var source = in_mtg_obj_array[c].source;
-                    if ( source ) {
-                        var url = source.semanticURL;
+                    //if ( !url ) {
+                    var url = in_mtg_obj_array[c]['root_server_uri'] + 'semantic';
+                    //};
 
-                        if ( !url ) {
-                            url = source.rootURL + 'semantic';
-                        };
-
-                        marker_html += '<dd><em><a href="' + url + '">';
-                        marker_html += source.name;
-                        marker_html += '</a></em></dd>';
-                    }
+                    marker_html += '<dd><em><a href="' + url + '">';
+                    marker_html += url;
+                    marker_html += '</a></em></dd>';
                 }
 
                 new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
@@ -404,11 +342,6 @@ Tally.prototype.displayMeetingMarkerInResults = function(in_mtg_obj_array) {
     }
 
     return null;
-};
-
-
-Tally.prototype.getSourceUrl = function(id) {
-    return this.sources.getArrayItemByObjectKeyValue('id', id)['rootURL'];
 };
 
 Handlebars.registerHelper('tlsEnabled', function(url) {

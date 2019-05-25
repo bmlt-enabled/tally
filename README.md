@@ -2,12 +2,17 @@ INTRODUCTION
 ============
 This is an extremely simple Web app that aggregates the various known [BMLT Root Servers](https://bmlt.magshare.net/installing-a-new-root-server/), and creates a "live" table that displays some basic statistics about those servers.
 
+The tally queries Tomato for it's results.  Virtual servers are not catalogued in Tomato so they are pulled from [here](js/virtual-roots.js).
+
 [It can be seen in action here.](https://tally.bmlt.app)
 
 CHANGELIST
 ----------
-***Version 2.0.0* ** *- unreleased*
+***Version 2.0.0* ** *- May 25, 2019*
 - Rewritten to load entirely through javascript, PHP removed.
+- Rewritten to load from Tomato, rootServerList.json was moved to that repository.
+- Virtual roots are stored in a separate file now and stored in the Tomato rootserver rest format.
+- Removed coverage display on map which was used for Sandwich which is now retired.
 
 ***Version 1.2.17* ** *- May 13, 2019*
 
