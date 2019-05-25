@@ -29,6 +29,7 @@ table#tallyHo
     margin-left: auto;
     margin-right:auto;
     border-collapse: collapse;
+    border-bottom: 2px solid #0A61AD;
 }
 
 table#tallyHo a,
@@ -43,6 +44,10 @@ table#tallyHo a:active
 {
     color: #f63;
     text-decoration: underline;
+}
+
+table#tallyHo th {
+    border-bottom: 2px solid #0A61AD;
 }
 
 table#tallyHo td
