@@ -44,7 +44,7 @@
             <tbody id="tallyBody">
                 {{#each this}}
                     <tr>
-                        <td id="tallyName_Data_{{ this.id }}" class="tallyName">{{this.name}}</td>
+                        <td id="tallyName_Data_{{ this.id }}" class="tallyName"><a href="{{ this.root_server_url }}" target="_blank">{{this.name}}</a></td>
                         <td id="tallySSL_Data_{{ this.id }}">{{tlsEnabled this.root_server_url}}</td>
                         <td id="tallySemanticAdmin_Data_{{ this.id }}">{{semanticAdminEnabled this}}</td>
                         <td id="tallyVersion_Data_{{ this.id }}">{{version this}}</td>
