@@ -9,15 +9,15 @@ function Tally() {
     this.inDraw = false;
     this.markersDisplayedCheckbox = null;
     this.regionalAffiliationCheckbox = null;
-    this.m_icon_image_single = new google.maps.MarkerImage ( "images/NAMarkerB.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-    this.m_icon_image_multi = new google.maps.MarkerImage ( "images/NAMarkerR.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-    this.m_icon_shadow = new google.maps.MarkerImage( "images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+    this.m_icon_image_single = new google.maps.MarkerImage("images/NAMarkerB.png", new google.maps.Size(22, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
+    this.m_icon_image_multi = new google.maps.MarkerImage("images/NAMarkerR.png", new google.maps.Size(22, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
+    this.m_icon_shadow = new google.maps.MarkerImage("images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
     this.meetings = [];
     this.meetingsCount = 0;
 
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
-    getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function(roots) {
+    getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function (roots) {
         document.getElementById("tally").innerHTML = template(roots);
         new Tablesort(document.getElementById('tallyHo'));
         document.getElementById('tallyRootServerDataLoading').style.display = 'none';
@@ -29,12 +29,27 @@ function Tally() {
             document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
         }
 
-        return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time');
-    }).then(function(meetings) {
-        self.meetings = meetings;
+        var shardSize = 1000;
+        var shards = Math.ceil(self.meetingsCount / shardSize);
+        var pages = [];
+        for (var x = 1; x <= shards; x++) {
+            pages.push(x);
+        }
 
-        document.getElementById('tallyButtonLoading').style.display = 'none';
-        document.getElementById('tallyMapButton').style.display = 'block';
+        var promises = pages.map(function (page) {
+            return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
+        });
+
+        RSVP.all(promises).then(function (meetings) {
+            for (m = 0; m < meetings.length; m++) {
+                if (meetings[m].length > 0) {
+                    self.meetings = self.meetings.concat(meetings[m]);
+                }
+            }
+
+            document.getElementById('tallyButtonLoading').style.display = 'none';
+            document.getElementById('tallyMapButton').style.display = 'block';
+        });
     });
 }
 
