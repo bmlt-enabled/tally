@@ -53,6 +53,14 @@
                         <td id="tallyMeetings_Data_{{ this.id }}">{{this.num_meetings}}</td>
                     </tr>
                 {{/each}}
+                <tfoot>
+        			<tr class="tallyTotal">
+            			<td class="tallyName" colspan="4">TOTAL Servers <span id="serversTotal"></span></td>
+            			<td id="regionsTotal"></td>
+            			<td id="areasTotal"></td>
+           				<td id="meetingsTotal"></td>
+       				 </tr>
+        		</tfoot>
             </tbody>
         </table>
     </script>

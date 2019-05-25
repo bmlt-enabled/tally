@@ -266,3 +266,8 @@ div#tallyVersion
     font-style: italic;
     font-size: small;
 }
+
+#tallyHo tfoot tr.tallyTotal td.tallyName
+{
+    text-align:left;
+}
