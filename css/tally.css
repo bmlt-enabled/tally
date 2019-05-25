@@ -18,12 +18,10 @@ th
     padding: 5px;
 }
 
-img.masthead
+img#masthead
 {
-    margin-left: auto;
-    margin-right:auto;
-    height:60%;
-    width:60%;
+    width:100%;
+    display: block;
 }
 
 table#tallyHo,
