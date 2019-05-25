@@ -1,10 +1,29 @@
 html,
 body
 {
-    width: 100%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
     height: 100%;
-    margin: 0;
-    padding: 0;
+    width: 100%;
+}
+
+#tallyBannerContainer
+{
+    background-image: url('/images/banner_rails.png');
+    background-repeat: repeat-x;
+    background-size: 15% 100%;
+    display: block;
+    height: 15%;
+    width: auto;
+}
+
+img#tallyBannerImage
+{
+    display: block;
+    margin: auto;
+    height: 100%;
+    width: auto;
 }
 
 #tallyMan
@@ -13,23 +32,17 @@ body
     text-align: center;
 }
 
-th
-{
-    padding: 5px;
-}
-
-img#masthead
-{
-    width:100%;
-    display: block;
-}
-
 table#tallyHo
 {
     margin-left: auto;
     margin-right:auto;
     border-collapse: collapse;
     border-bottom: 2px solid #0A61AD;
+}
+
+th
+{
+    padding: 5px;
 }
 
 table#tallyHo a,

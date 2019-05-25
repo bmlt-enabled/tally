@@ -14,10 +14,12 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyB4q4Cwwl7PvTdLSAyVy4oWOLt4l0yEuyM"></script>
 </head>
 <body>
+<div id="tallyBannerContainer">
+    <img id="tallyBannerImage" src="images/banner.png">
+</div>
 <div id="tallyMan">
-    <a href="https://bmlt.app"><img id="masthead" src="images/banner.png"></a>
     <h3><span id="tallyTotal"></span> total meetings tallied, which is <span id="tallyPctTotal">0</span>% of the <span id="tallyKnownTotal"></span> known meetings in the world.</h3>
-    <h4><i>requires root server version 2.10.3 or higher and SSL, contact admin@bmlt.app to get listed.</i></h4>
+    <h4><i>Contact admin@bmlt.app to get listed here.</i></h4>
     <div class="tallyButtons">
         <div id="tallyButtonLoading"><img src="images/spinner3.gif"> Loading Meeting Details for Map</div>
         <input id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
