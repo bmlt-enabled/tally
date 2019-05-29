@@ -28,7 +28,7 @@ function Tally() {
 
         document.getElementById("tally").innerHTML = template(roots);
         self.getVirtualRootsDetails(roots);
-        new Tablesort(document.getElementById('tallyHo'));
+        new Tablesort(document.getElementById('tallyHo'), { descending: true });
         document.getElementById('tallyRootServerDataLoading').style.display = 'none';
         document.getElementById('tallyButtonLoading').style.display = 'block';
 		self.serversCount = roots.length;
