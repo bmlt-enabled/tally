@@ -76,7 +76,11 @@ function Tally() {
     });
 }
 
-Tally.prototype.getVirtualRootsDetailsCallback = function () {
+Tally.prototype.dataCompletedLoading = function () {
+    this.tableRender();
+};
+
+Tally.prototype.tableRender = function () {
     new Tablesort(document.getElementById('tallyHo'), { descending: true });
 };
 
@@ -103,7 +107,7 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
                     getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults&data_field_key=id_bigint', payload, function (meetings) {
                         /*<PAYLOAD>*/
                         document.getElementById("tallyMeetings_Data_" + payload['id']).innerHTML = meetings.length;
-                        tally.getVirtualRootsDetailsCallback();
+                        tally.dataCompletedLoading();
                     });
                 });
             })
