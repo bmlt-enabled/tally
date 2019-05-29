@@ -28,7 +28,6 @@ function Tally() {
 
         document.getElementById("tally").innerHTML = template(roots);
         self.getVirtualRootsDetails(roots);
-        new Tablesort(document.getElementById('tallyHo'));
         document.getElementById('tallyRootServerDataLoading').style.display = 'none';
         document.getElementById('tallyButtonLoading').style.display = 'block';
 		self.serversCount = roots.length;
@@ -77,6 +76,14 @@ function Tally() {
     });
 }
 
+Tally.prototype.dataLoadingComplete = function () {
+    this.tableRender();
+};
+
+Tally.prototype.tableRender = function () {
+    new Tablesort(document.getElementById('tallyHo'), { descending: true });
+};
+
 Tally.prototype.getVirtualRootsDetails = function (roots) {
     for (var r = 0; r < roots.length; r++) {
         if (roots[r].hasOwnProperty('virtual') != null && roots[r]['virtual']) {
@@ -100,6 +107,7 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
                     getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults&data_field_key=id_bigint', payload, function (meetings) {
                         /*<PAYLOAD>*/
                         document.getElementById("tallyMeetings_Data_" + payload['id']).innerHTML = meetings.length;
+                        tally.dataLoadingComplete();
                     });
                 });
             })
