@@ -38,8 +38,6 @@ and (orientation: portrait) {
     }
 }
 
-
-
 #tallyMan
 {
     font-family: Helvetica, Arial, sans-serif;
@@ -254,7 +252,7 @@ div#tallyButtonLoading {
 
 div#tallyMap {
     width: 100%;
-    height: 100%;
+    height: 85%;
 }
 
 div.centerControlDiv
