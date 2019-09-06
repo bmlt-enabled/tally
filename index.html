@@ -76,7 +76,9 @@
 <div id="tallyMap" style="display: none"></div>
 <script type="text/javascript" src="js/tally.js?v=1"></script>
 <script type="text/javascript">
-    var tally = new Tally();
+    var tally = new Tally({
+        nawsDataMap: getUrlParameter("naws") === "1"
+    });
 </script>
 </body>
 </html>

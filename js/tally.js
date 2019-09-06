@@ -1,9 +1,11 @@
-function Tally() {
+function Tally(config) {
     var self = this;
+
     this.tomatoUrl = "https://tomato.na-bmlt.org/";
     this.knownTotal = 70065;
     this.mapObject = null;
     // this controls whether or not results will be queried for map pins, useful for debugging non-map display elements
+    this.nawsDataMap = config.nawsDataMap;
     this.mapLoad = true;
     this.mapMarkers = [];
     this.calculatedMarkers = [];
@@ -20,60 +22,68 @@ function Tally() {
 
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
-    getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function (roots) {
-        for (v = 0; v < virtual_roots.length; v++) {
-            virtual_roots[v]['virtual'] = true;
-            roots.push(virtual_roots[v]);
-        }
-
-        document.getElementById("tally").innerHTML = template(roots);
-        self.getVirtualRootsDetails(roots);
-        document.getElementById('tallyRootServerDataLoading').style.display = 'none';
-        document.getElementById('tallyButtonLoading').style.display = 'block';
-		self.serversCount = roots.length;
-		
-        for (var r = 0; r < roots.length; r++) {
-        
-            if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
-                self.meetingsCount += roots[r]['num_meetings'];
-                self.areasCount += roots[r]['num_areas'];
-                self.regionsCount += roots[r]['num_regions'];
-                
-                document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
-                document.getElementById("meetingsTotal").innerHTML = self.meetingsCount.toString();
-                document.getElementById("areasTotal").innerHTML = self.areasCount.toString();
-                document.getElementById("regionsTotal").innerHTML = self.regionsCount.toString();
-                document.getElementById("serversTotal").innerHTML = self.serversCount.toString();
-                document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
+    if (!self.nawsDataMap) {
+        getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function (roots) {
+            for (v = 0; v < virtual_roots.length; v++) {
+                virtual_roots[v]['virtual'] = true;
+                roots.push(virtual_roots[v]);
             }
-        }
 
-        var shardSize = 1000;
-        var shards = Math.ceil(self.meetingsCount / shardSize);
-        var pages = [];
-        for (var x = 1; x <= shards; x++) {
-            pages.push(x);
-        }
+            document.getElementById("tally").innerHTML = template(roots);
+            self.getVirtualRootsDetails(roots);
+            document.getElementById('tallyRootServerDataLoading').style.display = 'none';
+            document.getElementById('tallyButtonLoading').style.display = 'block';
+            self.serversCount = roots.length;
 
-        if (self.mapLoad) {
-            var promises = pages.map(function (page) {
-                return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
-            });
+            for (var r = 0; r < roots.length; r++) {
 
-            RSVP.all(promises).then(function (meetings) {
-                for (m = 0; m < meetings.length; m++) {
-                    if (meetings[m].length > 0) {
-                        self.meetings = self.meetings.concat(meetings[m]);
-                    }
+                if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
+                    self.meetingsCount += roots[r]['num_meetings'];
+                    self.areasCount += roots[r]['num_areas'];
+                    self.regionsCount += roots[r]['num_regions'];
+
+                    document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
+                    document.getElementById("meetingsTotal").innerHTML = self.meetingsCount.toString();
+                    document.getElementById("areasTotal").innerHTML = self.areasCount.toString();
+                    document.getElementById("regionsTotal").innerHTML = self.regionsCount.toString();
+                    document.getElementById("serversTotal").innerHTML = self.serversCount.toString();
+                    document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
                 }
+            }
 
+            var shardSize = 1000;
+            var shards = Math.ceil(self.meetingsCount / shardSize);
+            var pages = [];
+            for (var x = 1; x <= shards; x++) {
+                pages.push(x);
+            }
+
+            if (self.mapLoad) {
+                var promises = pages.map(function (page) {
+                    return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
+                });
+
+                RSVP.all(promises).then(function (meetings) {
+                    for (m = 0; m < meetings.length; m++) {
+                        if (meetings[m].length > 0) {
+                            self.meetings = self.meetings.concat(meetings[m]);
+                        }
+                    }
+
+                    document.getElementById('tallyButtonLoading').style.display = 'none';
+                    document.getElementById('tallyMapButton').style.display = 'block';
+                });
+            } else {
                 document.getElementById('tallyButtonLoading').style.display = 'none';
-                document.getElementById('tallyMapButton').style.display = 'block';
-            });
-        } else {
+            }
+        });
+    } else {
+        getJSON("js/naws_meetings.json").then(function(meetings) {
+            self.meetings = meetings;
             document.getElementById('tallyButtonLoading').style.display = 'none';
-        }
-    });
+            document.getElementById('tallyMapButton').style.display = 'block';
+        });
+    }
 }
 
 Tally.prototype.dataLoadingComplete = function () {
@@ -161,7 +171,7 @@ Tally.prototype.displayMeetingMarkers = function( meetings ) {
             }
         }
     }
-}
+};
 
 Tally.prototype.loadMap = function() {
     if ( !this.mapObject ) {
@@ -417,6 +427,13 @@ function getJSON(url) {
         xmlhttp.open("GET", url, true);
         xmlhttp.send();
     });
+}
+
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
 Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {

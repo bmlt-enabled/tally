@@ -1,2 +1,4 @@
 .idea
 admins.txt
+*.sql
+*.json
