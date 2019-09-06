@@ -78,7 +78,7 @@ function Tally(config) {
             }
         });
     } else {
-        getJSON("js/naws_meetings.json").then(function(meetings) {
+        getJSON("js/naws_meetings.json?v=" + (new Date().valueOf())).then(function(meetings) {
             self.meetings = meetings;
             document.getElementById('tallyButtonLoading').style.display = 'none';
             document.getElementById('tallyMapButton').style.display = 'block';
