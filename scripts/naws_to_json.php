@@ -6,7 +6,7 @@ $results = [];
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     array_push($results, [
-        'meeting_name' => sprintf("%s - %s, %s (%s)", $row['com_name'], $row['city'], $row['country'], $row['groupid']),
+        'meeting_name' => sprintf("%s (%s, %s)", $row['place'], $row['city'], $row['country']),
         'latitude' => $row['latitude'],
         'longitude' => $row['longitude'],
         'weekday_tinyint' => $row['mtg_day'],
