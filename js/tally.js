@@ -1,7 +1,7 @@
 function Tally(config) {
     var self = this;
 
-    this.tomatoUrl = "https://tomato.na-bmlt.org/";
+    this.tomatoUrl = "https://tomato.bmltenabled.org/";
     this.knownTotal = 70065;
     this.mapObject = null;
     // this controls whether or not results will be queried for map pins, useful for debugging non-map display elements
@@ -18,6 +18,7 @@ function Tally(config) {
     this.meetingsCount = 0;
     this.areasCount = 0;
     this.regionsCount = 0;
+    this.zonesCount = 0;
     this.serversCount = 0;
 
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
@@ -41,12 +42,15 @@ function Tally(config) {
                     self.meetingsCount += roots[r]['num_meetings'];
                     self.areasCount += roots[r]['num_areas'];
                     self.regionsCount += roots[r]['num_regions'];
+                    self.zonesCount += roots[r]['num_zones'];
 
                     document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
                     document.getElementById("meetingsTotal").innerHTML = self.meetingsCount.toString();
                     document.getElementById("areasTotal").innerHTML = self.areasCount.toString();
                     document.getElementById("regionsTotal").innerHTML = self.regionsCount.toString();
+                    document.getElementById("zonesTotal").innerHTML = self.zonesCount.toString();
                     document.getElementById("serversTotal").innerHTML = self.serversCount.toString();
+                    document.getElementById('tallyServiceBodies').innerHTML = (self.areasCount + self.regionsCount + self.zonesCount).toString();
                     document.getElementById('tallyPctTotal').innerHTML = Math.floor((self.meetingsCount / self.knownTotal) * 100).toString();
                 }
             }
@@ -101,11 +105,19 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
                 /*<PAYLOAD>*/
                 var regions = 0;
                 var areas = 0;
+                var zones = 0;
 
                 for ( var i = 0; i < service_bodies.length; i++ ) {
-                    service_bodies[i].type === 'RS' ? regions++ : areas++;
+                    if (service_bodies[i].type === 'ZF') {
+                        zones++;
+                    } if (service_bodies[i].type === 'RS') {
+                        regions++;
+                    } else {
+                        areas++;
+                    }
                 }
 
+                document.getElementById("tallyZones_Data_" + payload['id']).innerHTML = zones.toString();
                 document.getElementById("tallyRegion_Data_" + payload['id']).innerHTML = regions.toString();
                 document.getElementById("tallyArea_Data_" + payload['id']).innerHTML = areas.toString();
 
