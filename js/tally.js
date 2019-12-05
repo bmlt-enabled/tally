@@ -16,6 +16,7 @@ function Tally(config) {
     this.m_icon_shadow = new google.maps.MarkerImage("images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0, 0), new google.maps.Point(12, 32));
     this.meetings = [];
     this.meetingsCount = 0;
+    this.groupsCount = 0;
     this.areasCount = 0;
     this.regionsCount = 0;
     this.zonesCount = 0;
@@ -40,12 +41,14 @@ function Tally(config) {
 
                 if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
                     self.meetingsCount += roots[r]['num_meetings'];
+                    self.groupsCount += roots[r]['num_groups'];
                     self.areasCount += roots[r]['num_areas'];
                     self.regionsCount += roots[r]['num_regions'];
                     self.zonesCount += roots[r]['num_zones'];
 
                     document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
                     document.getElementById("meetingsTotal").innerHTML = self.meetingsCount.toString();
+                    document.getElementById("groupsTotal").innerHTML = self.groupsCount.toString();
                     document.getElementById("areasTotal").innerHTML = self.areasCount.toString();
                     document.getElementById("regionsTotal").innerHTML = self.regionsCount.toString();
                     document.getElementById("zonesTotal").innerHTML = self.zonesCount.toString();
@@ -126,9 +129,21 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
                     document.getElementById("tallyVersion_Data_" + payload['id']).innerHTML = serverInfo[0].version;
                     document.getElementById("tallySemanticAdmin_Data_" + payload['id']).innerHTML = serverInfo[0].semanticAdmin === "1" ? "Y" : "N";
 
-                    getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults&data_field_key=id_bigint', payload, function (meetings) {
+                    getJSONP(payload['root_server_url'] + 'client_interface/jsonp/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name', payload, function (meetings) {
                         /*<PAYLOAD>*/
                         document.getElementById("tallyMeetings_Data_" + payload['id']).innerHTML = meetings.length;
+
+                        var virtualGroupDistinction = [];
+
+                        for (var i = 0; i < meetings.length; i++) {
+                            var meetingName = meetings[i]['meeting_name'];
+                            console.log(meetingName);
+                            if (!virtualGroupDistinction.has(meetingName)) {
+                                virtualGroupDistinction.push(meetingName);
+                            }
+                        }
+
+                        document.getElementById("tallyGroups_Data_" + payload['id']).innerHTML = virtualGroupDistinction.length.toString();
                         tally.dataLoadingComplete();
                     });
                 });
@@ -454,4 +469,14 @@ Array.prototype.getArrayItemByObjectKeyValue = function(key, value) {
             return this[i];
         }
     }
+};
+
+Array.prototype.has = function(value) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] === value) {
+            return true;
+        }
+    }
+
+    return false;
 };
