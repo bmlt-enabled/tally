@@ -36,11 +36,12 @@
                     <th id="tallySSL_Header"><a href="#">SSL<sup>1</sup></a></th>
                     <th id="tallySemanticAdmin_Header"><a href="#">Admin<sup>2</sup></a></th>
                     <th id="tallyGoogleApiKeyPresent_Header"><a href="#">GAPI<sup>3</sup></a></th>
-                    <th id="tallyVersion_Header" data-sort-method="dotsep" ><a href="#">Version</a></th>
-                    <th id="tallyZones_Header"><a href="#"># Zones</a></th>
-                    <th id="tallyRegion_Header"><a href="#"># Regions</a></th>
-                    <th id="tallyArea_Header"><a href="#"># Areas</a></th>
-                    <th id="tallyMeeting_Header" class="selected" data-sort-default><a href="#"># Meetings</a></th>
+                    <th id="tallyVersion_Header" data-sort-method="dotsep"><a href="#">Version</a></th>
+                    <th id="tallyZones_Header"><a href="#">Zones</a></th>
+                    <th id="tallyRegion_Header"><a href="#">Regions</a></th>
+                    <th id="tallyArea_Header"><a href="#">Areas</a></th>
+                    <th id="tallyGroups_Header"><a href="#">Groups<sup>4</sup></a></th>
+                    <th id="tallyMeeting_Header" class="selected" data-sort-default><a href="#">Meetings</a></th>
                 </tr>
             </thead>
             <tbody id="tallyBody">
@@ -54,6 +55,7 @@
                         <td id="tallyZones_Data_{{ this.id }}">{{this.num_zones}}</td>
                         <td id="tallyRegion_Data_{{ this.id }}">{{this.num_regions}}</td>
                         <td id="tallyArea_Data_{{ this.id }}">{{this.num_areas}}</td>
+                        <td id="tallyGroups_Data_{{ this.id }}">{{this.num_groups}}</td>
                         <td id="tallyMeetings_Data_{{ this.id }}">{{this.num_meetings}}</td>
                     </tr>
                 {{/each}}
@@ -64,6 +66,7 @@
                     <td id="zonesTotal"></td>
                     <td id="regionsTotal"></td>
                     <td id="areasTotal"></td>
+                    <td id="groupsTotal"></td>
                     <td id="meetingsTotal"></td>
                 </tr>
             </tfoot>
@@ -73,6 +76,7 @@
         <p class="tallyMo"><sup>1</sup> Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/" target="_blank">Semantic Administration being enabled</a>.</p>
         <p class="tallyMo"><sup>2</sup> Indicates server is available to use <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446" target="_blank">NA Meeting List Administrator</a> app.</p>
         <p class="tallyMo"><sup>3</sup> Indicates if the Google API Key was found to be present.  This is necessary for setting coordinates for each meeting entry.  More information is available <a href="https://bmlt.app/google-maps-api-keys-and-geolocation-issues/" target="_blank">here</a>.</p>
+        <p class="tallyMo"><sup>4</sup> Groups counts are estimates.  The calculation is is done by looking at unique group codes and meeting name matching.
         <p class="tallyMo">If <sup>1</sup> and <sup>2</sup> are met, then you can use the admin mobile app.</p>
     </div>
 </div>
