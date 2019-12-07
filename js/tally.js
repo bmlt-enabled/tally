@@ -25,6 +25,9 @@ function Tally(config) {
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
     if (!self.nawsDataMap) {
+        self.getByServiceBodies(function() {
+            new Tablesort(document.getElementById('tallyServiceBodiesTable'), { descending: true });
+        });
         getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function (roots) {
             for (v = 0; v < virtual_roots.length; v++) {
                 virtual_roots[v]['virtual'] = true;
@@ -78,7 +81,7 @@ function Tally(config) {
                     }
 
                     document.getElementById('tallyButtonLoading').style.display = 'none';
-                    document.getElementById('tallyMapButton').style.display = 'block';
+                    document.getElementById('tallyMapButton').style.display = 'inline';
                 });
             } else {
                 document.getElementById('tallyButtonLoading').style.display = 'none';
@@ -88,7 +91,7 @@ function Tally(config) {
         getJSON("js/naws_meetings.json?v=" + (new Date().valueOf())).then(function(meetings) {
             self.meetings = meetings;
             document.getElementById('tallyButtonLoading').style.display = 'none';
-            document.getElementById('tallyMapButton').style.display = 'block';
+            document.getElementById('tallyMapButton').style.display = 'inline';
         });
     }
 }
@@ -99,6 +102,14 @@ Tally.prototype.dataLoadingComplete = function () {
 
 Tally.prototype.tableRender = function () {
     new Tablesort(document.getElementById('tallyHo'), { descending: true });
+};
+
+Tally.prototype.getByServiceBodies = function(callback) {
+    var template = Handlebars.compile(document.getElementById("tallyByServiceBody-table-template").innerHTML);
+    getJSON(this.tomatoUrl + 'rest/v1/servicebodies/?format=json').then(function(service_bodies) {
+        document.getElementById("tallyByServiceBody").innerHTML = template(service_bodies.results);
+        callback();
+    });
 };
 
 Tally.prototype.getVirtualRootsDetails = function (roots) {
@@ -137,7 +148,6 @@ Tally.prototype.getVirtualRootsDetails = function (roots) {
 
                         for (var i = 0; i < meetings.length; i++) {
                             var meetingName = meetings[i]['meeting_name'];
-                            console.log(meetingName);
                             if (!virtualGroupDistinction.has(meetingName)) {
                                 virtualGroupDistinction.push(meetingName);
                             }
@@ -172,12 +182,19 @@ Tally.prototype.setUpMapControls = function ( ) {
 Tally.prototype.showTable = function() {
     document.getElementById ( "tallyMap" ).style.display = 'none';
     document.getElementById ( "tallyMan" ).style.display = 'block';
+    document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
 };
 
 Tally.prototype.displayTallyMap = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
     document.getElementById ( "tallyMap" ).style.display = 'block';
+    document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
     this.loadMap();
+};
+
+Tally.prototype.displayTallyByServiceBody = function() {
+    document.getElementById ( "tallyMan" ).style.display = 'none';
+    document.getElementById ( "tallyManServiceBodies" ).style.display = 'block';
 };
 
 Tally.prototype.displayMeetingMarkers = function( meetings ) {
