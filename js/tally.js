@@ -6,7 +6,7 @@ function Tally(config) {
     this.mapObject = null;
     // this controls whether or not results will be queried for map pins, useful for debugging non-map display elements
     this.nawsDataMap = config.nawsDataMap;
-    this.mapLoad = false;
+    this.mapLoad = true;
     this.mapMarkers = [];
     this.calculatedMarkers = [];
     this.whatADrag = false;
@@ -81,7 +81,7 @@ function Tally(config) {
                     }
 
                     document.getElementById('tallyButtonLoading').style.display = 'none';
-                    document.getElementById('tallyMapButton').style.display = 'block';
+                    document.getElementById('tallyMapButton').style.display = 'inline';
                 });
             } else {
                 document.getElementById('tallyButtonLoading').style.display = 'none';
@@ -91,7 +91,7 @@ function Tally(config) {
         getJSON("js/naws_meetings.json?v=" + (new Date().valueOf())).then(function(meetings) {
             self.meetings = meetings;
             document.getElementById('tallyButtonLoading').style.display = 'none';
-            document.getElementById('tallyMapButton').style.display = 'block';
+            document.getElementById('tallyMapButton').style.display = 'inline';
         });
     }
 }
