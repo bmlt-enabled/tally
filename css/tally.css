@@ -44,7 +44,12 @@ and (orientation: portrait) {
     text-align: center;
 }
 
-table#tallyHo
+#tallyManServiceBodies {
+    font-family: Helvetica, Arial, sans-serif;
+    text-align: center;
+}
+
+table.tallyTable
 {
     margin-left: auto;
     margin-right:auto;
@@ -57,32 +62,32 @@ th
     padding: 5px;
 }
 
-table#tallyHo a,
-table#tallyHo a:visited
+table.tallyTable a,
+table.tallyTable a:visited
 {
     color: #0A61AD;
     text-decoration: none;
 }
 
-table#tallyHo a:hover,
-table#tallyHo a:active
+table.tallyTable a:hover,
+table.tallyTable a:active
 {
     color: #f63;
     text-decoration: underline;
 }
 
-table#tallyHo th {
+table.tallyTable th {
     border-bottom: 2px solid #0A61AD;
 }
 
-table#tallyHo td
+table.tallyTable td
 {
     padding: 0.25em;
     padding-left: 1em;
     padding-right: 1em;
 }
 
-table#tallyHo thead td
+table.tallyTable thead td
 {
     border: none;
     text-align: center;
@@ -90,8 +95,8 @@ table#tallyHo thead td
     border-bottom: 2px solid #0A61AD;
 }
 
-table#tallyHo thead td.selected a,
-table#tallyHo thead td.selected a:visited
+table.tallyTable thead td.selected a,
+table.tallyTable thead td.selected a:visited
 {
     padding: 0.25em;
     display:block;
@@ -101,13 +106,13 @@ table#tallyHo thead td.selected a:visited
     color: white;
 }
 
-table#tallyHo thead td.selected.down a
+table.tallyTable thead td.selected.down a
 {
     background-color:red;
     color: white;
 }
 
-table#tallyHo tr.tallyTotal td
+table.tallyTable tr.tallyTotal td
 {
     border: none;
     text-align: right;
@@ -115,53 +120,53 @@ table#tallyHo tr.tallyTotal td
     border-top: 2px solid #0A61AD;
 }
 
-table#tallyHo tr:nth-child(even) {
+table.tallyTable tr:nth-child(even) {
     background-color: #DDDDDD;
 }
 
-table#tallyHo tr:nth-child(odd) {
+table.tallyTable tr:nth-child(odd) {
     background-color: #FFFFFF;
 }
 
-table#tallyHo tbody td
+table.tallyTable tbody td
 {
     text-align: right;
     padding-right: 1em;
 }
 
-table#tallyHo thead td
+table.tallyTable thead td
 {
     padding-right: 0;
 }
 
-table#tallyHo tbody tr.odd td
+table.tallyTable tbody tr.odd td
 {
     background-color: #eef;
 }
 
-table#tallyHo tbody td.tallyName,
-table#tallyHo tbody td.tallyVersion
+table.tallyTable tbody td.tallyName,
+table.tallyTable tbody td.tallyVersion
 {
     text-align: left;
     padding-right: 0;
 }
 
-table#tallyHo tbody td.tallyVersion
+table.tallyTable tbody td.tallyVersion
 {
     padding-left: 1em;
 }
 
-table#tallyHo tbody td.tallySSL
+table.tallyTabletbody td.tallySSL
 {
     text-align:center;
 }
 
-table#tallyHo tbody td.inValidSSL
+table.tallyTable tbody td.inValidSSL
 {
     color: red;
 }
 
-table#tallyHo tbody td.validSSL
+table.tallyTable tbody td.validSSL
 {
     color: #090;
     font-weight: bold;
@@ -234,10 +239,11 @@ input.showTableButton
     color:#0A61AD;
 }
 
-input#tallyMapButton {
+input.tallyButton {
     margin-left: auto;
     margin-right:auto;
     margin-bottom: 1em;
+    margin-top: 5px;
     width: 10em;  height: 3em;
     border-radius: 4px;
     font-size:12px;

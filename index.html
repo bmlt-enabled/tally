@@ -22,14 +22,15 @@
     <h4><i>Contact admin@bmlt.app to get listed here.</i></h4>
     <div class="tallyButtons">
         <div id="tallyButtonLoading"><img src="images/spinner3.gif"> Loading Meeting Details for Map</div>
-        <input id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
+        <input class="tallyButton" id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
+        <input class="tallyButton" id="tallyByServiceBodyButton" type="button" value="Service Bodies" onclick="tally.displayTallyByServiceBody();">
     </div>
     <div id="tallyLogTable" style="display:none">
         <div id="tallyRootServerDataLoading"><img src="images/spinner3.gif"> Loading Root Server Data</div>
     </div>
     <div id="tally"></div>
     <script id="tally-table-template" type="text/x-handlebars-template">
-        <table id="tallyHo">
+        <table id="tallyHo" class="tallyTable">
             <thead id="tallyHead">
                 <tr>
                     <th id="tallyName_Header"><a href="#">Server Name</a></th>
@@ -80,7 +81,35 @@
         <p class="tallyMo">If <sup>1</sup> and <sup>2</sup> are met, then you can use the admin mobile app.</p>
     </div>
 </div>
-<div id="tallyMap" style="display: none"></div>
+<div id="tallyMap" style="display: none;"></div>
+<div id="tallyManServiceBodies" style="display: none;">
+    <div class="tallyButtons">
+        <input class="tallyButton" id="tallyDisplayRootServersButton" type="button" value="Root Servers" onclick="tally.showTable();">
+    </div>
+    <div id="tallyByServiceBody"></div>
+</div>
+<script id="tallyByServiceBody-table-template" type="text/x-handlebars-template">
+    <table id="tallyServiceBodiesTable" class="tallyTable">
+        <thead id="tallyHead">
+            <tr>
+                <th><a href="#">Service Body</a></th>
+                <th><a href="#">Type</a></th>
+                <th><a href="#">Groups</a></th>
+                <th><a href="#">Meetings</a></th>
+            </tr>
+        </thead>
+        <tbody id="tallyBody">
+            {{#each this}}
+                <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.type}}</td>
+                    <td>{{this.num_groups}}</td>
+                    <td>{{this.num_meetings}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
 <script type="text/javascript" src="js/tally.js?v=1"></script>
 <script type="text/javascript">
     var tally = new Tally({
