@@ -25,11 +25,13 @@ function Tally(config) {
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
     if (!self.nawsDataMap) {
-        self.getByServiceBodies(function() {
+        self.getByServiceBodies(1, null, function(data) {
+            var template = Handlebars.compile(document.getElementById("tallyByServiceBody-table-template").innerHTML);
+            document.getElementById("tallyByServiceBody").innerHTML = template(data);
             new Tablesort(document.getElementById('tallyServiceBodiesTable'), { descending: true });
         });
         getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function (roots) {
-            for (v = 0; v < virtual_roots.length; v++) {
+            for (var v = 0; v < virtual_roots.length; v++) {
                 virtual_roots[v]['virtual'] = true;
                 roots.push(virtual_roots[v]);
             }
@@ -104,11 +106,20 @@ Tally.prototype.tableRender = function () {
     new Tablesort(document.getElementById('tallyHo'), { descending: true });
 };
 
-Tally.prototype.getByServiceBodies = function(callback) {
-    var template = Handlebars.compile(document.getElementById("tallyByServiceBody-table-template").innerHTML);
-    getJSON(this.tomatoUrl + 'rest/v1/servicebodies/?format=json').then(function(service_bodies) {
-        document.getElementById("tallyByServiceBody").innerHTML = template(service_bodies.results);
-        callback();
+Tally.prototype.getByServiceBodies = function(page, payload, callback) {
+    var self = this;
+
+    if (payload == null) {
+        payload = []
+    }
+
+    getJSON(this.tomatoUrl + 'rest/v1/servicebodies/?page=' + page).then(function(data) {
+        payload = payload.concat(data['results']);
+        if (data['next'] !== null) {
+            self.getByServiceBodies(++page, payload, callback)
+        } else {
+            callback(payload);
+        }
     });
 };
 
