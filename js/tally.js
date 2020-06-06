@@ -25,7 +25,7 @@ function Tally(config) {
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
     if (!self.nawsDataMap) {
-        self.getByServiceBodies(1, null,function(data) {
+        self.getByServiceBodies(1, null, function(data) {
             var template = Handlebars.compile(document.getElementById("tallyByServiceBody-table-template").innerHTML);
             document.getElementById("tallyByServiceBody").innerHTML = template(data);
             new Tablesort(document.getElementById('tallyServiceBodiesTable'), { descending: true });
