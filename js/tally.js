@@ -113,7 +113,7 @@ Tally.prototype.getByServiceBodies = function(page, payload, callback) {
         payload = []
     }
 
-    getJSON(this.tomatoUrl + 'rest/v1/servicebodies/?format=json&page=' + page).then(function(data) {
+    getJSON(this.tomatoUrl + 'rest/v1/servicebodies/?page=' + page).then(function(data) {
         payload = payload.concat(data['results']);
         if (data['next'] !== null) {
             self.getByServiceBodies(++page, payload, callback)
