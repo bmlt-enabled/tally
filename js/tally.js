@@ -411,7 +411,7 @@ Tally.prototype.displayMeetingMarkerInResults = function(in_mtg_obj_array) {
                     marker_html += ' ' + hour + ':' + minute + ' ' + pm;
                     marker_html += '</em></dd>';
                     //if ( !url ) {
-                    var url = in_mtg_obj_array[c]['root_server_uri'] + 'semantic';
+                    var url = in_mtg_obj_array[c]['root_server_uri'] + '/semantic';
                     //};
 
                     marker_html += '<dd><em><a href="' + url + '">';
