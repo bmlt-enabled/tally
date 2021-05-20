@@ -21,6 +21,7 @@ function Tally(config) {
     this.regionsCount = 0;
     this.zonesCount = 0;
     this.serversCount = 0;
+    this.byRootServerVersions = {};
 
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
@@ -43,8 +44,18 @@ function Tally(config) {
             self.serversCount = roots.length;
 
             for (var r = 0; r < roots.length; r++) {
-
                 if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
+                    var version = JSON.parse(roots[r]['server_info'])[0]['version'];
+                    if (self.byRootServerVersions[version] == null) {
+                        self.byRootServerVersions[version] = 1
+                    } else {
+                        self.byRootServerVersions[version] += 1
+                    }
+
+                    var rootServerVersionTemplate = Handlebars.compile(document.getElementById("tallyByRootServerVersion-table-template").innerHTML);
+                    document.getElementById("tallyByRootServerVersions").innerHTML = rootServerVersionTemplate(self.byRootServerVersions);
+                    new Tablesort(document.getElementById('tallyRootServerVersionTable'), { descending: true });
+
                     self.meetingsCount += roots[r]['num_meetings'];
                     self.groupsCount += roots[r]['num_groups'];
                     self.areasCount += roots[r]['num_areas'];
@@ -63,6 +74,7 @@ function Tally(config) {
                 }
             }
 
+            console.log(self.byRootServerVersions)
             var shardSize = 1000;
             var shards = Math.ceil(self.meetingsCount / shardSize);
             var pages = [];
@@ -194,18 +206,27 @@ Tally.prototype.showTable = function() {
     document.getElementById ( "tallyMap" ).style.display = 'none';
     document.getElementById ( "tallyMan" ).style.display = 'block';
     document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
+    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'none';
 };
 
 Tally.prototype.displayTallyMap = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
     document.getElementById ( "tallyMap" ).style.display = 'block';
     document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
+    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'none';
     this.loadMap();
 };
 
 Tally.prototype.displayTallyByServiceBody = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
     document.getElementById ( "tallyManServiceBodies" ).style.display = 'block';
+    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'none';
+};
+
+Tally.prototype.displayTallyByRootServerVersions = function() {
+    document.getElementById ( "tallyMan" ).style.display = 'none';
+    document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
+    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'block';
 };
 
 Tally.prototype.displayMeetingMarkers = function( meetings ) {

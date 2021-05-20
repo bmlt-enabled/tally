@@ -24,6 +24,7 @@
         <div id="tallyButtonLoading"><img src="images/spinner3.gif"> Loading Meeting Details for Map</div>
         <input class="tallyButton" id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
         <input class="tallyButton" id="tallyByServiceBodyButton" type="button" value="Service Bodies" onclick="tally.displayTallyByServiceBody();">
+        <input class="tallyButton" id="tallyByRootServerVersionsButton" type="button" value="Versions" onclick="tally.displayTallyByRootServerVersions();">
     </div>
     <div id="tallyLogTable" style="display:none">
         <div id="tallyRootServerDataLoading"><img src="images/spinner3.gif"> Loading Root Server Data</div>
@@ -88,6 +89,13 @@
     </div>
     <div id="tallyByServiceBody"></div>
 </div>
+<div id="tallyManRootServerVersions" style="display: none;">
+    <div class="tallyButtons">
+        <input class="tallyButton" type="button" value="Root Servers" onclick="tally.showTable();">
+    </div>
+    <div id="tallyByRootServerVersions"></div>
+</div>
+
 <script id="tallyByServiceBody-table-template" type="text/x-handlebars-template">
     <table id="tallyServiceBodiesTable" class="tallyTable">
         <thead id="tallyHead">
@@ -110,6 +118,26 @@
         </tbody>
     </table>
 </script>
+
+<script id="tallyByRootServerVersion-table-template" type="text/x-handlebars-template">
+    <table id="tallyRootServerVersionTable" class="tallyTable">
+        <thead id="tallyHead">
+            <tr>
+                <th data-sort-default class="selected"><a href="#">Version</a></th>
+                <th><a href="#">Count</a></th>
+            </tr>
+        </thead>
+        <tbody id="tallyBody">
+        {{#each this}}
+            <tr>
+                <td class="tallyName">{{@key}}</td>
+                <td>{{this}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</script>
+
 <script type="text/javascript" src="js/tally.js?v=1"></script>
 <script type="text/javascript">
     var tally = new Tally({
