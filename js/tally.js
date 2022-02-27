@@ -206,27 +206,27 @@ Tally.prototype.showTable = function() {
     document.getElementById ( "tallyMap" ).style.display = 'none';
     document.getElementById ( "tallyMan" ).style.display = 'block';
     document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
-    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'none';
+    document.getElementById ( "tallyReports" ).style.display = 'none';
 };
 
 Tally.prototype.displayTallyMap = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
     document.getElementById ( "tallyMap" ).style.display = 'block';
     document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
-    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'none';
+    document.getElementById ( "tallyReports" ).style.display = 'none';
     this.loadMap();
 };
 
 Tally.prototype.displayTallyByServiceBody = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
     document.getElementById ( "tallyManServiceBodies" ).style.display = 'block';
-    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'none';
+    document.getElementById ( "tallyReports" ).style.display = 'none';
 };
 
-Tally.prototype.displayTallyByRootServerVersions = function() {
+Tally.prototype.displayTallyReports = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
     document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
-    document.getElementById ( "tallyManRootServerVersions" ).style.display = 'block';
+    document.getElementById ( "tallyReports" ).style.display = 'block';
 };
 
 Tally.prototype.displayMeetingMarkers = function( meetings ) {
