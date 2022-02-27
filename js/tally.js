@@ -21,7 +21,15 @@ function Tally(config) {
     this.regionsCount = 0;
     this.zonesCount = 0;
     this.serversCount = 0;
-    this.byRootServerVersions = {};
+    this.reports = {
+        byRootServerVersions: {},
+        venue_types: {
+            in_person: 0,
+            virtual: 0,
+            temp_virtual: 0,
+            hybrid: 0,
+        }
+    }
 
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
@@ -46,15 +54,11 @@ function Tally(config) {
             for (var r = 0; r < roots.length; r++) {
                 if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
                     var version = JSON.parse(roots[r]['server_info'])[0]['version'];
-                    if (self.byRootServerVersions[version] == null) {
-                        self.byRootServerVersions[version] = 1
+                    if (self.reports.byRootServerVersions[version] == null) {
+                        self.reports.byRootServerVersions[version] = 1
                     } else {
-                        self.byRootServerVersions[version] += 1
+                        self.reports.byRootServerVersions[version] += 1
                     }
-
-                    var rootServerVersionTemplate = Handlebars.compile(document.getElementById("tallyByRootServerVersion-table-template").innerHTML);
-                    document.getElementById("tallyByRootServerVersions").innerHTML = rootServerVersionTemplate(self.byRootServerVersions);
-                    new Tablesort(document.getElementById('tallyRootServerVersionTable'), { descending: true });
 
                     self.meetingsCount += roots[r]['num_meetings'];
                     self.groupsCount += roots[r]['num_groups'];
@@ -84,18 +88,37 @@ function Tally(config) {
 
             if (self.mapLoad) {
                 var promises = pages.map(function (page) {
-                    return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
+                    return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,formats,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
                 });
 
                 RSVP.all(promises).then(function (meetings) {
-                    for (m = 0; m < meetings.length; m++) {
+                    for (var m = 0; m < meetings.length; m++) {
                         if (meetings[m].length > 0) {
                             self.meetings = self.meetings.concat(meetings[m]);
+                            var meetings_data = meetings[m]
+                            for (var z = 0; z < meetings_data.length; z++) {
+                                var formats = meetings_data[z]["formats"] != null ? meetings_data[z]["formats"].split(",") : []
+                                if (formats.includes("HY")) {
+                                    self.reports.venue_types.hybrid++;
+                                } else if (formats.includes("VM") && formats.includes("TC")) {
+                                    self.reports.venue_types.temp_virtual++;
+                                } else if (formats.includes("VM") && !formats.includes("TC")) {
+                                    self.reports.venue_types.virtual++;
+                                } else {
+                                    self.reports.venue_types.in_person++;
+                                }
+                            }
                         }
                     }
 
+                    var reportsTemplate = Handlebars.compile(document.getElementById("reports-table-template").innerHTML);
+                    document.getElementById("tallyReportsTemplate").innerHTML = reportsTemplate(self.reports);
+                    new Tablesort(document.getElementById('tallyRootServerVersionTable'), { descending: true });
+                    new Tablesort(document.getElementById('meetingVenueReport'), { descending: true });
+
                     document.getElementById('tallyButtonLoading').style.display = 'none';
                     document.getElementById('tallyMapButton').style.display = 'inline';
+                    document.getElementById('tallyReportsButton').style.display = 'inline';
                 });
             } else {
                 document.getElementById('tallyButtonLoading').style.display = 'none';
@@ -106,6 +129,7 @@ function Tally(config) {
             self.meetings = meetings;
             document.getElementById('tallyButtonLoading').style.display = 'none';
             document.getElementById('tallyMapButton').style.display = 'inline';
+            document.getElementById('tallyReportsButton').style.display = 'inline';
         });
     }
 }
