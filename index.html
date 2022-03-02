@@ -24,7 +24,7 @@
         <div id="tallyButtonLoading"><img src="images/spinner3.gif"> Loading Meeting Details for Map</div>
         <input class="tallyButton" id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
         <input class="tallyButton" id="tallyByServiceBodyButton" type="button" value="Service Bodies" onclick="tally.displayTallyByServiceBody();">
-        <input class="tallyButton" id="tallyReportsButton" type="button" value="Reports" onclick="tally.displayTallyReports();">
+        <input class="tallyButton" id="tallyReportsButton" type="button" value="Reports" onclick="tally.displayTallyReports();" style="display:none;">
         <input class="tallyButton" id="tallyMetrics" type="button" value="Metrics" onclick="window.open('https://metrics.bmlt.app/', '_blank');">
     </div>
     <div id="tallyLogTable" style="display:none">
@@ -76,10 +76,10 @@
         </table>
     </script>
     <div id="tallyLegend">
-        <p class="tallyMo"><sup>1</sup> Remember that the server must be <a href="https://letsencrypt.org">SSL/HTTPS</a>, in addition to <a href="https://bmlt.app/semantic/semantic-administration/" target="_blank">Semantic Administration being enabled</a>.</p>
-        <p class="tallyMo"><sup>2</sup> Indicates server is available to use <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446" target="_blank">NA Meeting List Administrator</a> app.</p>
+        <p class="tallyMo"><sup>1</sup> Remember that the server must be SSL/HTTPS, in addition to <a href="https://bmlt.app/semantic/semantic-administration/" target="_blank">Semantic Administration being enabled</a>.</p>
+        <p class="tallyMo"><sup>2</sup> Indicates server is available to use the Administration API and the <a href="https://itunes.apple.com/us/app/na-meeting-list-administrator/id1198601446" target="_blank">NA Meeting List Administrator</a> app.</p>
         <p class="tallyMo"><sup>3</sup> Indicates if the Google API Key was found to be present.  This is necessary for setting coordinates for each meeting entry.  More information is available <a href="https://bmlt.app/google-maps-api-keys-and-geolocation-issues/" target="_blank">here</a>.</p>
-        <p class="tallyMo"><sup>4</sup> Groups counts are estimates.  The calculation is is done by looking at unique group codes and meeting name matching.
+        <p class="tallyMo"><sup>4</sup> Groups counts are estimates.  The calculation is done by looking at unique group codes and meeting name matching.
         <p class="tallyMo">If <sup>1</sup> and <sup>2</sup> are met, then you can use the admin mobile app.</p>
     </div>
 </div>
@@ -94,7 +94,7 @@
     <div class="tallyButtons">
         <input class="tallyButton" type="button" value="Root Servers" onclick="tally.showTable();">
     </div>
-    <div id="tallyByRootServerVersions"></div>
+    <div id="tallyReportsTemplate"></div>
 </div>
 
 <script id="tallyByServiceBody-table-template" type="text/x-handlebars-template">
@@ -120,7 +120,7 @@
     </table>
 </script>
 
-<script id="tallyByRootServerVersion-table-template" type="text/x-handlebars-template">
+<script id="reports-table-template" type="text/x-handlebars-template">
     <table id="tallyRootServerVersionTable" class="tallyTable">
         <thead id="tallyHead">
             <tr>
@@ -129,7 +129,24 @@
             </tr>
         </thead>
         <tbody id="tallyBody">
-        {{#each this}}
+        {{#each this.byRootServerVersions}}
+            <tr>
+                <td class="tallyName">{{@key}}</td>
+                <td>{{this}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    <hr/>
+    <table id="meetingVenueReport" class="tallyTable">
+        <thead id="tallyHead">
+            <tr>
+                <th data-sort-default class="selected"><a href="#">Type</a></th>
+                <th><a href="#">Count</a></th>
+            </tr>
+        </thead>
+        <tbody id="tallyBody">
+        {{#each this.venue_types}}
             <tr>
                 <td class="tallyName">{{@key}}</td>
                 <td>{{this}}</td>
