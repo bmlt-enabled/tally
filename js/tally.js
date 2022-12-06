@@ -39,7 +39,7 @@ function Tally(config) {
             document.getElementById("tallyByServiceBody").innerHTML = template(data);
             new Tablesort(document.getElementById('tallyServiceBodiesTable'), { descending: true });
         });
-        getJSON(self.tomatoUrl + "rest/v1/rootservers/").then(function (roots) {
+        getJSON(self.tomatoUrl + "main_server/api/v1/rootservers/").then(function (roots) {
             for (var v = 0; v < virtual_roots.length; v++) {
                 virtual_roots[v]['virtual'] = true;
                 roots.push(virtual_roots[v]);
@@ -53,18 +53,18 @@ function Tally(config) {
 
             for (var r = 0; r < roots.length; r++) {
                 if (!roots[r].hasOwnProperty('virtual') || !roots[r]['virtual']) {
-                    var version = JSON.parse(roots[r]['server_info'])[0]['version'];
+                    var version = JSON.parse(roots[r]['server_info'])['version'];
                     if (self.reports.byRootServerVersions[version] == null) {
                         self.reports.byRootServerVersions[version] = 1
                     } else {
                         self.reports.byRootServerVersions[version] += 1
                     }
 
-                    self.meetingsCount += roots[r]['num_meetings'];
-                    self.groupsCount += roots[r]['num_groups'];
-                    self.areasCount += roots[r]['num_areas'];
-                    self.regionsCount += roots[r]['num_regions'];
-                    self.zonesCount += roots[r]['num_zones'];
+                    self.meetingsCount += roots[r]['statistics']['meetings']['numTotal'];
+                    self.groupsCount += roots[r]['statistics']['serviceBodies']['numGroups'];
+                    self.areasCount += roots[r]['statistics']['serviceBodies']['numAreas'];
+                    self.regionsCount += roots[r]['statistics']['serviceBodies']['numRegions'];
+                    self.zonesCount += roots[r]['statistics']['serviceBodies']['numZones'];
 
                     document.getElementById("tallyTotal").innerHTML = self.meetingsCount.toString();
                     document.getElementById("meetingsTotal").innerHTML = self.meetingsCount.toString();
@@ -149,8 +149,9 @@ Tally.prototype.getByServiceBodies = function(page, payload, callback) {
         payload = []
     }
 
-    getJSON(this.tomatoUrl + 'rest/v1/servicebodies/?page=' + page).then(function(data) {
+    getJSON(this.tomatoUrl + 'main_server/api/v1/servicebodies/?page=' + page).then(function(data) {
         payload = payload.concat(data['results']);
+        // TODO: Fix
         if (data['next'] !== null) {
             self.getByServiceBodies(++page, payload, callback)
         } else {
@@ -485,15 +486,15 @@ Handlebars.registerHelper('tlsEnabled', function(url) {
 });
 
 Handlebars.registerHelper('semanticAdminEnabled', function(root) {
-    return JSON.parse(root['server_info'])[0]['semanticAdmin'] === '1' ? 'Y' : 'N'
+    return JSON.parse(root['server_info'])['semanticAdmin'] === '1' ? 'Y' : 'N'
 });
 
 Handlebars.registerHelper('googleApiKeyPresent', function(root) {
-    return JSON.parse(root['server_info'])[0]['google_api_key'] != null ? 'Y' : 'N'
+    return JSON.parse(root['server_info'])['google_api_key'] != null ? 'Y' : 'N'
 });
 
 Handlebars.registerHelper('serverInfo', function(root, key) {
-    return JSON.parse(root['server_info'])[0][key];
+    return JSON.parse(root['server_info'])[key];
 });
 
 function getJSONP(url, payload, callback) {
