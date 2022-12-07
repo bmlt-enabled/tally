@@ -39,7 +39,7 @@ function Tally(config) {
                 return {
                     id: rawRoot.id,
                     name: rawRoot.name,
-                    root_server_url: rawRoot.url,
+                    root_server_url: rawRoot.url.replace(/\/$/, ""),
                     num_zones: rawRoot['statistics']['serviceBodies']['numZones'],
                     num_regions: rawRoot['statistics']['serviceBodies']['numRegions'],
                     num_areas: rawRoot['statistics']['serviceBodies']['numAreas'],
@@ -221,21 +221,18 @@ Tally.prototype.setUpMapControls = function ( ) {
 Tally.prototype.showTable = function() {
     document.getElementById ( "tallyMap" ).style.display = 'none';
     document.getElementById ( "tallyMan" ).style.display = 'block';
-    document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
     document.getElementById ( "tallyReports" ).style.display = 'none';
 };
 
 Tally.prototype.displayTallyMap = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
     document.getElementById ( "tallyMap" ).style.display = 'block';
-    document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
     document.getElementById ( "tallyReports" ).style.display = 'none';
     this.loadMap();
 };
 
 Tally.prototype.displayTallyReports = function() {
     document.getElementById ( "tallyMan" ).style.display = 'none';
-    document.getElementById ( "tallyManServiceBodies" ).style.display = 'none';
     document.getElementById ( "tallyReports" ).style.display = 'block';
 };
 
