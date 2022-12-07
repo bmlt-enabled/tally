@@ -88,6 +88,7 @@ function Tally(config) {
             }
 
             console.log(self.byRootServerVersions)
+            var concurrentRequests = 6;
             var shardSize = 1000;
             var shards = Math.ceil(self.meetingsCount / shardSize);
             var pages = [];
@@ -96,39 +97,49 @@ function Tally(config) {
             }
 
             if (self.mapLoad) {
-                var promises = pages.map(function (page) {
-                    return getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=root_server_uri,longitude,latitude,id_bigint,formats,meeting_name,weekday_tinyint,start_time&page_num=' + page + '&page_size=' + shardSize);
-                });
+                const getMapData = function(n) {
+                    const pageNums = pages.splice(0, pages.length >= n ? n : pages.length);
+                    const promises = [];
+                    for (const page of pageNums) {
+                        promises.push(getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,formats&page_num=' + page + '&page_size=' + shardSize));
+                    }
 
-                RSVP.all(promises).then(function (meetings) {
-                    for (var m = 0; m < meetings.length; m++) {
-                        if (meetings[m].length > 0) {
-                            self.meetings = self.meetings.concat(meetings[m]);
-                            var meetings_data = meetings[m]
-                            for (var z = 0; z < meetings_data.length; z++) {
-                                var formats = meetings_data[z]["formats"] != null ? meetings_data[z]["formats"].split(",") : []
-                                if (formats.includes("HY")) {
-                                    self.reports.venue_types.hybrid++;
-                                } else if (formats.includes("VM") && formats.includes("TC")) {
-                                    self.reports.venue_types.temp_virtual++;
-                                } else if (formats.includes("VM") && !formats.includes("TC")) {
-                                    self.reports.venue_types.virtual++;
-                                } else {
-                                    self.reports.venue_types.in_person++;
+                    RSVP.all(promises).then(function (meetings) {
+                        for (var m = 0; m < meetings.length; m++) {
+                            if (meetings[m].length > 0) {
+                                self.meetings = self.meetings.concat(meetings[m]);
+                                var meetings_data = meetings[m]
+                                for (var z = 0; z < meetings_data.length; z++) {
+                                    var formats = meetings_data[z]["formats"] != null ? meetings_data[z]["formats"].split(",") : []
+                                    if (formats.includes("HY")) {
+                                        self.reports.venue_types.hybrid++;
+                                    } else if (formats.includes("VM") && formats.includes("TC")) {
+                                        self.reports.venue_types.temp_virtual++;
+                                    } else if (formats.includes("VM") && !formats.includes("TC")) {
+                                        self.reports.venue_types.virtual++;
+                                    } else {
+                                        self.reports.venue_types.in_person++;
+                                    }
                                 }
                             }
                         }
-                    }
+    
+                        if (pages.length === 0) {
+                            var reportsTemplate = Handlebars.compile(document.getElementById("reports-table-template").innerHTML);
+                            document.getElementById("tallyReportsTemplate").innerHTML = reportsTemplate(self.reports);
+                            new Tablesort(document.getElementById('tallyRootServerVersionTable'), { descending: true });
+                            new Tablesort(document.getElementById('meetingVenueReport'), { descending: true });
+        
+                            document.getElementById('tallyButtonLoading').style.display = 'none';
+                            document.getElementById('tallyMapButton').style.display = 'inline';
+                            document.getElementById('tallyReportsButton').style.display = 'inline';
+                        } else {
+                            getMapData(concurrentRequests);
+                        }
+                    });
+                };
 
-                    var reportsTemplate = Handlebars.compile(document.getElementById("reports-table-template").innerHTML);
-                    document.getElementById("tallyReportsTemplate").innerHTML = reportsTemplate(self.reports);
-                    new Tablesort(document.getElementById('tallyRootServerVersionTable'), { descending: true });
-                    new Tablesort(document.getElementById('meetingVenueReport'), { descending: true });
-
-                    document.getElementById('tallyButtonLoading').style.display = 'none';
-                    document.getElementById('tallyMapButton').style.display = 'inline';
-                    document.getElementById('tallyReportsButton').style.display = 'inline';
-                });
+                getMapData(concurrentRequests);
             } else {
                 document.getElementById('tallyButtonLoading').style.display = 'none';
             }
@@ -392,14 +403,7 @@ Tally.prototype.displayMeetingMarkerInResults = function(in_mtg_obj_array) {
 
         if ( bounds.contains ( main_point ) ) {
             var displayed_image = (in_mtg_obj_array.length === 1) ? this.m_icon_image_single : this.m_icon_image_multi;
-
-            var marker_html = '';
             var zoom_marker_detail_level = 3;
-
-            if ( this.mapObject.getZoom() > zoom_marker_detail_level ) {
-                marker_html = '<div><dl>';
-            }
-
             var new_marker = new google.maps.Marker (
                 {
                     'position':     main_point,
@@ -409,53 +413,8 @@ Tally.prototype.displayMeetingMarkerInResults = function(in_mtg_obj_array) {
                     'clickable':    this.mapObject.getZoom() > zoom_marker_detail_level
                 } );
 
-            var id = this.m_uid;
             new_marker.meeting_id_array = [];
             new_marker.meeting_obj_array = in_mtg_obj_array;
-
-            // We save all the meetings represented by this marker.
-            for ( var c = 0; c < in_mtg_obj_array.length; c++ ) {
-                if ( marker_html ) {
-                    var weekdays = ['ERROR', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    marker_html += '<dt><strong>';
-                    marker_html += in_mtg_obj_array[c]['meeting_name'];
-                    marker_html += '</strong></dt>';
-                    marker_html += '<dd><em>';
-                    marker_html += weekdays[parseInt ( in_mtg_obj_array[c]['weekday_tinyint'] )];
-                    var time = in_mtg_obj_array[c]['start_time'].toString().split(':');
-                    var hour = parseInt ( time[0] );
-                    var minute = parseInt ( time[1] );
-                    var pm = 'AM';
-                    if ( hour >= 12 ) {
-                        pm = 'PM';
-
-                        if ( hour > 12 ) {
-                            hour -= 12;
-                        }
-                    }
-
-                    hour = hour.toString();
-                    minute = (minute > 9) ? minute.toString() : ('0' + minute.toString());
-                    marker_html += ' ' + hour + ':' + minute + ' ' + pm;
-                    marker_html += '</em></dd>';
-                    //if ( !url ) {
-                    var url = in_mtg_obj_array[c]['root_server_uri'] + '/semantic';
-                    //};
-
-                    marker_html += '<dd><em><a href="' + url + '">';
-                    marker_html += url;
-                    marker_html += '</a></em></dd>';
-                }
-
-                new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
-            }
-
-            if ( marker_html ) {
-                marker_html += '</dl></div>';
-                var infowindow = new google.maps.InfoWindow ( { content: marker_html });
-                new_marker.addListener ( 'click', function() { infowindow.open ( this.mapObject, new_marker ); });
-            }
-
             return new_marker;
         }
     }
