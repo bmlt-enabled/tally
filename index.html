@@ -23,7 +23,6 @@
     <div class="tallyButtons">
         <div id="tallyButtonLoading"><img src="images/spinner3.gif"> Loading Meeting Details for Map</div>
         <input class="tallyButton" id="tallyMapButton" type="button" value="Display Map" onclick="tally.displayTallyMap();" style="display:none;">
-        <input class="tallyButton" id="tallyByServiceBodyButton" type="button" value="Service Bodies" onclick="tally.displayTallyByServiceBody();">
         <input class="tallyButton" id="tallyReportsButton" type="button" value="Reports" onclick="tally.displayTallyReports();" style="display:none;">
         <input class="tallyButton" id="tallyMetrics" type="button" value="Metrics" onclick="window.open('https://metrics.bmlt.app/', '_blank');">
     </div>
@@ -84,41 +83,12 @@
     </div>
 </div>
 <div id="tallyMap" style="display: none;"></div>
-<div id="tallyManServiceBodies" style="display: none;">
-    <div class="tallyButtons">
-        <input class="tallyButton" id="tallyDisplayRootServersButton" type="button" value="Root Servers" onclick="tally.showTable();">
-    </div>
-    <div id="tallyByServiceBody"></div>
-</div>
 <div id="tallyReports" style="display: none;">
     <div class="tallyButtons">
         <input class="tallyButton" type="button" value="Root Servers" onclick="tally.showTable();">
     </div>
     <div id="tallyReportsTemplate"></div>
 </div>
-
-<script id="tallyByServiceBody-table-template" type="text/x-handlebars-template">
-    <table id="tallyServiceBodiesTable" class="tallyTable">
-        <thead id="tallyHead">
-            <tr>
-                <th><a href="#">Service Body</a></th>
-                <th><a href="#">Type</a></th>
-                <th><a href="#">Groups</a></th>
-                <th data-sort-default class="selected"><a href="#">Meetings</a></th>
-            </tr>
-        </thead>
-        <tbody id="tallyBody">
-            {{#each this}}
-                <tr>
-                    <td class="tallyName">{{this.name}}</td>
-                    <td>{{this.type}}</td>
-                    <td>{{this.num_groups}}</td>
-                    <td>{{this.num_meetings}}</td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-</script>
 
 <script id="reports-table-template" type="text/x-handlebars-template">
     <table id="tallyRootServerVersionTable" class="tallyTable">
