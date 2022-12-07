@@ -88,7 +88,7 @@ function Tally(config) {
             }
 
             console.log(self.byRootServerVersions)
-            var concurrentRequests = 6;
+            var concurrentRequests = 4;
             var shardSize = 1000;
             var shards = Math.ceil(self.meetingsCount / shardSize);
             var pages = [];
