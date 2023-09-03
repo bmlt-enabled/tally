@@ -2,7 +2,7 @@ function Tally(config) {
     var self = this;
 
     this.tomatoUrl = "https://tomato.bmltenabled.org/";
-    this.knownTotal = 71815;
+    this.knownTotal = 72215;
     this.mapObject = null;
     // this controls whether or not results will be queried for map pins, useful for debugging non-map display elements
     this.nawsDataMap = config.nawsDataMap;
