@@ -1,7 +1,7 @@
 function Tally(config) {
     var self = this;
 
-    this.tomatoUrl = "https://tomato.bmltenabled.org/";
+    this.aggregatorUrl = "https://aggregator.bmltenabled.org/";
     this.knownTotal = 72215;
     this.mapObject = null;
     // this controls whether or not results will be queried for map pins, useful for debugging non-map display elements
@@ -34,7 +34,7 @@ function Tally(config) {
     document.getElementById('tallyKnownTotal').innerHTML = this.knownTotal;
     var template = Handlebars.compile(document.getElementById("tally-table-template").innerHTML);
     if (!self.nawsDataMap) {
-        getJSON(self.tomatoUrl + "main_server/api/v1/rootservers/").then(function (rawRoots) {
+        getJSON(self.aggregatorUrl + "main_server/api/v1/rootservers/").then(function (rawRoots) {
             const roots = rawRoots.map(rawRoot => {
                 return {
                     id: rawRoot.id,
@@ -101,7 +101,7 @@ function Tally(config) {
                     const pageNums = pages.splice(0, pages.length >= n ? n : pages.length);
                     const promises = [];
                     for (const page of pageNums) {
-                        promises.push(getJSON(self.tomatoUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,formats&page_num=' + page + '&page_size=' + shardSize));
+                        promises.push(getJSON(self.aggregatorUrl + 'main_server/client_interface/json/?switcher=GetSearchResults&data_field_key=longitude,latitude,formats&page_num=' + page + '&page_size=' + shardSize));
                     }
 
                     RSVP.all(promises).then(function (meetings) {
