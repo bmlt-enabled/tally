@@ -1,0 +1,48 @@
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    function calculateMidpoint(coordinates) {
+        const totalLat = coordinates.reduce((sum, coord) => sum + coord[0], 0);
+        const totalLon = coordinates.reduce((sum, coord) => sum + coord[1], 0);
+        const count = coordinates.length;
+
+        const avgLat = totalLat / count;
+        const avgLon = totalLon / count;
+
+        return [avgLat, avgLon];
+    }
+
+    function degreesToRadians(degrees) {
+        return degrees * (Math.PI / 180.0);
+    }
+
+    function radiansToDegrees(radians) {
+        return radians * (180.0 / Math.PI);
+    }
+
+    // $.getJSON("https://bmlt.sezf.org/main_server/client_interface/json/?switcher=GetServiceBodies&callback=?", function(data) {
+    //     let coordinates = [];
+    //
+    //     for (let meeting of data) {
+    //         coordinates.push([Number(meeting['latitude']), Number(meeting['longitude'])])
+    //     }
+    //
+    //     const midpoint = calculateMidpoint(coordinates);
+    //     console.log(midpoint);
+    // })
+
+
+    $.getJSON("https://bmlt.sezf.org/main_server/client_interface/jsonp/?switcher=GetSearchResults&recursive=1&services[]=43&data_field_key=longitude,latitude&callback=?", function(data) {
+        let coordinates = [];
+
+        for (let meeting of data) {
+            coordinates.push([Number(meeting['latitude']), Number(meeting['longitude'])])
+        }
+
+        const midpoint = calculateMidpoint(coordinates);
+        console.log(midpoint);
+    })
+
+</script>
+
+<input type="text" value="https://bmlt.sezf.org/main_server" id="root_server_uri">
+<button>Calculate</button>
