@@ -1,0 +1,276 @@
+html,
+body {
+	margin-top: 0;
+	margin-left: 0;
+	margin-right: 0;
+	height: 100%;
+	width: 100%;
+}
+
+#tallyBannerContainer {
+	background-image: url('/images/banner_rails.png');
+	background-repeat: repeat-x;
+	background-size: 15% 100%;
+	display: block;
+	height: 15%;
+	width: auto;
+}
+
+img#tallyBannerImage {
+	display: block;
+	margin: auto;
+	height: 100%;
+	width: auto;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
+	#tallyBannerContainer {
+		background-size: 12% 100%;
+		height: 12%;
+	}
+}
+
+#tallyMan {
+	font-family: Helvetica, Arial, sans-serif;
+	text-align: center;
+}
+
+#tallyReports {
+	font-family: Helvetica, Arial, sans-serif;
+	text-align: center;
+}
+
+table.tallyTable {
+	margin-left: auto;
+	margin-right: auto;
+	border-collapse: collapse;
+	border-bottom: 2px solid #0a61ad;
+}
+
+th {
+	padding: 5px;
+}
+
+table.tallyTable a,
+table.tallyTable a:visited {
+	color: #0a61ad;
+	text-decoration: none;
+}
+
+table.tallyTable a:hover,
+table.tallyTable a:active {
+	color: #f63;
+	text-decoration: underline;
+}
+
+table.tallyTable th {
+	border-bottom: 2px solid #0a61ad;
+}
+
+table.tallyTable td {
+	padding: 0.25em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+table.tallyTable thead td {
+	border: none;
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 2px solid #0a61ad;
+}
+
+table.tallyTable thead td.selected a,
+table.tallyTable thead td.selected a:visited {
+	padding: 0.25em;
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-color: #0a61ad;
+	color: white;
+}
+
+table.tallyTable thead td.selected.down a {
+	background-color: red;
+	color: white;
+}
+
+table.tallyTable tr.tallyTotal td {
+	border: none;
+	text-align: right;
+	font-weight: bold;
+	border-top: 2px solid #0a61ad;
+}
+
+table.tallyTable tr:nth-child(even) {
+	background-color: #dddddd;
+}
+
+table.tallyTable tr:nth-child(odd) {
+	background-color: #ffffff;
+}
+
+table.tallyTable tbody td {
+	text-align: right;
+	padding-right: 1em;
+}
+
+table.tallyTable thead td {
+	padding-right: 0;
+}
+
+table.tallyTable tbody tr.odd td {
+	background-color: #eef;
+}
+
+table.tallyTable tbody td.tallyName,
+table.tallyTable tbody td.tallyVersion {
+	text-align: left;
+	padding-right: 0;
+}
+
+table.tallyTable tbody td.tallyVersion {
+	padding-left: 1em;
+}
+
+table.tallyTabletbody td.tallySSL {
+	text-align: center;
+}
+
+table.tallyTable tbody td.inValidSSL {
+	color: red;
+}
+
+table.tallyTable tbody td.validSSL {
+	color: #090;
+	font-weight: bold;
+}
+
+table#tallyLogTable {
+	margin-top: 1em;
+	text-align: left;
+	font-style: italic;
+}
+
+#tallyRootServerDataLoading {
+	margin-bottom: 1em;
+}
+
+table#tallyLogTable td.in-progress-0 {
+	color: #c30;
+}
+
+table#tallyLogTable td.in-progress-1 {
+	color: #c60;
+}
+
+table#tallyLogTable td.in-progress-2 {
+	color: #cc0;
+}
+
+table#tallyLogTable td.in-progress-3 {
+	color: #0c0;
+}
+
+table#tallyHo tbody td.validServer {
+	color: #090;
+	font-weight: bold;
+}
+
+table#tallyHo tbody td.invalidServer {
+	color: red;
+}
+
+p#tallyCo {
+	display: table;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0.5em;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.tallyMo {
+	font-style: italic;
+	font-size: small;
+}
+
+input.showTableButton {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.tallyButtons {
+	font-weight: bold;
+	text-align: center;
+	color: #0a61ad;
+}
+
+input.tallyButton {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+	margin-top: 5px;
+	width: 10em;
+	height: 3em;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+div#tallyButtonLoading {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+}
+
+div#tallyMapDiv {
+	width: 100%;
+	height: 85%;
+}
+
+div#map {
+	width: 100%;
+	height: 100%;
+}
+
+div.centerControlDiv {
+	text-align: center;
+	background-color: white;
+	padding: 0.5em;
+	box-shadow: 2px 2px 1px #888888;
+}
+
+div.centerControlDiv div {
+	text-align: left;
+}
+
+div#tallyVersion {
+	margin-top: 1em;
+	text-align: center;
+	font-style: italic;
+	font-size: small;
+}
+
+#tallyHo tfoot tr.tallyTotal td.tallyName {
+	text-align: left;
+}
+
+#tallyRootServerVersionTable td {
+	text-align: left;
+}
+
+#meetingVenueReport td {
+	text-align: left;
+}
+
+.link-like {
+	color: #0a61ad;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.link-like:hover {
+	color: #f63;
+	text-decoration: underline;
+}
