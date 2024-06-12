@@ -1,0 +1,40 @@
+name: test
+on:
+  push:
+    branches-ignore: ['main']
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: build
+        run: |
+          npm ci && npm run build
+
+      - name: check
+        run: |
+          npm run check
+
+      - name: lint
+        run: |
+          npm run lint
+
+      - name: Approve PR
+        if: github.actor == 'renovate[bot]'
+        run: gh pr review ${{ github.event.pull_request.number }} --approve
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge PR
+        if: github.actor == 'renovate[bot]'
+        run: gh pr merge ${{ github.event.pull_request.number }} --merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
