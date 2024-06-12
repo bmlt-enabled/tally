@@ -17,7 +17,7 @@
 
 	let map: google.maps.Map;
 	let mapElement: HTMLElement;
-	let mapMarkers: google.maps.Marker[] = [];
+	let mapMarkers: google.maps.marker.AdvancedMarkerElement[] = [];
 
 	const showTable = () => {
 		displayTallyTable();
@@ -137,7 +137,10 @@
 			}
 
 			while (mapMarkers.length) {
-				mapMarkers.pop()?.setMap(null);
+				const marker = mapMarkers.pop();
+				if (marker) {
+					marker.map = null;
+				}
 			}
 
 			if (!whatADrag && !inDraw) {
@@ -157,14 +160,14 @@
 			const mainPoint = new google.maps.LatLng(inMtgObjArray[0].latitude, inMtgObjArray[0].longitude);
 
 			if (bounds && bounds.contains(mainPoint)) {
-				const displayedImage = inMtgObjArray.length === 1 ? m_icon_image_single : m_icon_image_multi;
-				const newMarker = new google.maps.Marker({
+				const displayedImage = document.createElement('img');
+				displayedImage.src = inMtgObjArray.length === 1 ? m_icon_image_single : m_icon_image_multi;
+
+				return new google.maps.marker.AdvancedMarkerElement({
 					position: mainPoint,
 					map: map,
-					icon: displayedImage
+					content: displayedImage
 				});
-
-				return newMarker;
 			}
 		}
 
@@ -182,7 +185,7 @@
 		const thing = 'QUl6YVN5QzRkMWNqX2ZRbVR1SDVJbTZoSkJXelRVWjNxZ2wzQjZF';
 		const loader = new Loader({
 			apiKey: window.atob(thing),
-			version: 'quarterly',
+			version: 'weekly',
 			libraries: ['places', 'marker']
 		});
 
