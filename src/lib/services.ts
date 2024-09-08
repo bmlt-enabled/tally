@@ -192,6 +192,18 @@ const calculateTallyData = async (roots: AggregatorRoot[]): Promise<Partial<Tall
 	});
 
 	const virtualRoots = await getVirtualRootsDetails(VirtualRoots);
+
+	virtualRoots.forEach((virtualRoot) => {
+		virtualRoot.root_server_url = virtualRoot.root_server_url.replace(/\/$/, '');
+		const version = JSON.parse(virtualRoot.server_info).version;
+		byRootServerVersions[version] = (byRootServerVersions[version] || 0) + 1;
+		meetingsCount += virtualRoot.num_total_meetings;
+		groupsCount += virtualRoot.num_groups;
+		areasCount += virtualRoot.num_areas;
+		regionsCount += virtualRoot.num_regions;
+		zonesCount += virtualRoot.num_zones;
+	});
+
 	filteredRoots.push(...virtualRoots);
 	return {
 		meetingsCount,
