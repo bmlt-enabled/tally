@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Tally, MeetingLocations } from './types'; // Adjust the import path as necessary
 
 export const initialTally: Tally = {
-	knownTotal: 72215,
+	knownTotal: 76075,
 	meetingsCount: 0,
 	groupsCount: 0,
 	areasCount: 0,
