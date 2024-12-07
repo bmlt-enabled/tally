@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: |
           npm ci
-          npm run build
+          NODE_ENV=production npm run build
           touch ./build/.nojekyll && echo 'tally.bmlt.app' > ./build/CNAME
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

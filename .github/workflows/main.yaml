@@ -16,6 +16,8 @@ jobs:
           node-version: 20
 
       - name: build
+        env:
+          NODE_ENV: development
         run: |
           npm ci && npm run build
 
