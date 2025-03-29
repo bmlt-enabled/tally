@@ -55,7 +55,7 @@
 			</tr>
 		</thead>
 		<tbody id="tallyBody">
-			{#each tally.filteredRoots as root}
+			{#each tally.filteredRoots as root (root.id)}
 				<tr>
 					<td class="tallyName"><a href={root.root_server_url} target="_blank">{root.name}</a> [<a href="{root.root_server_url}/semantic" target="_blank">Explore</a>]</td>
 					<td>{tlsEnabled(root.root_server_url)}</td>

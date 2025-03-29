@@ -34,7 +34,7 @@
 		</tr>
 	</thead>
 	<tbody id="tallyBody">
-		{#each Object.entries(tally.reports.byRootServerVersions) as [version, count]}
+		{#each Object.entries(tally.reports.byRootServerVersions) as [version, count] (version)}
 			<tr>
 				<td>{version}</td>
 				<td>{count}</td>
