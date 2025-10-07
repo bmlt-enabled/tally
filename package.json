@@ -34,7 +34,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@googlemaps/js-api-loader": "^1.16.6",
+		"@googlemaps/js-api-loader": "^2.0.0",
 		"@googlemaps/adv-markers-utils": "^1.1.0"
 	}
 }
