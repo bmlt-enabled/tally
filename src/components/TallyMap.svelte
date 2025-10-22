@@ -3,7 +3,7 @@
 	import { currentView, meetingData } from '$lib/store';
 	import type { MeetingLocations } from '$lib/types';
 	import { onMount } from 'svelte';
-	import { Loader } from '@googlemaps/js-api-loader';
+	import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 
 	let meetings: MeetingLocations[] = [];
 	let calculatedMarkers: { matched: boolean; matches: MeetingLocations[]; object: MeetingLocations; coords: google.maps.Point | null }[] = [];
@@ -183,14 +183,11 @@
 
 	onMount(async () => {
 		const thing = 'QUl6YVN5QzRkMWNqX2ZRbVR1SDVJbTZoSkJXelRVWjNxZ2wzQjZF';
-		const loader = new Loader({
-			apiKey: window.atob(thing),
-			version: 'weekly',
-			libraries: ['places', 'marker']
+		setOptions({
+			key: window.atob(thing),
+			v: 'beta'
 		});
-
-		const { Map } = await loader.importLibrary('maps');
-		await google.maps.importLibrary('marker');
+		const [{ Map }] = await Promise.all([importLibrary('maps'), importLibrary('places'), importLibrary('marker')]);
 
 		mapElement = document.getElementById('map') as HTMLElement;
 
