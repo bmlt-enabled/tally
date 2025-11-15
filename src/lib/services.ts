@@ -1,11 +1,7 @@
 import { tallyData, meetingData, currentView, isLoadingData } from './store';
-import TallyReports from '../components/TallyReports.svelte';
-import TallyMap from '../components/TallyMap.svelte';
 import { VirtualRoots } from '$lib/VirtualRoots';
 import type { Tally, AggregatorRoot, Root, Reports, ServerInfo, ServiceBody, Meeting, MeetingLocations } from '$lib/types';
 
-let tallyReportsInstance: TallyReports | null = null;
-let tallyMapInstance: TallyMap | null = null;
 const aggregatorUrl: string = 'https://aggregator.bmltenabled.org/main_server';
 const concurrentRequests = 4;
 
@@ -57,53 +53,15 @@ const fetchMeetingData = async (concurrentRequests: number, tallyData: Partial<T
 };
 
 export const displayTallyReports = () => {
-	currentView.set('reports'); // Use store to manage current view
-	const tallyMan = document.getElementById('tallyMan');
-	const tallyReports = document.getElementById('tallyReports');
-	const tallyReportsTemplate = document.getElementById('tallyReportsTemplate');
-
-	if (tallyMan && tallyReports && tallyReportsTemplate) {
-		tallyMan.style.display = 'none';
-		tallyReports.style.display = 'block';
-
-		if (!tallyReportsInstance) {
-			tallyReportsInstance = new TallyReports({
-				target: tallyReportsTemplate
-			});
-		}
-	}
+	currentView.set('reports');
 };
 
 export const displayTallyTable = () => {
-	currentView.set('default'); // Use store to manage current view
-	const tallyMan = document.getElementById('tallyMan');
-	const tallyReports = document.getElementById('tallyReports');
-	const tallyMapDiv = document.getElementById('tallyMapDiv');
-
-	if (tallyMan && tallyReports) {
-		tallyMan.style.display = 'block';
-		tallyReports.style.display = 'none';
-	}
-	if (tallyMapDiv) {
-		tallyMapDiv.style.display = 'none';
-	}
+	currentView.set('default');
 };
 
 export const displayTallyMap = () => {
-	currentView.set('map'); // Use store to manage current view
-	const tallyMan = document.getElementById('tallyMan');
-	const tallyMap = document.getElementById('tallyMapDiv');
-
-	if (tallyMan && tallyMap) {
-		tallyMan.style.display = 'none';
-		tallyMap.style.display = 'block';
-
-		if (!tallyMapInstance) {
-			tallyMapInstance = new TallyMap({
-				target: tallyMap
-			});
-		}
-	}
+	currentView.set('map');
 };
 
 const getVirtualRootsDetails = async (roots: Root[]): Promise<Root[]> => {

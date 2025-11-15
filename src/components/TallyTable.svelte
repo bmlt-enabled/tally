@@ -1,14 +1,7 @@
 <script lang="ts">
-	import { afterUpdate } from 'svelte';
 	import { tallyData } from '$lib/store';
 	import { TableSort } from '$lib/TableSort';
-	import type { Tally, Root } from '$lib/types';
-
-	let tally: Tally;
-
-	tallyData.subscribe((value) => {
-		tally = value;
-	});
+	import type { Root } from '$lib/types';
 
 	const googleApiKeyPresent = (root: Root): string => {
 		return JSON.parse(root.server_info).google_api_key ? 'Y' : 'N';
@@ -18,20 +11,17 @@
 		return JSON.parse(root.server_info)[key];
 	};
 
-	const tableRender = () => {
-		const tableElement = document.getElementById('tallyHo') as HTMLTableElement;
-		if (tableElement) {
+	let tableElement = $state<HTMLTableElement>();
+
+	$effect(() => {
+		if (tableElement && $tallyData.serversCount > 0) {
 			new TableSort(tableElement, { descending: false });
 		}
-	};
-
-	afterUpdate(async () => {
-		tableRender();
 	});
 </script>
 
-{#if tally.serversCount > 0}
-	<table id="tallyHo" class="tallyTable">
+{#if $tallyData.serversCount > 0}
+	<table id="tallyHo" class="tallyTable" bind:this={tableElement}>
 		<thead id="tallyHead">
 			<tr>
 				<th id="tallyName_Header"><span class="link-like">Server Name</span></th>
@@ -45,7 +35,7 @@
 			</tr>
 		</thead>
 		<tbody id="tallyBody">
-			{#each tally.filteredRoots as root}
+			{#each $tallyData.filteredRoots as root}
 				<tr>
 					<td class="tallyName"><a href={root.root_server_url} target="_blank">{root.name}</a> [<a href="{root.root_server_url}/semantic" target="_blank">Explore</a>]</td>
 					<td>{googleApiKeyPresent(root)}</td>
@@ -60,12 +50,12 @@
 		</tbody>
 		<tfoot>
 			<tr class="tallyTotal">
-				<td class="tallyName" colspan="3">TOTAL Servers <span id="serversTotal">{tally.serversCount}</span></td>
-				<td>{tally.zonesCount}</td>
-				<td>{tally.regionsCount}</td>
-				<td>{tally.areasCount}</td>
-				<td>{tally.groupsCount}</td>
-				<td>{tally.meetingsCount}</td>
+				<td class="tallyName" colspan="3">TOTAL Servers <span id="serversTotal">{$tallyData.serversCount}</span></td>
+				<td>{$tallyData.zonesCount}</td>
+				<td>{$tallyData.regionsCount}</td>
+				<td>{$tallyData.areasCount}</td>
+				<td>{$tallyData.groupsCount}</td>
+				<td>{$tallyData.meetingsCount}</td>
 			</tr>
 		</tfoot>
 	</table>

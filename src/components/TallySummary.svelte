@@ -1,17 +1,10 @@
 <script lang="ts">
 	import { tallyData } from '$lib/store';
-	import type { Tally } from '$lib/types';
 
-	let tally: Tally;
-
-	tallyData.subscribe((value) => {
-		tally = value;
-	});
-
-	$: knownTotal = tally.knownTotal;
-	$: tallyTotal = tally.meetingsCount;
-	$: tallyServiceBodies = tally.serviceBodiesCount;
-	$: tallyPctTotal = Math.floor((tallyTotal / knownTotal) * 100);
+	const knownTotal = $derived($tallyData.knownTotal);
+	const tallyTotal = $derived($tallyData.meetingsCount);
+	const tallyServiceBodies = $derived($tallyData.serviceBodiesCount);
+	const tallyPctTotal = $derived(Math.floor((tallyTotal / knownTotal) * 100));
 </script>
 
 <h3>

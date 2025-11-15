@@ -1,32 +1,21 @@
 <script lang="ts">
-	import { afterUpdate } from 'svelte';
 	import { tallyData } from '$lib/store';
-	import type { Tally } from '$lib/types';
 	import { TableSort } from '$lib/TableSort';
 
-	let tally: Tally;
+	let tableRootServerElement = $state<HTMLTableElement>();
+	let tableMeetingVenueReport = $state<HTMLTableElement>();
 
-	tallyData.subscribe((value) => {
-		tally = value;
-	});
-
-	const tableReportSort = () => {
-		const tableRootServerElement = document.getElementById('tallyRootServerVersionTable') as HTMLTableElement;
-		const tableMeetingVenueReport = document.getElementById('meetingVenueReport') as HTMLTableElement;
-		if (tableRootServerElement) {
+	$effect(() => {
+		if (tableRootServerElement && $tallyData.reports) {
 			new TableSort(tableRootServerElement, { descending: true });
 		}
-		if (tableMeetingVenueReport) {
+		if (tableMeetingVenueReport && $tallyData.filteredRoots.length > 0) {
 			new TableSort(tableMeetingVenueReport, { descending: true });
 		}
-	};
-
-	afterUpdate(async () => {
-		tableReportSort();
 	});
 </script>
 
-<table id="tallyRootServerVersionTable" class="tallyTable">
+<table id="tallyRootServerVersionTable" class="tallyTable" bind:this={tableRootServerElement}>
 	<thead id="tallyHead">
 		<tr>
 			<th data-sort-default data-sort-method="dotsep" class="selected"><span class="link-like">Version</span></th>
@@ -34,7 +23,7 @@
 		</tr>
 	</thead>
 	<tbody id="tallyBody">
-		{#each Object.entries(tally.reports.byRootServerVersions) as [version, count]}
+		{#each Object.entries($tallyData.reports.byRootServerVersions) as [version, count]}
 			<tr>
 				<td>{version}</td>
 				<td>{count}</td>
@@ -45,7 +34,7 @@
 
 <hr />
 
-<table id="meetingVenueReport" class="tallyTable">
+<table id="meetingVenueReport" class="tallyTable" bind:this={tableMeetingVenueReport}>
 	<thead id="tallyHead">
 		<tr>
 			<th data-sort-default class="selected"><span class="link-like">Type</span></th>
@@ -55,15 +44,15 @@
 	<tbody id="tallyBody">
 		<tr>
 			<td>virtual</td>
-			<td>{tally.filteredRoots.reduce((sum, meeting) => sum + meeting.num_virtual, 0)}</td>
+			<td>{$tallyData.filteredRoots.reduce((sum, meeting) => sum + meeting.num_virtual, 0)}</td>
 		</tr>
 		<tr>
 			<td>in_person</td>
-			<td>{tally.filteredRoots.reduce((sum, meeting) => sum + meeting.num_in_person, 0)}</td>
+			<td>{$tallyData.filteredRoots.reduce((sum, meeting) => sum + meeting.num_in_person, 0)}</td>
 		</tr>
 		<tr>
 			<td>hybrid</td>
-			<td>{tally.filteredRoots.reduce((sum, meeting) => sum + meeting.num_hybrid, 0)}</td>
+			<td>{$tallyData.filteredRoots.reduce((sum, meeting) => sum + meeting.num_hybrid, 0)}</td>
 		</tr>
 	</tbody>
 </table>

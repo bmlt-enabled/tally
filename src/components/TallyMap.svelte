@@ -5,15 +5,11 @@
 	import { onMount } from 'svelte';
 	import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 
-	let meetings: MeetingLocations[] = [];
 	let calculatedMarkers: { matched: boolean; matches: MeetingLocations[]; object: MeetingLocations; coords: google.maps.Point | null }[] = [];
 	let inDraw = false;
 	let whatADrag = false;
 	const m_icon_image_single = 'images/NAMarkerB.png';
 	const m_icon_image_multi = 'images/NAMarkerR.png';
-	meetingData.subscribe((value) => {
-		meetings = value;
-	});
 
 	let map: google.maps.Map;
 	let mapElement: HTMLElement;
@@ -133,7 +129,7 @@
 	const displayMeetingMarkers = () => {
 		if (map && map.getBounds()) {
 			if (!calculatedMarkers.length) {
-				calculatedMarkers = sMapOverlappingMarkers(meetings);
+				calculatedMarkers = sMapOverlappingMarkers($meetingData);
 			}
 
 			while (mapMarkers.length) {
