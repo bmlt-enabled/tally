@@ -65,7 +65,6 @@ export interface Root {
 	num_hybrid: number;
 	num_unknown: number;
 	server_info: string;
-	id?: string;
 }
 
 export interface AggregatorRoot {

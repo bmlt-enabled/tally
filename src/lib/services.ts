@@ -1,6 +1,5 @@
 import { tallyData, meetingData, currentView, isLoadingData } from './store';
-import { VirtualRoots } from '$lib/VirtualRoots';
-import type { Tally, AggregatorRoot, Root, Reports, ServerInfo, ServiceBody, Meeting, MeetingLocations } from '$lib/types';
+import type { Tally, AggregatorRoot, Root, Reports, MeetingLocations } from '$lib/types';
 
 const aggregatorUrl: string = 'https://aggregator.bmltenabled.org/main_server';
 const concurrentRequests = 4;
@@ -8,7 +7,7 @@ const concurrentRequests = 4;
 export const fetchTallyData = async () => {
 	try {
 		const aggregatorRootData: AggregatorRoot[] = await getJSON(`${aggregatorUrl}/api/v1/rootservers/`);
-		const newState = await calculateTallyData(aggregatorRootData);
+		const newState = calculateTallyData(aggregatorRootData);
 
 		tallyData.update((state) => ({
 			...state,
@@ -64,55 +63,7 @@ export const displayTallyMap = () => {
 	currentView.set('map');
 };
 
-const getVirtualRootsDetails = async (roots: Root[]): Promise<Root[]> => {
-	const updatedRoots: Root[] = [];
-
-	for (const root of roots) {
-		try {
-			const serviceBodies: ServiceBody[] = await getJSON(`${root.root_server_url}client_interface/json/?switcher=GetServiceBodies`);
-
-			const counts = serviceBodies.reduce(
-				(acc, serviceBody) => {
-					if (serviceBody.type === 'ZF') {
-						acc.zones++;
-					} else if (serviceBody.type === 'RS') {
-						acc.regions++;
-					} else {
-						acc.areas++;
-					}
-					return acc;
-				},
-				{ regions: 0, areas: 0, zones: 0 }
-			);
-
-			const serverInfo: ServerInfo[] = await getJSON(`${root.root_server_url}client_interface/json/?switcher=GetServerInfo`);
-			const meetings: Meeting[] = await getJSON(`${root.root_server_url}client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name`);
-
-			const virtualGroupDistinction: Set<string> = new Set(meetings.map((meeting) => meeting.meeting_name));
-
-			updatedRoots.push({
-				root_server_url: root.root_server_url,
-				name: root.name,
-				num_zones: counts.zones,
-				num_regions: counts.regions,
-				num_areas: counts.areas,
-				num_groups: virtualGroupDistinction.size,
-				num_total_meetings: meetings.length,
-				num_in_person: root.num_in_person,
-				num_virtual: root.num_virtual,
-				num_hybrid: root.num_hybrid,
-				num_unknown: root.num_unknown,
-				server_info: JSON.stringify(serverInfo[0])
-			});
-		} catch (error) {
-			console.error(`Error fetching data for root ${root.id}:`, error);
-		}
-	}
-
-	return updatedRoots;
-};
-
-const calculateTallyData = async (roots: AggregatorRoot[]): Promise<Partial<Tally>> => {
+const calculateTallyData = (roots: AggregatorRoot[]): Partial<Tally> => {
 	let meetingsCount = 0;
 	let groupsCount = 0;
 	let areasCount = 0;
@@ -149,27 +100,13 @@ const calculateTallyData = async (roots: AggregatorRoot[]): Promise<Partial<Tall
 		});
 	});
 
-	const virtualRoots = await getVirtualRootsDetails(VirtualRoots);
-
-	virtualRoots.forEach((virtualRoot) => {
-		virtualRoot.root_server_url = virtualRoot.root_server_url.replace(/\/$/, '');
-		const version = JSON.parse(virtualRoot.server_info).version;
-		byRootServerVersions[version] = (byRootServerVersions[version] || 0) + 1;
-		meetingsCount += virtualRoot.num_total_meetings;
-		groupsCount += virtualRoot.num_groups;
-		areasCount += virtualRoot.num_areas;
-		regionsCount += virtualRoot.num_regions;
-		zonesCount += virtualRoot.num_zones;
-	});
-
-	filteredRoots.push(...virtualRoots);
 	return {
 		meetingsCount,
 		groupsCount,
 		areasCount,
 		regionsCount,
 		zonesCount,
-		serversCount: roots.length + virtualRoots.length,
+		serversCount: roots.length,
 		filteredRoots,
 		roots,
 		serviceBodiesCount: areasCount + regionsCount + zonesCount,
