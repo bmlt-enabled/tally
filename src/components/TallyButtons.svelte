@@ -25,7 +25,7 @@
 <div class="tallyButtons">
 	{#if $isLoadingData}
 		<div id="tallyRootServerDataLoading">
-			<img src="images/spinner3.gif" alt="Loading" /> Loading Meeting Details for Map
+			<span class="spinner" role="status" aria-label="Loading"></span> Loading Meeting Details for Map
 		</div>
 	{/if}
 	{#if $currentView === 'default' && !$isLoadingData}
