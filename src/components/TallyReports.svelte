@@ -5,12 +5,25 @@
 	let tableRootServerElement = $state<HTMLTableElement>();
 	let tableMeetingVenueReport = $state<HTMLTableElement>();
 
+	let rootServerSort: TableSort | undefined;
+	let meetingVenueSort: TableSort | undefined;
+
+	// Data can update while this view is open (extra roots load in the background), so build each
+	// sorter once and re-apply the current sort afterwards; re-instantiating would stack header listeners.
 	$effect(() => {
 		if (tableRootServerElement && $tallyData.reports) {
-			new TableSort(tableRootServerElement, { descending: true });
+			if (rootServerSort?.el === tableRootServerElement) {
+				rootServerSort.refresh();
+			} else {
+				rootServerSort = new TableSort(tableRootServerElement, { descending: true });
+			}
 		}
 		if (tableMeetingVenueReport && $tallyData.filteredRoots.length > 0) {
-			new TableSort(tableMeetingVenueReport, { descending: true });
+			if (meetingVenueSort?.el === tableMeetingVenueReport) {
+				meetingVenueSort.refresh();
+			} else {
+				meetingVenueSort = new TableSort(tableMeetingVenueReport, { descending: true });
+			}
 		}
 	});
 </script>
