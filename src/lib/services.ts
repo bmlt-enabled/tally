@@ -1,22 +1,26 @@
 import { tallyData, meetingData, currentView, isLoadingData } from './store';
-import type { Tally, AggregatorRoot, Root, Reports, MeetingLocations } from '$lib/types';
+import { ExtraRoots, type ExtraRoot } from '$lib/ExtraRoots';
+import type { Tally, AggregatorRoot, Root, Reports, ServerInfo, ServiceBody, Meeting, MeetingLocations } from '$lib/types';
 
 const aggregatorUrl: string = 'https://aggregator.bmltenabled.org/main_server';
 const concurrentRequests = 4;
 
 export const fetchTallyData = async () => {
 	try {
-		const aggregatorRootData: AggregatorRoot[] = await getJSON(`${aggregatorUrl}/api/v1/rootservers/`);
-		const newState = calculateTallyData(aggregatorRootData);
+		const [aggregatorRootData, extraRootsDetails] = await Promise.all([getJSON(`${aggregatorUrl}/api/v1/rootservers/`) as Promise<AggregatorRoot[]>, getExtraRootsDetails(ExtraRoots)]);
+		const newState = calculateTallyData(
+			aggregatorRootData,
+			extraRootsDetails.map((details) => details.root)
+		);
 
 		tallyData.update((state) => ({
 			...state,
 			...newState
 		}));
 
-		const aggregatorMeetingData = await fetchMeetingData(concurrentRequests, newState);
+		const aggregatorMeetingData = await fetchMeetingData(concurrentRequests, aggregatorMeetingsCount(aggregatorRootData));
 
-		meetingData.update(() => aggregatorMeetingData);
+		meetingData.update(() => [...aggregatorMeetingData, ...extraRootsDetails.flatMap((details) => details.locations)]);
 
 		isLoadingData.set(false);
 	} catch (error) {
@@ -24,9 +28,11 @@ export const fetchTallyData = async () => {
 	}
 };
 
-const fetchMeetingData = async (concurrentRequests: number, tallyData: Partial<Tally>) => {
+const aggregatorMeetingsCount = (roots: AggregatorRoot[]) => roots.reduce((sum, root) => sum + root.statistics.meetings.numTotal, 0);
+
+const fetchMeetingData = async (concurrentRequests: number, meetingsCount: number) => {
 	const shardSize = 1000;
-	const shards = Math.ceil((tallyData.meetingsCount ?? 35000) / shardSize);
+	const shards = Math.ceil(meetingsCount / shardSize);
 	const results: MeetingLocations[] = [];
 	const pages = Array.from({ length: shards }, (_, i) => i + 1);
 
@@ -63,7 +69,83 @@ export const displayTallyMap = () => {
 	currentView.set('map');
 };
 
-const calculateTallyData = (roots: AggregatorRoot[]): Partial<Tally> => {
+const getExtraRootsDetails = async (roots: ExtraRoot[]): Promise<{ root: Root; locations: MeetingLocations[] }[]> => {
+	const results = await Promise.all(
+		roots.map(async (root) => {
+			try {
+				const [serviceBodies, serverInfo, meetings] = await Promise.all([
+					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetServiceBodies`) as Promise<ServiceBody[]>,
+					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetServerInfo`) as Promise<ServerInfo[]>,
+					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name,venue_type,longitude,latitude`) as Promise<Meeting[]>
+				]);
+
+				const serviceBodyCounts = serviceBodies.reduce(
+					(acc, serviceBody) => {
+						if (serviceBody.type === 'ZF') {
+							acc.zones++;
+						} else if (serviceBody.type === 'RS') {
+							acc.regions++;
+						} else {
+							acc.areas++;
+						}
+						return acc;
+					},
+					{ zones: 0, regions: 0, areas: 0 }
+				);
+
+				// venue_type: 1 = in person, 2 = virtual, 3 = hybrid
+				const venueCounts = meetings.reduce(
+					(acc, meeting) => {
+						if (meeting.venue_type === '1') {
+							acc.inPerson++;
+						} else if (meeting.venue_type === '2') {
+							acc.virtual++;
+						} else if (meeting.venue_type === '3') {
+							acc.hybrid++;
+						} else {
+							acc.unknown++;
+						}
+						return acc;
+					},
+					{ inPerson: 0, virtual: 0, hybrid: 0, unknown: 0 }
+				);
+
+				const locations: MeetingLocations[] = meetings
+					.filter((meeting) => meeting.venue_type !== '2')
+					.map((meeting) => ({
+						longitude: parseFloat(meeting.longitude ?? ''),
+						latitude: parseFloat(meeting.latitude ?? '')
+					}))
+					.filter((location) => !isNaN(location.longitude) && !isNaN(location.latitude));
+
+				return {
+					root: {
+						root_server_url: root.root_server_url,
+						name: root.name,
+						num_zones: serviceBodyCounts.zones,
+						num_regions: serviceBodyCounts.regions,
+						num_areas: serviceBodyCounts.areas,
+						num_groups: new Set(meetings.map((meeting) => meeting.meeting_name)).size,
+						num_total_meetings: meetings.length,
+						num_in_person: venueCounts.inPerson,
+						num_virtual: venueCounts.virtual,
+						num_hybrid: venueCounts.hybrid,
+						num_unknown: venueCounts.unknown,
+						server_info: JSON.stringify(serverInfo[0])
+					},
+					locations
+				};
+			} catch (error) {
+				console.error(`Error fetching data for root ${root.root_server_url}:`, error);
+				return null;
+			}
+		})
+	);
+
+	return results.filter((result) => result !== null);
+};
+
+const calculateTallyData = (roots: AggregatorRoot[], extraRoots: Root[]): Partial<Tally> => {
 	let meetingsCount = 0;
 	let groupsCount = 0;
 	let areasCount = 0;
@@ -100,13 +182,25 @@ const calculateTallyData = (roots: AggregatorRoot[]): Partial<Tally> => {
 		});
 	});
 
+	extraRoots.forEach((root) => {
+		const version = JSON.parse(root.server_info).version;
+		byRootServerVersions[version] = (byRootServerVersions[version] || 0) + 1;
+		meetingsCount += root.num_total_meetings;
+		groupsCount += root.num_groups;
+		areasCount += root.num_areas;
+		regionsCount += root.num_regions;
+		zonesCount += root.num_zones;
+	});
+
+	filteredRoots.push(...extraRoots);
+
 	return {
 		meetingsCount,
 		groupsCount,
 		areasCount,
 		regionsCount,
 		zonesCount,
-		serversCount: roots.length,
+		serversCount: roots.length + extraRoots.length,
 		filteredRoots,
 		roots,
 		serviceBodiesCount: areasCount + regionsCount + zonesCount,

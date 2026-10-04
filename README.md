@@ -4,7 +4,7 @@
 
 This is a Web app that aggregates the various known [BMLT Root Servers](https://bmlt.app/setting-up-the-bmlt/), and creates a "live" table that displays some basic statistics about those servers.
 
-The tally queries the Aggregator for its results.
+The tally queries the Aggregator for its results. Root servers that are not catalogued in the Aggregator are queried directly and are listed [here](src/lib/ExtraRoots.ts).
 
 ## [It can be seen in action here.](https://tally.bmlt.app)
 
