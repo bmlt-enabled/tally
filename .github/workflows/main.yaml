@@ -10,16 +10,16 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
 
-      - name: node 22
+      - name: setup node
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: .nvmrc
 
       - name: build
         env:
           NODE_ENV: development
         run: |
-          npm install && npm run build
+          npm ci && npm run build
 
       - name: check
         run: |
