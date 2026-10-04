@@ -12,10 +12,17 @@
 	};
 
 	let tableElement = $state<HTMLTableElement>();
+	let tableSort: TableSort | undefined;
 
+	// Rows can arrive in more than one update (extra roots load in the background), so build the
+	// sorter once and re-apply the current sort afterwards; re-instantiating would stack header listeners.
 	$effect(() => {
-		if (tableElement && $tallyData.serversCount > 0) {
-			new TableSort(tableElement, { descending: false });
+		if (tableElement && $tallyData.filteredRoots.length > 0) {
+			if (tableSort?.el === tableElement) {
+				tableSort.refresh();
+			} else {
+				tableSort = new TableSort(tableElement, { descending: false });
+			}
 		}
 	});
 </script>

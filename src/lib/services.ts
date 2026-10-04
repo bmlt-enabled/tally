@@ -4,25 +4,41 @@ import type { Tally, AggregatorRoot, Root, Reports, ServerInfo, ServiceBody, Mee
 
 const aggregatorUrl: string = 'https://aggregator.bmltenabled.org/main_server';
 const concurrentRequests = 4;
+const extraRootTimeoutMs = 60000;
 
 export const fetchTallyData = async () => {
 	try {
-		const [aggregatorRootData, extraRootsDetails] = await Promise.all([getJSON(`${aggregatorUrl}/api/v1/rootservers/`) as Promise<AggregatorRoot[]>, getExtraRootsDetails(ExtraRoots)]);
-		const newState = calculateTallyData(
-			aggregatorRootData,
-			extraRootsDetails.map((details) => details.root)
-		);
+		// Extra roots load in the background so a slow or unreachable server never blocks the aggregator data.
+		// getExtraRootsDetails never rejects; a failed root is logged and left out.
+		const extraRootsDetailsPromise = getExtraRootsDetails(ExtraRoots);
+
+		const aggregatorRootData: AggregatorRoot[] = await getJSON(`${aggregatorUrl}/api/v1/rootservers/`);
 
 		tallyData.update((state) => ({
 			...state,
-			...newState
+			...calculateTallyData(aggregatorRootData, [])
 		}));
+
+		extraRootsDetailsPromise.then((extraRootsDetails) => {
+			if (extraRootsDetails.length === 0) return;
+			tallyData.update((state) => ({
+				...state,
+				...calculateTallyData(
+					aggregatorRootData,
+					extraRootsDetails.map((details) => details.root)
+				)
+			}));
+		});
 
 		const aggregatorMeetingData = await fetchMeetingData(concurrentRequests, aggregatorMeetingsCount(aggregatorRootData));
 
-		meetingData.update(() => [...aggregatorMeetingData, ...extraRootsDetails.flatMap((details) => details.locations)]);
+		meetingData.update((meetings) => [...meetings, ...aggregatorMeetingData]);
 
 		isLoadingData.set(false);
+
+		extraRootsDetailsPromise.then((extraRootsDetails) => {
+			meetingData.update((meetings) => [...meetings, ...extraRootsDetails.flatMap((details) => details.locations)]);
+		});
 	} catch (error) {
 		console.error('Error fetching tally data:', error);
 	}
@@ -74,9 +90,11 @@ const getExtraRootsDetails = async (roots: ExtraRoot[]): Promise<{ root: Root; l
 		roots.map(async (root) => {
 			try {
 				const [serviceBodies, serverInfo, meetings] = await Promise.all([
-					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetServiceBodies`) as Promise<ServiceBody[]>,
-					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetServerInfo`) as Promise<ServerInfo[]>,
-					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name,venue_type,longitude,latitude`) as Promise<Meeting[]>
+					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetServiceBodies`, extraRootTimeoutMs) as Promise<ServiceBody[]>,
+					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetServerInfo`, extraRootTimeoutMs) as Promise<ServerInfo[]>,
+					getJSON(`${root.root_server_url}/client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,meeting_name,venue_type,longitude,latitude`, extraRootTimeoutMs) as Promise<
+						Meeting[]
+					>
 				]);
 
 				const serviceBodyCounts = serviceBodies.reduce(
@@ -208,8 +226,8 @@ const calculateTallyData = (roots: AggregatorRoot[], extraRoots: Root[]): Partia
 	};
 };
 
-const getJSON = async (url: string): Promise<[]> => {
-	const response = await fetch(url);
+const getJSON = async (url: string, timeoutMs?: number): Promise<[]> => {
+	const response = await fetch(url, timeoutMs ? { signal: AbortSignal.timeout(timeoutMs) } : undefined);
 	if (!response.ok) {
 		throw new Error('Network response was not ok');
 	}
